@@ -4,10 +4,11 @@ import { mockDb } from '@/lib/mockDb';
 
 export async function GET(
   _req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const user = await requireUser();
-  const call = mockDb.calls.find(c => c.id === params.id && c.orgId === user.orgId);
+  const { id } = await params;
+  const call = mockDb.calls.find(c => c.id === id && c.orgId === user.orgId);
   if (!call) return new NextResponse('Not found', { status: 404 });
   return NextResponse.json(call);
 }

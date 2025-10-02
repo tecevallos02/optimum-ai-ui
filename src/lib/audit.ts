@@ -1,0 +1,75 @@
+import { PrismaClient } from "@prisma/client"
+import { headers } from "next/headers"
+
+const prisma = new PrismaClient()
+
+export type AuditAction = 
+  | 'signin' 
+  | 'signout' 
+  | 'org:created' 
+  | 'org:switch' 
+  | 'invite:created' 
+  | 'invite:accepted' 
+  | 'role:changed'
+  | 'user:created'
+  | 'membership:created'
+
+export interface AuditMeta {
+  [key: string]: any
+}
+
+export async function logAudit(
+  action: AuditAction,
+  actorId: string,
+  orgId: string,
+  target?: string,
+  meta?: AuditMeta
+) {
+  try {
+    const headersList = await headers()
+    const ip = headersList.get('x-forwarded-for') || 
+               headersList.get('x-real-ip') || 
+               'unknown'
+    const userAgent = headersList.get('user-agent') || 'unknown'
+
+    await prisma.auditLog.create({
+      data: {
+        action,
+        actorId,
+        orgId,
+        target,
+        ip,
+        userAgent,
+        createdAt: new Date(),
+      },
+    })
+  } catch (error) {
+    // Log audit failures but don't throw to avoid breaking main functionality
+    console.error('Failed to log audit event:', error)
+  }
+}
+
+export async function getAuditLogs(
+  orgId: string, 
+  limit: number = 50,
+  offset: number = 0
+) {
+  return await prisma.auditLog.findMany({
+    where: { orgId },
+    include: {
+      actor: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+    skip: offset,
+  })
+}
+
+
+

@@ -8,10 +8,6 @@ import OrgSwitcherClient from "@/components/OrgSwitcherClient"; // <- client wra
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
 
-  // You can fetch orgs here (server) and pass as data only
-  const orgs = [{ id: user?.orgId ?? "org_1", name: "Demo Company" }];
-  const currentOrgId = user?.orgId ?? "org_1";
-
   return (
     <div className="min-h-screen flex bg-bg">
       {/* Sidebar */}
@@ -37,8 +33,8 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       {/* Main content */}
       <main className="flex-1">
         <header className="flex items-center justify-between p-4 border-b border-border bg-white sticky top-0 z-10">
-          {/* Client wrapper owns the handler; we only pass serializable data here */}
-          <OrgSwitcherClient orgs={orgs} currentOrgId={currentOrgId} />
+          {/* OrgSwitcherClient now fetches its own data */}
+          <OrgSwitcherClient />
 
           <div className="flex items-center space-x-3">
             <span className="text-sm text-muted">{user?.email}</span>

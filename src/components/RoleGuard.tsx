@@ -1,16 +1,40 @@
 'use client';
 import { ReactNode } from 'react';
-import { Role } from '@/lib/roles';
-import { useCurrentUser } from '@/lib/useCurrentUser';
+import { Role, isAtLeast } from '@/lib/roles';
+import { useSession } from 'next-auth/react';
+import useSWR from 'swr';
 
 interface RoleGuardProps {
-  allowed: Role[];
+  allowed: Role | Role[];
   fallback?: ReactNode;
   children: ReactNode;
+  requireAtLeast?: boolean; // If true, uses role hierarchy
 }
 
-export default function RoleGuard({ allowed, fallback = null, children }: RoleGuardProps) {
-  const { user } = useCurrentUser();
-  if (!user) return null;
-  return allowed.includes(user.role) ? <>{children}</> : <>{fallback}</>;
+export default function RoleGuard({ 
+  allowed, 
+  fallback = null, 
+  children, 
+  requireAtLeast = false 
+}: RoleGuardProps) {
+  const { data: session } = useSession();
+  
+  // Get current user data including role
+  const { data: userData } = useSWR(
+    session ? '/api/me' : null,
+    (url: string) => fetch(url).then(res => res.json())
+  );
+
+  if (!session || !userData || !userData.role) {
+    return <>{fallback}</>;
+  }
+
+  const userRole = userData.role;
+  const allowedRoles = Array.isArray(allowed) ? allowed : [allowed];
+
+  const hasPermission = requireAtLeast
+    ? allowedRoles.some(role => isAtLeast(userRole, role))
+    : allowedRoles.includes(userRole);
+
+  return hasPermission ? <>{children}</> : <>{fallback}</>;
 }

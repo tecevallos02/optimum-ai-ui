@@ -5,12 +5,31 @@ import { fetcher } from '@/lib/fetcher';
 
 export default function AuditPage() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    fetcher<{ data: AuditLog[] }>('/api/audit').then(res => setLogs(res.data));
+    fetcher<{ data: AuditLog[] }>('/api/audit')
+      .then(res => {
+        if (res && res.data) {
+          setLogs(res.data);
+        } else {
+          setError('No audit logs available');
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load audit logs', err);
+        setError('Failed to load audit logs');
+      });
   }, []);
+
   return (
     <div>
       <h1 className="text-2xl font-semibold mb-4">Audit Log</h1>
+
+      {error && (
+        <p className="text-red-500 text-sm mb-4">{error}</p>
+      )}
+
       <ul className="space-y-2">
         {logs.map(log => (
           <li key={log.id} className="bg-white p-4 rounded shadow-card">
@@ -22,4 +41,3 @@ export default function AuditPage() {
     </div>
   );
 }
-

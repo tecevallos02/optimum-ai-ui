@@ -1,33 +1,110 @@
-// Prisma schema for future DB use. Currently unused in mock mode.
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }
 
-model Organization {
-  id      String   @id @default(uuid())
-  name    String
-  users   UserOrgRole[]
+// Auth.js models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id      String   @id @default(uuid())
-  email   String   @unique
-  name    String?
-  roles   UserOrgRole[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  memberships   Membership[]
+  createdInvitations Invitation[] @relation("InvitationCreator")
+  auditLogs     AuditLog[]
 }
 
-model UserOrgRole {
-  id      String @id @default(uuid())
-  userId  String
-  orgId   String
-  role    Role
-  user    User     @relation(fields: [userId], references: [id])
-  org     Organization @relation(fields: [orgId], references: [id])
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Multi-tenant models
+model Organization {
+  id          String       @id @default(cuid())
+  name        String
+  createdAt   DateTime     @default(now())
+  memberships Membership[]
+  invitations Invitation[]
+  auditLogs   AuditLog[]
+}
+
+model Membership {
+  id     String @id @default(cuid())
+  userId String
+  orgId  String
+  role   Role
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  org    Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, orgId])
+}
+
+model Invitation {
+  id         String    @id @default(cuid())
+  orgId      String
+  email      String
+  role       Role
+  token      String    @unique
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  createdBy  String
+  createdAt  DateTime  @default(now())
+  
+  org     Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  creator User         @relation("InvitationCreator", fields: [createdBy], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  orgId     String
+  actorId   String
+  action    String
+  target    String?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  
+  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  actor User         @relation(fields: [actorId], references: [id])
 }
 
 enum Role {

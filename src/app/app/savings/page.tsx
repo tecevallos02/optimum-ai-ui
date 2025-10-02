@@ -8,7 +8,9 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 export default function SavingsPage() {
   const [series, setSeries] = useState<SavingsSeries>([]);
   useEffect(() => {
-    fetcher<SavingsSeries>('/api/savings').then(setSeries);
+    fetcher<SavingsSeries>('/api/savings').then((data) => {
+      if (data) setSeries(data);
+    });
   }, []);
 
   const downloadPdf = async () => {
