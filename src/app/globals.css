@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smooth scroll and fade-up class for section reveals */
+html {
+  scroll-behavior: smooth;
+}
+
+.fade-up {
+  @apply opacity-0 translate-y-5;
+  animation: fadeUp 0.8s ease forwards;
+}

@@ -1,0 +1,37 @@
+// Prisma schema for future DB use. Currently unused in mock mode.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Organization {
+  id      String   @id @default(uuid())
+  name    String
+  users   UserOrgRole[]
+}
+
+model User {
+  id      String   @id @default(uuid())
+  email   String   @unique
+  name    String?
+  roles   UserOrgRole[]
+}
+
+model UserOrgRole {
+  id      String @id @default(uuid())
+  userId  String
+  orgId   String
+  role    Role
+  user    User     @relation(fields: [userId], references: [id])
+  org     Organization @relation(fields: [orgId], references: [id])
+}
+
+enum Role {
+  OWNER
+  MANAGER
+  AGENT
+}
