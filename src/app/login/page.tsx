@@ -5,9 +5,10 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-function SignInContent() {
+function LoginContent() {
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState('')
+  const [error, setError] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/app'
@@ -23,48 +24,81 @@ function SignInContent() {
 
   const handleProviderSignIn = async (provider: string) => {
     setIsLoading(true)
+    setError('')
     try {
       const result = await signIn(provider, { callbackUrl, redirect: false })
       if (result?.error) {
         console.error('Sign in error:', result.error)
-        alert(`Sign in failed: ${result.error}`)
+        setError(`Sign in failed: ${result.error}`)
+      } else if (result?.ok) {
+        router.push(callbackUrl)
       }
     } catch (error) {
       console.error('Sign in error:', error)
-      alert('Sign in failed. Please try again.')
+      setError('Sign in failed. Please try again.')
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleEmailSignUp = async (e: React.FormEvent) => {
+  const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
     
     setIsLoading(true)
+    setError('')
     try {
-      // Create user account and send activation email
-      const response = await fetch('/api/auth/send-activation', {
+      // Check if user exists and is verified
+      const userResponse = await fetch('/api/auth/check-verification', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          email,
-          name: email.split('@')[0] // Use email prefix as name
-        }),
+        body: JSON.stringify({ email }),
       })
 
-      if (response.ok) {
-        // Redirect to verification page
-        router.push(`/verify?email=${encodeURIComponent(email)}`)
+      const userData = await userResponse.json()
+      
+      if (!userData.success) {
+        setError('Account not found. Please create an account first.')
+        return
+      }
+      
+      if (!userData.verified) {
+        // User exists but needs verification, send activation email
+        const activationResponse = await fetch('/api/auth/send-activation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            email,
+            name: email.split('@')[0]
+          }),
+        })
+
+        if (activationResponse.ok) {
+          router.push(`/verify?email=${encodeURIComponent(email)}`)
+        } else {
+          setError('Account found but failed to send verification email. Please try again.')
+        }
       } else {
-        const errorData = await response.json()
-        alert(`Error creating account: ${errorData.error || 'Please try again.'}`)
+        // User is verified, use NextAuth magic link for login
+        const result = await signIn('email', { 
+          email, 
+          callbackUrl,
+          redirect: false 
+        })
+        
+        if (result?.ok) {
+          router.push(callbackUrl)
+        } else {
+          setError(`Error signing in: ${result?.error || 'Unknown error'}`)
+        }
       }
     } catch (error) {
-      console.error('Email sign up error:', error)
-      alert('Error creating account. Please try again.')
+      console.error('Email sign in error:', error)
+      setError('Error signing in. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -75,12 +109,33 @@ function SignInContent() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+            Sign in to your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Get started with Optimum AI and create your organization
+            Welcome back! Sign in to access your organization dashboard
           </p>
         </div>
+        
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-md p-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">
+                  Sign in failed
+                </h3>
+                <div className="mt-2 text-sm text-red-700">
+                  <p>{error}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
         <div className="mt-8 space-y-4">
           {/* Google Sign In - only show if configured */}
@@ -96,7 +151,7 @@ function SignInContent() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              Sign up with Google
+              Sign in with Google
             </button>
           )}
 
@@ -113,7 +168,7 @@ function SignInContent() {
                 <path fill="#7FBA00" d="M1 13h10v10H1z"/>
                 <path fill="#FFB900" d="M13 13h10v10H13z"/>
               </svg>
-              Sign up with Microsoft
+              Sign in with Microsoft
             </button>
           )}
 
@@ -132,7 +187,7 @@ function SignInContent() {
                     OAuth providers not configured
                   </h3>
                   <div className="mt-2 text-sm text-yellow-700">
-                    <p>Google and Microsoft sign-in are not available. Please configure OAuth credentials in your environment variables or use email authentication below.</p>
+                    <p>Google and Microsoft sign-in are not available. Please use email authentication below.</p>
                   </div>
                 </div>
               </div>
@@ -153,7 +208,7 @@ function SignInContent() {
           )}
 
           {/* Email Sign In */}
-          <form onSubmit={handleEmailSignUp} className="space-y-4">
+          <form onSubmit={handleEmailSignIn} className="space-y-4">
             <div>
               <label htmlFor="email" className="sr-only">
                 Email address
@@ -167,7 +222,7 @@ function SignInContent() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your email address"
+                placeholder="Enter your existing email address"
               />
             </div>
             
@@ -185,37 +240,62 @@ function SignInContent() {
                       Development Mode
                     </h3>
                     <div className="mt-1 text-sm text-blue-700">
-                      <p>An activation code will be generated and logged to the console instead of being sent via email.</p>
+                      <p>For existing accounts, a magic link will be sent. For unverified accounts, an activation code will be generated.</p>
                     </div>
                   </div>
                 </div>
               </div>
             )}
+            
             <button
               type="submit"
               disabled={isLoading || !email}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Creating account...' : 'Create account with email'}
+              {isLoading ? 'Signing in...' : 'Sign in with existing email'}
             </button>
           </form>
         </div>
 
-        {/* Login link */}
+        {/* Sign up link */}
         <div className="text-center">
           <p className="text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
-              Sign in here
+            Don't have an account?{' '}
+            <Link href="/signin" className="font-medium text-blue-600 hover:text-blue-500">
+              Create one here
             </Link>
           </p>
+        </div>
+
+        {/* Demo accounts info */}
+        <div className="bg-green-50 border border-green-200 rounded-md p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-green-800">
+                Demo Accounts Available
+              </h3>
+              <div className="mt-2 text-sm text-green-700">
+                <p>Try logging in with these pre-created business accounts:</p>
+                <ul className="mt-1 list-disc list-inside">
+                  <li>dr.smith@acmedental.com (Dental Practice Owner)</li>
+                  <li>ceo@techstart.com (Tech Company CEO)</li>
+                  <li>partner@greenvalleylaw.com (Law Firm Partner)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-export default function SignInPage() {
+export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -225,9 +305,7 @@ export default function SignInPage() {
         </div>
       </div>
     }>
-      <SignInContent />
+      <LoginContent />
     </Suspense>
   )
 }
-
-

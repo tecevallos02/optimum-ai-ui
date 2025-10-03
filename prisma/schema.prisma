@@ -40,6 +40,8 @@ model User {
   email              String       @unique
   emailVerified      DateTime?
   image              String?
+  activationToken    String?      @unique
+  activationExpires  DateTime?
   accounts           Account[]
   auditLogs          AuditLog[]
   createdInvitations Invitation[] @relation("InvitationCreator")

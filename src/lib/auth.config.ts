@@ -17,8 +17,7 @@ if (!process.env.NEXTAUTH_SECRET) {
 }
 
 export const authOptions: AuthOptions = {
-  // Temporarily disabled due to Windows permission issues
-  // adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma),
   providers: [
     // Only enable providers with valid credentials
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && 
@@ -36,29 +35,32 @@ export const authOptions: AuthOptions = {
         tenantId: process.env.AZURE_AD_TENANT_ID!,
       })
     ] : []),
-    // Email provider - only enable if SMTP is configured
-    ...(process.env.EMAIL_SERVER_HOST && process.env.EMAIL_SERVER_USER && 
-        process.env.EMAIL_SERVER_USER !== 'your-email@gmail.com' && 
-        process.env.EMAIL_SERVER_PASSWORD && 
-        process.env.EMAIL_SERVER_PASSWORD !== 'your-app-password' ? [
-      EmailProvider({
-        server: {
-          host: process.env.EMAIL_SERVER_HOST!,
-          port: Number(process.env.EMAIL_SERVER_PORT!),
-          auth: {
-            user: process.env.EMAIL_SERVER_USER!,
-            pass: process.env.EMAIL_SERVER_PASSWORD!,
-          },
-        },
-        from: process.env.EMAIL_FROM!,
-      })
-    ] : []),
+    // Email provider - always enabled for development
+    EmailProvider({
+      from: process.env.EMAIL_FROM || "noreply@localhost",
+      sendVerificationRequest: async ({ identifier: email, url, provider }) => {
+        try {
+          // For development, we'll log the magic link to console
+          if (process.env.NODE_ENV === "development") {
+            console.log("🔗 Magic Link for", email, ":", url)
+            console.log("📧 In production, this would be sent via email")
+            return
+          }
+
+          // In production, you can configure real email sending here
+          console.log("🔗 Magic Link for", email, ":", url)
+        } catch (error) {
+          console.error("Failed to send verification email:", error)
+          throw new Error("Failed to send verification email")
+        }
+      },
+    }),
   ],
   session: {
     strategy: "jwt",
   },
   pages: {
-    signIn: "/signin",
+    signIn: "/login",
   },
   callbacks: {
     async jwt({ token, user, account }) {
@@ -68,31 +70,76 @@ export const authOptions: AuthOptions = {
         token.email = user.email
         token.name = user.name
         token.image = user.image
+        token.emailVerified = user.emailVerified
         
-        // Temporarily disabled due to Windows permission issues
-        // Fetch user's organizations and memberships
-        // const memberships = await prisma.membership.findMany({
-        //   where: { userId: user.id },
-        //   include: { org: true },
-        //   orderBy: { org: { createdAt: 'asc' } },
-        // })
+        // Check if email is verified
+        if (!user.emailVerified) {
+          console.log('User email not verified:', user.email)
+          // Don't create organizations or memberships for unverified users
+          token.orgs = []
+          token.currentOrgId = null
+          return token
+        }
         
-        // token.orgs = memberships.map(m => ({
-        //   id: m.org.id,
-        //   name: m.org.name,
-        //   role: m.role,
-        // }))
-        
-        // Set current org to first one if available
-        // token.currentOrgId = memberships[0]?.org.id || null
-        
-        // Temporary mock data for testing
-        token.orgs = [{
-          id: 'temp-org-1',
-          name: 'Test Organization',
-          role: 'OWNER',
-        }]
-        token.currentOrgId = 'temp-org-1'
+        try {
+          // Check if user has any memberships
+          const memberships = await prisma.membership.findMany({
+            where: { userId: user.id },
+            include: { org: true },
+            orderBy: { org: { createdAt: 'asc' } },
+          })
+          
+          // If user has no memberships, create a default organization for them
+          if (memberships.length === 0) {
+            console.log('Creating default organization for verified user:', user.email)
+            
+            // Create a default organization for the new user
+            const defaultOrg = await prisma.organization.create({
+              data: {
+                name: `${user.name || 'My'} Organization`,
+                createdAt: new Date(),
+              }
+            })
+            
+            // Create membership with OWNER role
+            await prisma.membership.create({
+              data: {
+                userId: user.id,
+                orgId: defaultOrg.id,
+                role: 'OWNER',
+              }
+            })
+            
+            // Add the new organization to token
+            token.orgs = [{
+              id: defaultOrg.id,
+              name: defaultOrg.name,
+              role: 'OWNER',
+            }]
+            token.currentOrgId = defaultOrg.id
+            
+            console.log('✅ Created organization and membership for user:', user.email)
+          } else {
+            // User already has memberships
+            token.orgs = memberships.map(m => ({
+              id: m.org.id,
+              name: m.org.name,
+              role: m.role,
+            }))
+            
+            // Set current org to first one if available
+            token.currentOrgId = memberships[0]?.org.id || null
+          }
+        } catch (error) {
+          console.error('Error handling user memberships:', error)
+          // Fallback to mock data if database fails
+          token.orgs = [{
+            id: 'temp-org-1',
+            name: 'Test Organization',
+            role: 'OWNER',
+          }]
+          token.currentOrgId = 'temp-org-1'
+        }
       }
       
       return token

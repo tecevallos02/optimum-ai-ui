@@ -3,8 +3,8 @@ import { NextResponse } from "next/server"
 
 export default withAuth(
   function middleware(req) {
-    // If user is authenticated but accessing /signin, redirect to app
-    if (req.nextUrl.pathname === '/signin' && req.nextauth.token) {
+    // If user is authenticated but accessing auth pages, redirect to app
+    if ((req.nextUrl.pathname === '/signin' || req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/auth') && req.nextauth.token) {
       return NextResponse.redirect(new URL('/app', req.url))
     }
     
@@ -19,6 +19,9 @@ export default withAuth(
         if (
           pathname === '/' ||
           pathname === '/signin' ||
+          pathname === '/login' ||
+          pathname === '/auth' ||
+          pathname === '/verify' ||
           pathname.startsWith('/api/auth/') ||
           pathname.startsWith('/invite/') ||
           pathname.startsWith('/_next/') ||
