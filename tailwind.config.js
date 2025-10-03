@@ -1,6 +1,5 @@
-import type { Config } from 'tailwindcss';
-
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: [
     './src/**/*.{ts,tsx}',
     './src/app/**/*.{ts,tsx}',
@@ -43,4 +42,3 @@ const config: Config = {
   },
   plugins: [require('@tailwindcss/forms')]
 };
-export default config;

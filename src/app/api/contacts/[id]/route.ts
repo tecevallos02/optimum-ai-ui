@@ -1,0 +1,114 @@
+import { NextRequest, NextResponse } from "next/server"
+import { PrismaClient } from "@prisma/client"
+import { requireUser, getCurrentOrgId } from "@/lib/auth"
+import { logAudit } from "@/lib/audit"
+
+const prisma = new PrismaClient()
+
+// PATCH /api/contacts/[id] - Update contact
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const user = await requireUser()
+    const currentOrgId = await getCurrentOrgId()
+    const { id } = await params
+    
+    if (!currentOrgId) {
+      return NextResponse.json(
+        { error: "No organization selected" },
+        { status: 400 }
+      )
+    }
+    
+    // Verify contact belongs to current organization
+    const existingContact = await prisma.contact.findFirst({
+      where: {
+        id,
+        orgId: currentOrgId,
+      },
+    })
+    
+    if (!existingContact) {
+      return NextResponse.json(
+        { error: "Contact not found" },
+        { status: 404 }
+      )
+    }
+    
+    const body = await request.json()
+    
+    const updateData: Record<string, unknown> = {}
+    if (body.name !== undefined) updateData.name = body.name.trim()
+    if (body.email !== undefined) updateData.email = body.email?.trim() || null
+    if (body.phone !== undefined) updateData.phone = body.phone?.trim() || null
+    if (body.tags !== undefined) updateData.tags = JSON.stringify(body.tags || [])
+    if (body.notes !== undefined) updateData.notes = body.notes?.trim() || null
+    
+    const contact = await prisma.contact.update({
+      where: { id },
+      data: updateData,
+    })
+    
+    // Log audit event
+    await logAudit('contact:updated', user.id, currentOrgId, id)
+    
+    return NextResponse.json(contact)
+  } catch (error) {
+    console.error('Error updating contact:', error)
+    return NextResponse.json(
+      { error: "Failed to update contact" },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE /api/contacts/[id] - Delete contact
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const user = await requireUser()
+    const currentOrgId = await getCurrentOrgId()
+    const { id } = await params
+    
+    if (!currentOrgId) {
+      return NextResponse.json(
+        { error: "No organization selected" },
+        { status: 400 }
+      )
+    }
+    
+    // Verify contact belongs to current organization
+    const existingContact = await prisma.contact.findFirst({
+      where: {
+        id,
+        orgId: currentOrgId,
+      },
+    })
+    
+    if (!existingContact) {
+      return NextResponse.json(
+        { error: "Contact not found" },
+        { status: 404 }
+      )
+    }
+    
+    await prisma.contact.delete({
+      where: { id },
+    })
+    
+    // Log audit event
+    await logAudit('contact:deleted', user.id, currentOrgId, id)
+    
+    return new NextResponse(null, { status: 204 })
+  } catch (error) {
+    console.error('Error deleting contact:', error)
+    return NextResponse.json(
+      { error: "Failed to delete contact" },
+      { status: 500 }
+    )
+  }
+}

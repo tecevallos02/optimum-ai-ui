@@ -18,11 +18,11 @@ export default async function DashboardPage() {
     };
 
   // Build series data (safe if mockDb.savings is missing)
-  const callsHandledSeries =
-    (mockDb as any)?.savings?.map((d: any) => ({
-      name: `M${d.month}`,
-      calls: d.timeSaved,
-    })) ?? [];
+  const savingsData = mockDb.savings || [];
+  const callsHandledSeries = savingsData.map((d) => ({
+    name: `M${d.month}`,
+    calls: d.timeSaved,
+  }));
 
   const intentsSeries = [
     { name: "book", count: 120 },

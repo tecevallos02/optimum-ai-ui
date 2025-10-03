@@ -14,7 +14,7 @@ interface Invitation {
 }
 
 export default function InvitePage({ params }: { params: Promise<{ token: string }> }) {
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
   const router = useRouter()
   const [invitation, setInvitation] = useState<Invitation | null>(null)
   const [loading, setLoading] = useState(true)
@@ -33,7 +33,7 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
         } else {
           setError('Invalid or expired invitation')
         }
-      } catch (err) {
+      } catch {
         setError('Failed to load invitation')
       } finally {
         setLoading(false)
@@ -69,7 +69,7 @@ export default function InvitePage({ params }: { params: Promise<{ token: string
         const errorData = await response.json()
         setError(errorData.error || 'Failed to accept invitation')
       }
-    } catch (err) {
+    } catch {
       setError('Failed to accept invitation')
     } finally {
       setAccepting(false)

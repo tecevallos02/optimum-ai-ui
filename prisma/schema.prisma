@@ -4,11 +4,10 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// Auth.js models
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -22,8 +21,7 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -37,16 +35,16 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  memberships   Membership[]
+  id                 String       @id @default(cuid())
+  name               String?
+  email              String       @unique
+  emailVerified      DateTime?
+  image              String?
+  accounts           Account[]
+  auditLogs          AuditLog[]
   createdInvitations Invitation[] @relation("InvitationCreator")
-  auditLogs     AuditLog[]
+  memberships        Membership[]
+  sessions           Session[]
 }
 
 model VerificationToken {
@@ -57,54 +55,65 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Multi-tenant models
 model Organization {
   id          String       @id @default(cuid())
   name        String
   createdAt   DateTime     @default(now())
-  memberships Membership[]
-  invitations Invitation[]
   auditLogs   AuditLog[]
+  contacts    Contact[]
+  invitations Invitation[]
+  memberships Membership[]
 }
 
 model Membership {
-  id     String @id @default(cuid())
+  id     String       @id @default(cuid())
   userId String
   orgId  String
   role   Role
-  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   org    Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, orgId])
 }
 
 model Invitation {
-  id         String    @id @default(cuid())
+  id         String       @id @default(cuid())
   orgId      String
   email      String
   role       Role
-  token      String    @unique
+  token      String       @unique
   expiresAt  DateTime
   acceptedAt DateTime?
   createdBy  String
-  createdAt  DateTime  @default(now())
-  
-  org     Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  creator User         @relation("InvitationCreator", fields: [createdBy], references: [id])
+  createdAt  DateTime     @default(now())
+  creator    User         @relation("InvitationCreator", fields: [createdBy], references: [id])
+  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 }
 
 model AuditLog {
-  id        String   @id @default(cuid())
+  id        String       @id @default(cuid())
   orgId     String
   actorId   String
   action    String
   target    String?
   ip        String?
   userAgent String?
-  createdAt DateTime @default(now())
-  
-  org   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  actor User         @relation(fields: [actorId], references: [id])
+  createdAt DateTime     @default(now())
+  actor     User         @relation(fields: [actorId], references: [id])
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+}
+
+model Contact {
+  id        String       @id @default(cuid())
+  orgId     String
+  name      String
+  email     String?
+  phone     String?
+  tags      String[]     @default([])
+  notes     String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 }
 
 enum Role {

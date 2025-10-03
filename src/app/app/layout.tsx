@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import RoleGuard from "@/components/RoleGuard";
 import OrgSwitcherClient from "@/components/OrgSwitcherClient"; // <- client wrapper
+import LogoutButton from "../../components/LogoutButton";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
@@ -43,6 +44,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
                 {user?.role}
               </span>
             </RoleGuard>
+            <LogoutButton />
           </div>
         </header>
         <div className="p-4">{children}</div>

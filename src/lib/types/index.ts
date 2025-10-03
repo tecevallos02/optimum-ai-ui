@@ -29,10 +29,12 @@ export type Contact = {
   id: string;
   orgId: string;
   name: string;
-  phone: string;
-  email: string;
+  phone?: string | null;
+  email?: string | null;
   tags: string[];
-  notes: string;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type KPI = {

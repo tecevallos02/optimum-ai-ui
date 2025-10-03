@@ -13,17 +13,19 @@ export type AuditAction =
   | 'role:changed'
   | 'user:created'
   | 'membership:created'
+  | 'contact:created'
+  | 'contact:updated'
+  | 'contact:deleted'
 
 export interface AuditMeta {
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export async function logAudit(
   action: AuditAction,
   actorId: string,
   orgId: string,
-  target?: string,
-  meta?: AuditMeta
+  target?: string
 ) {
   try {
     const headersList = await headers()

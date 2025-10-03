@@ -3,13 +3,13 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 
-export type Column<T extends Record<string, any>> = {
+export type Column<T extends Record<string, unknown>> = {
   key: keyof T & string;                 // ensure key is a string key of T
   header: string;
   render?: (row: T) => React.ReactNode;  // row is strongly typed as T
 };
 
-export default function DataTable<T extends Record<string, any>>({
+export default function DataTable<T extends Record<string, unknown>>({
   data,
   columns,
   pageSize = 10,
@@ -18,10 +18,10 @@ export default function DataTable<T extends Record<string, any>>({
   columns: Column<T>[];
   pageSize?: number;
 }) {
-  const rows: T[] = Array.isArray(data) ? data : [];
   const [page, setPage] = useState(0);
 
   const { pageData, pageCount, safePage } = useMemo(() => {
+    const rows: T[] = Array.isArray(data) ? data : [];
     const total = rows.length;
     const count = Math.max(1, Math.ceil(total / pageSize)); // avoid 0 pages
     const clampedPage = Math.min(Math.max(0, page), count - 1);
@@ -32,7 +32,7 @@ export default function DataTable<T extends Record<string, any>>({
       pageCount: count,
       safePage: clampedPage,
     };
-  }, [rows, page, pageSize]);
+  }, [data, page, pageSize]);
 
   // keep page in bounds when data changes (avoid setState during render)
   useEffect(() => {
@@ -61,12 +61,12 @@ export default function DataTable<T extends Record<string, any>>({
               </tr>
             ) : (
               pageData.map((row, idx) => (
-                <tr key={(row as any).id ?? idx} className="border-t border-border">
+                <tr key={String((row as Record<string, unknown>).id) || idx} className="border-t border-border">
                   {columns.map((c) => (
                     <td key={c.key} className="px-4 py-3">
                       {c.render
                         ? c.render(row)
-                        : String((row as any)[c.key] ?? "")}
+                        : String((row as Record<string, unknown>)[c.key] ?? "")}
                     </td>
                   ))}
                 </tr>

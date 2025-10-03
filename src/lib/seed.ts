@@ -43,7 +43,9 @@ export function seedContacts(): Contact[] {
     phone: `555-000${i}`,
     email: `contact${i + 1}@demo.com`,
     tags: i % 2 ? ['vip'] : [],
-    notes: `Notes for contact ${i + 1}`
+    notes: `Notes for contact ${i + 1}`,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   }));
 }
 

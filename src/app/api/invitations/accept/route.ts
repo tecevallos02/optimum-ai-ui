@@ -70,9 +70,9 @@ export async function POST(request: NextRequest) {
     }
     
     // Accept invitation in a transaction
-    const result = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       // Create membership
-      const membership = await tx.membership.create({
+      await tx.membership.create({
         data: {
           userId: user.id,
           orgId: invitation.orgId,
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
         data: { acceptedAt: new Date() },
       })
       
-      return membership
+      return null
     })
     
     // Log audit event

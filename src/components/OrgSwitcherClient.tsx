@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import OrgSwitcher from "@/components/OrgSwitcher";
 import useSWR from "swr";
 
-type Org = { id: string; name: string; role: string };
+// type Org = { id: string; name: string; role: string };
 
 export default function OrgSwitcherClient() {
   const { data: session } = useSession();

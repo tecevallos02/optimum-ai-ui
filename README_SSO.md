@@ -1,160 +1,181 @@
-# SSO and Multi-Tenant Setup Guide
+# Optimum AI UI - SSO Setup Guide
 
-This guide explains how to set up and configure the SSO (Single Sign-On) and multi-tenant features for Optimum AI UI.
+This Next.js 14 SaaS application provides multi-tenant AI receptionist management with SSO authentication.
 
-## Overview
+## Features
 
-The application now supports:
-- **Authentication**: Google OAuth, Microsoft Azure AD, and Email magic links
-- **Multi-tenancy**: Organizations with role-based access control (RBAC)
-- **Roles**: OWNER, MANAGER, AGENT with hierarchical permissions
-- **Invitations**: Team member invitation system
-- **Audit Logging**: Track important user actions
+- **Multi-tenant Organizations** with RBAC (OWNER, MANAGER, AGENT)
+- **SSO Authentication** via Google OIDC, Microsoft Azure AD, and Email magic links
+- **Organization Management** with invitation system
+- **Contacts CRUD** with full management interface
+- **Calendar Integration** (Google Calendar ready)
+- **Audit Logging** for all actions
+- **Dashboard & KPIs** with real-time data
+
+## Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+- SQLite (dev) or PostgreSQL (production)
+- Google OAuth credentials (optional)
+- Microsoft Azure AD credentials (optional)
+- SMTP server for email magic links (optional)
 
 ## Environment Variables
 
-Create a `.env.local` file in the project root with the following variables:
+Create a `.env.local` file in the project root:
 
 ```bash
+# NextAuth Configuration
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=REPLACE_ME_32B_RANDOM
+
+# Google OIDC (Optional)
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Microsoft Entra ID / Azure AD OIDC (Optional)
+AZURE_AD_TENANT_ID=your-tenant-id
+AZURE_AD_CLIENT_ID=your-azure-client-id
+AZURE_AD_CLIENT_SECRET=your-azure-client-secret
+
+# Email Magic Link (Optional)
+EMAIL_SERVER_HOST=smtp.gmail.com
+EMAIL_SERVER_PORT=587
+EMAIL_SERVER_USER=your-email@gmail.com
+EMAIL_SERVER_PASSWORD=your-app-password
+EMAIL_FROM="Optimum AI <no-reply@YOUR_DOMAIN>"
+
 # Database
-DATABASE_URL="file:./prisma/dev.db"
+DATABASE_URL=sqlite:./prisma/dev.db
 
-# NextAuth.js Configuration
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-nextauth-secret-here-32-chars-minimum"
+# Public Configuration
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
-# Google OAuth
-GOOGLE_CLIENT_ID="your-google-client-id"
-GOOGLE_CLIENT_SECRET="your-google-client-secret"
-
-# Microsoft Azure AD
-AZURE_AD_TENANT_ID="your-azure-tenant-id"
-AZURE_AD_CLIENT_ID="your-azure-client-id"
-AZURE_AD_CLIENT_SECRET="your-azure-client-secret"
-
-# Email Provider (for magic links)
-EMAIL_SERVER_HOST="smtp.example.com"
-EMAIL_SERVER_PORT="587"
-EMAIL_SERVER_USER="your-smtp-username"
-EMAIL_SERVER_PASSWORD="your-smtp-password"
-EMAIL_FROM="Optimum AI <no-reply@yourdomain.com>"
-
-# Public Site URL
-NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+# Optional: Calendar Integration
+# CALCOM_API_KEY=your-calcom-api-key
+# GOOGLE_CALENDAR_API_CREDENTIALS_JSON={"type":"service_account",...}
 ```
 
-## Provider Setup
+## Setup Instructions
 
-### Google OAuth Setup
+### 1. Install Dependencies
 
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable the Google+ API
-4. Go to "Credentials" and create OAuth 2.0 Client IDs
+```bash
+npm install
+```
+
+### 2. Database Setup
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run migrations
+npx prisma migrate dev
+
+# (Optional) Seed with sample data
+npx prisma db seed
+```
+
+### 3. Generate NextAuth Secret
+
+```bash
+# Generate a secure secret
+openssl rand -base64 32
+```
+
+Copy the output to `NEXTAUTH_SECRET` in your `.env.local`.
+
+### 4. Configure OAuth Providers (Optional)
+
+#### Google OAuth Setup
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing
+3. Enable Google+ API
+4. Create OAuth 2.0 credentials
 5. Add authorized redirect URIs:
-   - `http://localhost:3000/api/auth/callback/google` (development)
-   - `https://yourdomain.com/api/auth/callback/google` (production)
-6. Copy the Client ID and Client Secret to your `.env.local`
+   - `http://localhost:3000/api/auth/callback/google`
+   - `https://yourdomain.com/api/auth/callback/google`
+6. Copy Client ID and Secret to `.env.local`
 
-### Microsoft Azure AD Setup
+#### Microsoft Azure AD Setup
 
-1. Go to the [Azure Portal](https://portal.azure.com/)
-2. Navigate to "Azure Active Directory" > "App registrations"
-3. Click "New registration"
-4. Set redirect URI to:
-   - `http://localhost:3000/api/auth/callback/azure-ad` (development)
-   - `https://yourdomain.com/api/auth/callback/azure-ad` (production)
-5. Go to "Certificates & secrets" and create a new client secret
-6. Copy the Tenant ID, Application (client) ID, and Client Secret to your `.env.local`
+1. Go to [Azure Portal](https://portal.azure.com/)
+2. Navigate to Azure Active Directory > App registrations
+3. Create new registration
+4. Add redirect URIs:
+   - `http://localhost:3000/api/auth/callback/azure-ad`
+   - `https://yourdomain.com/api/auth/callback/azure-ad`
+5. Create client secret
+6. Copy Tenant ID, Client ID, and Secret to `.env.local`
 
-### Email Provider Setup
+#### Email Magic Link Setup
 
-For email magic links, you need an SMTP server. You can use:
-- **Gmail**: Use App Passwords with `smtp.gmail.com:587`
-- **SendGrid**: Use API key as password with `smtp.sendgrid.net:587`
-- **AWS SES**: Configure with your AWS SES SMTP credentials
-- **Any SMTP provider**: Use their SMTP settings
+1. Use Gmail with App Password:
+   - Enable 2FA on Gmail
+   - Generate App Password
+   - Use your Gmail address and App Password
 
-## Running Locally
+2. Or use any SMTP server:
+   - Update `EMAIL_SERVER_*` variables
+   - Ensure server supports TLS
 
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+### 5. Start Development Server
 
-2. **Set up environment variables**:
-   Copy `.env.example` to `.env.local` and fill in your values
+```bash
+npm run dev
+```
 
-3. **Run database migrations**:
-   ```bash
-   npx prisma generate
-   npx prisma migrate dev
-   ```
+Visit `http://localhost:3000` to see the application.
 
-4. **Start the development server**:
-   ```bash
-   npm run dev
-   ```
+## Usage
 
-5. **Access the application**:
-   - Open http://localhost:3000
-   - Click "Sign In" to test authentication
-   - Create your first organization after signing in
+### First Time Setup
 
-## Testing the Features
-
-### Authentication Flow
-1. Visit http://localhost:3000/signin
-2. Try signing in with Google, Microsoft, or email
-3. After successful authentication, you'll be redirected to `/app`
+1. **Sign In**: Use any configured SSO method or email magic link
+2. **Create Organization**: You'll be prompted to create your first organization
+3. **Invite Team Members**: Use the team management to invite others
+4. **Configure Calendar**: Connect your Google Calendar for appointment management
 
 ### Organization Management
-1. After first sign-in, you'll be prompted to create an organization
-2. Use the organization switcher in the header to manage multiple orgs
-3. Switch between organizations to test multi-tenancy
 
-### Invitation System
-1. As an OWNER or MANAGER, create invitations via the API:
-   ```bash
-   POST /api/invitations
-   {
-     "email": "user@example.com",
-     "role": "AGENT"
-   }
-   ```
-2. The API will return an invitation URL
-3. Visit the invitation URL to test the acceptance flow
-4. Sign in with the invited email to accept the invitation
+- **OWNER**: Full access to all features, can manage users and billing
+- **MANAGER**: Can manage contacts, view reports, invite AGENT users
+- **AGENT**: Can view contacts and basic dashboard
 
-### Role-Based Access
-- **OWNER**: Full access, can manage all aspects of the organization
-- **MANAGER**: Can invite users and manage team members
-- **AGENT**: Limited access to assigned features
+### Key Features
 
-Use the `RoleGuard` component to protect UI elements:
-```tsx
-<RoleGuard allowed={['OWNER', 'MANAGER']} requireAtLeast>
-  <AdminOnlyButton />
-</RoleGuard>
-```
+#### Contacts Management
+- Add, edit, delete contacts
+- Tag and categorize contacts
+- Search and filter functionality
+- Bulk operations
 
-### Audit Logging
-Audit logs are automatically created for:
-- User sign-in/sign-out
-- Organization creation and switching
-- Invitation creation and acceptance
-- Role changes
+#### Calendar Integration
+- Connect Google Calendar
+- View upcoming appointments
+- Sync appointment data
+- Status tracking (confirmed, pending, cancelled)
 
-View audit logs via the API:
-```bash
-GET /api/audit?orgId=your-org-id
-```
+#### Audit Logging
+- All user actions are logged
+- IP address and user agent tracking
+- Organization-scoped logs
+- Action history for compliance
+
+#### Dashboard & KPIs
+- Call handling statistics
+- Booking metrics
+- Cost savings tracking
+- Real-time data visualization
 
 ## API Endpoints
 
 ### Authentication
-- `GET/POST /api/auth/*` - NextAuth.js routes
-- `GET /api/me` - Current user info with organizations and role
+- `GET /api/auth/[...nextauth]` - NextAuth.js endpoints
+- `GET /api/me` - Current user and organization data
 
 ### Organizations
 - `GET /api/orgs` - List user's organizations
@@ -162,69 +183,104 @@ GET /api/audit?orgId=your-org-id
 - `POST /api/orgs/[id]/switch` - Switch current organization
 
 ### Invitations
-- `POST /api/invitations` - Create invitation (MANAGER+ only)
+- `POST /api/invitations` - Create invitation (MANAGER+)
 - `GET /api/invitations/[token]` - Get invitation details
 - `POST /api/invitations/accept` - Accept invitation
 
-### Other APIs
-All existing APIs (`/api/calls`, `/api/kpis`, etc.) now require authentication and are scoped to the current organization.
+### Contacts
+- `GET /api/contacts` - List contacts (paginated)
+- `POST /api/contacts` - Create contact
+- `PATCH /api/contacts/[id]` - Update contact
+- `DELETE /api/contacts/[id]` - Delete contact
+
+### Calendar
+- `GET /api/appointments` - List appointments
+- `GET /api/calendar/connect` - Check connection status
+- `POST /api/calendar/connect` - Initiate calendar connection
 
 ## Database Schema
 
-The application uses the following key models:
-- **User**: NextAuth.js user with email, name, image
+### Core Models
+- **User**: NextAuth.js user data
 - **Account**: OAuth provider accounts
 - **Session**: User sessions
-- **Organization**: Tenant organizations
+- **Organization**: Multi-tenant organizations
 - **Membership**: User-organization relationships with roles
-- **Invitation**: Team invitation tokens
-- **AuditLog**: Activity tracking
+- **Invitation**: Organization invitations
+- **Contact**: Customer contact information
+- **AuditLog**: Action logging
 
-## Security Considerations
+### Roles
+- **OWNER**: Full organization access
+- **MANAGER**: Management access, can invite AGENT users
+- **AGENT**: Basic access to contacts and dashboard
 
-1. **Environment Variables**: Never commit `.env.local` to version control
-2. **NEXTAUTH_SECRET**: Use a strong, random secret (32+ characters)
-3. **HTTPS**: Always use HTTPS in production
-4. **Database**: Switch to PostgreSQL for production
-5. **Email Security**: Use secure SMTP credentials and consider rate limiting
+## Deployment
+
+### Production Database
+
+Update `DATABASE_URL` to use PostgreSQL:
+
+```bash
+DATABASE_URL=postgresql://username:password@localhost:5432/optimum_ai
+```
+
+### Environment Variables
+
+Ensure all production environment variables are set:
+- Use strong, unique secrets
+- Configure production OAuth redirect URIs
+- Set up production SMTP server
+- Use HTTPS URLs
+
+### Build and Deploy
+
+```bash
+npm run build
+npm start
+```
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **"Invalid redirect URI"**: Ensure your OAuth provider redirect URIs match exactly
-2. **"Database connection failed"**: Check your DATABASE_URL and ensure the database exists
-3. **"Email not sending"**: Verify SMTP credentials and check spam folders
-4. **"Session not found"**: Clear browser cookies and try signing in again
+1. **Database Connection**: Ensure DATABASE_URL is correct
+2. **OAuth Redirects**: Check redirect URIs match exactly
+3. **Email Delivery**: Verify SMTP credentials and settings
+4. **Session Issues**: Clear cookies and try again
 
 ### Debug Mode
 
-Enable debug logging by adding to `.env.local`:
+Enable NextAuth debug mode:
+
 ```bash
 NEXTAUTH_DEBUG=true
 ```
 
-This will provide detailed logs in the console for troubleshooting authentication issues.
+### Logs
 
-## Production Deployment
+Check application logs for detailed error information:
+- Database connection issues
+- OAuth callback errors
+- Email delivery failures
 
-Before deploying to production:
+## Security Considerations
 
-1. **Database**: Switch to PostgreSQL
-   ```bash
-   DATABASE_URL="postgresql://user:password@host:5432/database"
-   ```
-
-2. **Environment**: Update all URLs to production domains
-3. **OAuth**: Update redirect URIs in provider consoles
-4. **Security**: Use secure session cookies and HTTPS
-5. **Monitoring**: Set up error tracking and audit log monitoring
+- Use HTTPS in production
+- Regularly rotate secrets
+- Monitor audit logs
+- Implement rate limiting
+- Use strong passwords
+- Enable 2FA where possible
 
 ## Support
 
-For issues or questions:
-1. Check the troubleshooting section above
-2. Review NextAuth.js documentation: https://next-auth.js.org/
-3. Check Prisma documentation: https://www.prisma.io/docs/
+For issues and questions:
+1. Check this README
+2. Review application logs
+3. Check NextAuth.js documentation
+4. Verify environment configuration
 
+## License
 
+This project is proprietary software. All rights reserved.

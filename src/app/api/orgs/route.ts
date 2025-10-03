@@ -24,7 +24,7 @@ export async function GET() {
     }))
     
     return NextResponse.json({ orgs })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Unauthorized" },
       { status: 401 }
