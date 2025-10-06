@@ -70,10 +70,10 @@ export const authOptions: AuthOptions = {
         token.email = user.email
         token.name = user.name
         token.image = user.image
-        token.emailVerified = user.emailVerified
+        token.emailVerified = (user as any).emailVerified
         
         // Check if email is verified
-        if (!user.emailVerified) {
+        if (!(user as any).emailVerified) {
           console.log('User email not verified:', user.email)
           // Don't create organizations or memberships for unverified users
           token.orgs = []
