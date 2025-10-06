@@ -222,7 +222,7 @@ Visit `http://localhost:3000` to see the application.
 Update `DATABASE_URL` to use PostgreSQL:
 
 ```bash
-DATABASE_URL=postgresql://username:password@localhost:5432/optimum_ai
+DATABASE_URL=postgresql://neondb_owner:npg_AhF9HrGJ8YfU@ep-fancy-waterfall-ad9itrjq-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 ```
 
 ### Environment Variables
