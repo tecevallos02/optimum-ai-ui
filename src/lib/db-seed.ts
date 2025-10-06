@@ -35,7 +35,6 @@ async function main() {
     const org = await prisma.organization.create({
       data: {
         name: orgData.name,
-        createdAt: new Date(),
       }
     })
     createdOrgs.push(org)
@@ -128,7 +127,6 @@ async function main() {
         email: userData.email,
         name: userData.name,
         emailVerified: new Date(),
-        createdAt: new Date(),
       }
     })
 
@@ -180,8 +178,6 @@ async function main() {
         tags: contactData.tags,
         notes: `Contact for ${contactData.orgName}`,
         orgId: org.id,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       }
     })
 
@@ -222,7 +218,6 @@ async function main() {
           target: action.includes('Contact') ? 'contact' : action.includes('Appointment') ? 'appointment' : 'system',
           ip: '127.0.0.1',
           userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000), // Random date within last 30 days
         }
       })
     }
