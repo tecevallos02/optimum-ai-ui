@@ -23,6 +23,7 @@ export default withAuth(
           pathname === '/auth' ||
           pathname === '/verify' ||
           pathname.startsWith('/api/auth/') ||
+          pathname.startsWith('/api/test-db') ||
           pathname.startsWith('/invite/') ||
           pathname.startsWith('/_next/') ||
           pathname.startsWith('/favicon.ico') ||
