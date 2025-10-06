@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
         name: body.name.trim(),
         email: body.email?.trim() || null,
         phone: body.phone?.trim() || null,
-        tags: JSON.stringify(body.tags || []),
+        tags: body.tags || [],
         notes: body.notes?.trim() || null,
       },
     })
