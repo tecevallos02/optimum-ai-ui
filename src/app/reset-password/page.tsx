@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { validatePassword } from '@/lib/password'
 
 function ResetPasswordContent() {
   const [password, setPassword] = useState('')
@@ -12,6 +13,7 @@ function ResetPasswordContent() {
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([])
   const [token, setToken] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -25,6 +27,12 @@ function ResetPasswordContent() {
     }
   }, [searchParams])
 
+  const handlePasswordChange = (newPassword: string) => {
+    setPassword(newPassword)
+    const validation = validatePassword(newPassword)
+    setPasswordErrors(validation.errors)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!password || !confirmPassword || !token) return
@@ -34,8 +42,11 @@ function ResetPasswordContent() {
       return
     }
 
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long')
+    // Validate password
+    const validation = validatePassword(password)
+    if (!validation.isValid) {
+      setPasswordErrors(validation.errors)
+      setError('Password does not meet requirements')
       return
     }
 
@@ -154,7 +165,7 @@ function ResetPasswordContent() {
                   autoComplete="new-password"
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => handlePasswordChange(e.target.value)}
                   className="appearance-none rounded-md relative block w-full px-3 py-3 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                   placeholder="Enter your new password"
                 />
@@ -176,6 +187,20 @@ function ResetPasswordContent() {
                 </button>
               </div>
             </div>
+            
+            {/* Password validation errors */}
+            {passwordErrors.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {passwordErrors.map((error, index) => (
+                  <p key={index} className="text-sm text-red-600 flex items-center">
+                    <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    {error}
+                  </p>
+                ))}
+              </div>
+            )}
 
             <div>
               <label htmlFor="confirmPassword" className="sr-only">
@@ -214,7 +239,7 @@ function ResetPasswordContent() {
 
             <button
               type="submit"
-              disabled={isLoading || !password || !confirmPassword}
+              disabled={isLoading || !password || !confirmPassword || passwordErrors.length > 0}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Resetting password...' : 'Reset password'}
