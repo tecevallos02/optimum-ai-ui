@@ -55,8 +55,25 @@ export async function POST(request: NextRequest) {
     )
   } catch (error) {
     console.error('Password reset request error:', error)
+    
+    // Check if it's a database connection error
+    if (error instanceof Error && error.message.includes('password authentication failed')) {
+      return NextResponse.json(
+        { error: 'Database connection issue. Please check your database configuration.' },
+        { status: 500 }
+      )
+    }
+    
+    // Check if it's a Prisma field error (migration not run)
+    if (error instanceof Error && (error.message.includes('Unknown field') || error.message.includes('resetToken'))) {
+      return NextResponse.json(
+        { error: 'Database schema needs to be updated. Please run: npx prisma db push' },
+        { status: 500 }
+      )
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error. Please try again later.' },
       { status: 500 }
     )
   }
