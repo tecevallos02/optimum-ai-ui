@@ -43,7 +43,7 @@ export type Complaint = {
   phoneNumber: string;
   callTimestamp: string;
   description?: string | null;
-  status: 'open' | 'resolved' | 'closed';
+  status: 'OPEN' | 'RESOLVED' | 'CLOSED';
   createdAt: string;
   updatedAt: string;
 };
