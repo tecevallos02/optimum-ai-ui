@@ -2,8 +2,10 @@ import { AuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import AzureADProvider from "next-auth/providers/azure-ad"
 import EmailProvider from "next-auth/providers/email"
+import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "./prisma"
+import { verifyPassword } from "./password"
 
 // Validate required environment variables
 if (!process.env.DATABASE_URL) {
@@ -35,6 +37,59 @@ export const authOptions: AuthOptions = {
         tenantId: process.env.AZURE_AD_TENANT_ID!,
       })
     ] : []),
+    // Credentials provider for email/password authentication
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null
+        }
+
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+            include: {
+              memberships: {
+                include: {
+                  org: true
+                }
+              }
+            }
+          })
+
+          if (!user || !user.password || !user.emailVerified) {
+            return null
+          }
+
+          const isValidPassword = await verifyPassword(credentials.password, user.password)
+          if (!isValidPassword) {
+            return null
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            image: user.image,
+            emailVerified: user.emailVerified,
+            orgs: user.memberships.map(m => ({
+              id: m.org.id,
+              name: m.org.name,
+              role: m.role
+            }))
+          }
+        } catch (error) {
+          console.error('Credentials authorization error:', error)
+          return null
+        }
+      }
+    }),
     // Email provider - always enabled for development
     EmailProvider({
       from: process.env.EMAIL_FROM || "noreply@localhost",
