@@ -16,6 +16,9 @@ export type AuditAction =
   | 'contact:created'
   | 'contact:updated'
   | 'contact:deleted'
+  | 'complaint:created'
+  | 'complaint:updated'
+  | 'complaint:deleted'
 
 export interface AuditMeta {
   [key: string]: unknown
