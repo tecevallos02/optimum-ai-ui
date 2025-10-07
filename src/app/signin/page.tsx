@@ -4,10 +4,17 @@ import { signIn, getSession } from 'next-auth/react'
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { validatePassword } from '../../lib/password'
 
 function SignInContent() {
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [organizationName, setOrganizationName] = useState('')
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([])
+  const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/app'
@@ -37,9 +44,22 @@ function SignInContent() {
     }
   }
 
+  const handlePasswordChange = (newPassword: string) => {
+    setPassword(newPassword)
+    const validation = validatePassword(newPassword)
+    setPasswordErrors(validation.errors)
+  }
+
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email) return
+    if (!email || !password || !firstName || !lastName || !organizationName) return
+    
+    // Validate password
+    const validation = validatePassword(password)
+    if (!validation.isValid) {
+      setPasswordErrors(validation.errors)
+      return
+    }
     
     setIsLoading(true)
     try {
@@ -51,7 +71,11 @@ function SignInContent() {
         },
         body: JSON.stringify({ 
           email,
-          name: email.split('@')[0] // Use email prefix as name
+          password,
+          firstName,
+          lastName,
+          organizationName,
+          name: `${firstName} ${lastName}` // Full name
         }),
       })
 
@@ -154,6 +178,61 @@ function SignInContent() {
 
           {/* Email Sign In */}
           <form onSubmit={handleEmailSignUp} className="space-y-4">
+            {/* Name Fields */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="firstName" className="sr-only">
+                  First Name
+                </label>
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  autoComplete="given-name"
+                  required
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="appearance-none rounded-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="First name"
+                />
+              </div>
+              <div>
+                <label htmlFor="lastName" className="sr-only">
+                  Last Name
+                </label>
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  autoComplete="family-name"
+                  required
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="appearance-none rounded-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Last name"
+                />
+              </div>
+            </div>
+
+            {/* Organization Name */}
+            <div>
+              <label htmlFor="organizationName" className="sr-only">
+                Organization Name
+              </label>
+              <input
+                id="organizationName"
+                name="organizationName"
+                type="text"
+                autoComplete="organization"
+                required
+                value={organizationName}
+                onChange={(e) => setOrganizationName(e.target.value)}
+                className="appearance-none rounded-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Organization name"
+              />
+            </div>
+
+            {/* Email Field */}
             <div>
               <label htmlFor="email" className="sr-only">
                 Email address
@@ -169,6 +248,68 @@ function SignInContent() {
                 className="appearance-none rounded-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Enter your email address"
               />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  value={password}
+                  onChange={(e) => handlePasswordChange(e.target.value)}
+                  className="appearance-none rounded-md relative block w-full px-3 py-3 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Create a password"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                    </svg>
+                  ) : (
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              
+              {/* Password validation errors */}
+              {passwordErrors.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {passwordErrors.map((error, index) => (
+                    <p key={index} className="text-sm text-red-600 flex items-center">
+                      <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {error}
+                    </p>
+                  ))}
+                </div>
+              )}
+              
+              {/* Password requirements */}
+              <div className="mt-2 text-xs text-gray-500">
+                <p>Password requirements:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li className={password.length >= 12 ? 'text-green-600' : 'text-gray-500'}>
+                    At least 12 characters long
+                  </li>
+                  <li className={/[A-Z]/.test(password) ? 'text-green-600' : 'text-gray-500'}>
+                    Must include a capital letter
+                  </li>
+                </ul>
+              </div>
             </div>
             
             {/* Development notice */}
@@ -193,7 +334,7 @@ function SignInContent() {
             )}
             <button
               type="submit"
-              disabled={isLoading || !email}
+              disabled={isLoading || !email || !password || !firstName || !lastName || !organizationName || passwordErrors.length > 0}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Creating account...' : 'Create account with email'}

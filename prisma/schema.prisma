@@ -36,8 +36,11 @@ model Session {
 
 model User {
   id                 String       @id @default(cuid())
-  name               String?
+  name               String?      // Full name (for backward compatibility)
+  firstName          String?      // First name
+  lastName           String?      // Last name
   email              String       @unique
+  password           String?      // Hashed password for email/password auth
   emailVerified      DateTime?
   image              String?
   activationToken    String?      @unique
