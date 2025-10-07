@@ -184,6 +184,7 @@ function AddComplaintModal({ onClose, onSave }: {
     phoneNumber: "",
     callTimestamp: "",
     description: "",
+    status: "OPEN" as const,
   })
 
   const handleSubmit = (e: React.FormEvent) => {
