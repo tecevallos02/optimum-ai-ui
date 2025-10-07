@@ -40,9 +40,9 @@ export default function AuthPage() {
             <Image
               src="/goshawk-ai-logo.png"
               alt="Goshawk AI"
-              width={300}
-              height={90}
-              className="h-20 w-auto"
+              width={600}
+              height={180}
+              className="h-32 w-auto"
               priority
             />
           </div>
