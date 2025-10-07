@@ -1,7 +1,7 @@
 # 🚀 Production Setup Guide - Neon PostgreSQL
 
 ## Overview
-This guide will help you set up your Optimum AI UI application with Neon PostgreSQL for real business clients. You'll have multiple business organizations with proper user accounts ready for production use.
+This guide will help you set up your Goshawk AI UI application with Neon PostgreSQL for real business clients. You'll have multiple business organizations with proper user accounts ready for production use.
 
 ## 🎯 What You'll Get
 - **5 Real Business Organizations** (Dental, Tech, Law, Medical, Fitness)
@@ -16,8 +16,8 @@ This guide will help you set up your Optimum AI UI application with Neon Postgre
 1. Go to [Neon Console](https://console.neon.tech/)
 2. Sign up or login
 3. Create a new project:
-   - **Project Name**: `optimum-ai-ui`
-   - **Database Name**: `optimum_ai_db`
+   - **Project Name**: `goshawk-ai-ui`
+   - **Database Name**: `goshawk_ai_db`
    - **Region**: Choose closest to your users
 
 ### Step 2: Get Connection String

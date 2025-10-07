@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 Setting up Neon PostgreSQL for Optimum AI UI...\n');
+console.log('🚀 Setting up Neon PostgreSQL for Goshawk AI UI...\n');
 
 // Check if .env.local exists
 const envPath = path.join(process.cwd(), '.env.local');

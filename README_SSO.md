@@ -1,4 +1,4 @@
-# Optimum AI UI - SSO Setup Guide
+# Goshawk AI UI - SSO Setup Guide
 
 This Next.js 14 SaaS application provides multi-tenant AI receptionist management with SSO authentication.
 
@@ -44,7 +44,7 @@ EMAIL_SERVER_HOST=smtp.gmail.com
 EMAIL_SERVER_PORT=587
 EMAIL_SERVER_USER=your-email@gmail.com
 EMAIL_SERVER_PASSWORD=your-app-password
-EMAIL_FROM="Optimum AI <no-reply@YOUR_DOMAIN>"
+EMAIL_FROM="Goshawk AI <no-reply@YOUR_DOMAIN>"
 
 # Database
 DATABASE_URL=sqlite:./prisma/dev.db

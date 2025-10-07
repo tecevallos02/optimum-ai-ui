@@ -13,7 +13,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <div className="min-h-screen flex bg-bg">
       {/* Sidebar */}
       <aside className="hidden md:block w-60 bg-white border-r border-border p-4">
-        <h2 className="text-xl font-bold mb-4">Optimum AI</h2>
+        <h2 className="text-xl font-bold mb-4">Goshawk AI</h2>
         <nav className="space-y-2">
           <Link href="/app" className="block p-2 rounded hover:bg-bg">Dashboard</Link>
           <Link href="/app/calls" className="block p-2 rounded hover:bg-bg">Calls</Link>

@@ -78,7 +78,7 @@ function SignInContent() {
             Create your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Get started with Optimum AI and create your organization
+            Get started with Goshawk AI and create your organization
           </p>
         </div>
         
