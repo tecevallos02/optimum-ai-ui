@@ -260,6 +260,13 @@ function LoginContent() {
               {isLoading ? 'Signing in...' : 'Sign in with email and password'}
             </button>
           </form>
+          
+          {/* Forgot Password Link */}
+          <div className="text-center">
+            <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-500">
+              Forgot your password?
+            </Link>
+          </div>
         </div>
 
         {/* Sign up link */}

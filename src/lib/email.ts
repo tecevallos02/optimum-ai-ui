@@ -7,10 +7,23 @@ export interface ActivationEmailData {
   activationUrl: string
 }
 
+export interface PasswordResetEmailData {
+  email: string
+  name: string
+  resetToken: string
+  resetUrl: string
+}
+
 export async function generateActivationToken(): Promise<string> {
   // Generate a 6-digit activation code
   const token = Math.floor(100000 + Math.random() * 900000).toString()
   return token
+}
+
+export async function generateResetToken(): Promise<string> {
+  // Generate a secure random token for password reset
+  const crypto = await import('crypto')
+  return crypto.randomBytes(32).toString('hex')
 }
 
 export async function createActivationToken(userId: string): Promise<string> {
@@ -22,6 +35,21 @@ export async function createActivationToken(userId: string): Promise<string> {
     data: {
       activationToken: token,
       activationExpires: expiresAt,
+    },
+  })
+
+  return token
+}
+
+export async function createResetToken(userId: string): Promise<string> {
+  const token = await generateResetToken()
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      resetToken: token,
+      resetExpires: expiresAt,
     },
   })
 
@@ -136,5 +164,75 @@ export async function verifyActivationToken(token: string): Promise<{ success: b
       success: false,
       error: 'Failed to verify activation token',
     }
+  }
+}
+
+export async function sendPasswordResetEmail(data: PasswordResetEmailData): Promise<void> {
+  const { email, name, resetToken, resetUrl } = data
+
+  // In development, log the reset details
+  if (process.env.NODE_ENV === 'development') {
+    console.log('📧 Password Reset Email Details:')
+    console.log(`   To: ${email}`)
+    console.log(`   Name: ${name}`)
+    console.log(`   Reset Token: ${resetToken}`)
+    console.log(`   Reset URL: ${resetUrl}`)
+    console.log('📧 In production, this would be sent via email')
+    return
+  }
+
+  // In production, send real emails with Resend
+  try {
+    const { Resend } = await import('resend')
+    const resend = new Resend(process.env.RESEND_API_KEY)
+
+    await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'noreply@yourdomain.com',
+      to: [email],
+      subject: 'Reset your password - Goshawk AI',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #333; margin: 0;">Password Reset Request</h1>
+            <p style="color: #666; margin: 10px 0 0 0;">Goshawk AI</p>
+          </div>
+          
+          <div style="background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 10px; padding: 30px; margin: 30px 0;">
+            <p style="color: #333; font-size: 16px; margin: 0 0 15px 0;">Hello ${name},</p>
+            <p style="color: #333; font-size: 16px; margin: 0 0 20px 0;">We received a request to reset your password. Click the button below to create a new password:</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${resetUrl}" style="background-color: #dc3545; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; font-size: 16px;">
+                Reset Password
+              </a>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; margin: 20px 0 0 0;">If the button doesn't work, copy and paste this link into your browser:</p>
+            <p style="color: #007bff; font-size: 14px; word-break: break-all; margin: 5px 0 0 0;">${resetUrl}</p>
+          </div>
+          
+          <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; color: #856404; font-size: 14px;">
+              <strong>Important:</strong> This link will expire in 1 hour for security reasons. If you didn't request this password reset, you can safely ignore this email.
+            </p>
+          </div>
+          
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 12px; text-align: center; margin: 0;">
+            If you didn't request this password reset, you can safely ignore this email. Your password will not be changed.
+          </p>
+        </div>
+      `,
+    })
+
+    console.log('✅ Password reset email sent successfully to:', email)
+  } catch (error) {
+    console.error('❌ Failed to send password reset email:', error)
+    // Fallback to logging for debugging
+    console.log('📧 Password Reset Email Details (fallback):')
+    console.log(`   To: ${email}`)
+    console.log(`   Name: ${name}`)
+    console.log(`   Reset Token: ${resetToken}`)
+    console.log(`   Reset URL: ${resetUrl}`)
   }
 }

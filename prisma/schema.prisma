@@ -45,6 +45,8 @@ model User {
   image              String?
   activationToken    String?      @unique
   activationExpires  DateTime?
+  resetToken         String?      @unique
+  resetExpires       DateTime?
   accounts           Account[]
   auditLogs          AuditLog[]
   createdInvitations Invitation[] @relation("InvitationCreator")
