@@ -30,6 +30,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           <Link href="/app/calendar" className="block p-2 rounded hover:bg-bg">Calendar</Link>
           <Link href="/app/savings" className="block p-2 rounded hover:bg-bg">Savings</Link>
           <Link href="/app/contacts" className="block p-2 rounded hover:bg-bg">Contacts</Link>
+          <Link href="/app/complaints" className="block p-2 rounded hover:bg-bg">Complaints</Link>
           <Link href="/app/config" className="block p-2 rounded hover:bg-bg">Config</Link>
           <RoleGuard allowed={["OWNER", "MANAGER"]}>
             <Link href="/app/billing" className="block p-2 rounded hover:bg-bg">Billing</Link>

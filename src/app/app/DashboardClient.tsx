@@ -25,8 +25,8 @@ export default function DashboardClient({
         <KpiCard label="Calls Handled" value={kpis.callsHandled} />
         <KpiCard label="Bookings" value={kpis.bookings} />
         <KpiCard label="Avg Handle Time (s)" value={kpis.avgHandleTime} />
-        <KpiCard label="CSAT" value={kpis.csat.toFixed(1)} />
-        <KpiCard label="Minutes Used" value={`${kpis.minutesUsed}/${kpis.minutesLimit}`} />
+        <KpiCard label="Conversion Rate" value={`${kpis.conversionRate}%`} />
+        <KpiCard label="Complaints" value={kpis.complaints} />
         <KpiCard label="Estimated Savings ($)" value={`$${kpis.estimatedSavings}`} />
       </div>
 

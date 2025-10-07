@@ -37,13 +37,23 @@ export type Contact = {
   updatedAt: string;
 };
 
+export type Complaint = {
+  id: string;
+  orgId: string;
+  phoneNumber: string;
+  callTimestamp: string;
+  description?: string | null;
+  status: 'open' | 'resolved' | 'closed';
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type KPI = {
   callsHandled: number;
   bookings: number;
   avgHandleTime: number;
-  csat: number;
-  minutesUsed: number;
-  minutesLimit: number;
+  conversionRate: number; // % of calls that resulted in bookings
+  complaints: number; // number of complaints
   estimatedSavings: number;
 };
 

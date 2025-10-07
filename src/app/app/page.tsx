@@ -11,9 +11,8 @@ export default async function DashboardPage() {
       callsHandled: 0,
       bookings: 0,
       avgHandleTime: 0,
-      csat: 0,
-      minutesUsed: 0,
-      minutesLimit: 0,
+      conversionRate: 0,
+      complaints: 0,
       estimatedSavings: 0,
     };
 
