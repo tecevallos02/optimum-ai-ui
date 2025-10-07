@@ -109,27 +109,27 @@ export default function ComplaintsPage() {
     { 
       key: "callTimestamp", 
       header: "Call Timestamp",
-      render: (value) => new Date(value as string).toLocaleString()
+      render: (row) => new Date(row.callTimestamp as string).toLocaleString()
     },
     { key: "description", header: "Description" },
     { 
       key: "status", 
       header: "Status",
-      render: (value) => getStatusBadge(value as string)
+      render: (row) => getStatusBadge(row.status as string)
     },
     {
       key: "actions",
       header: "Actions",
-      render: (_, record) => (
+      render: (row) => (
         <div className="flex space-x-2">
           <button
-            onClick={() => setEditingComplaint(record)}
+            onClick={() => setEditingComplaint(row)}
             className="text-blue-600 hover:text-blue-800 text-sm"
           >
             Edit
           </button>
           <button
-            onClick={() => handleDeleteComplaint(record.id)}
+            onClick={() => handleDeleteComplaint(row.id)}
             className="text-red-600 hover:text-red-800 text-sm"
           >
             Delete
