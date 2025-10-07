@@ -1,6 +1,7 @@
 // path: src/app/app/layout.tsx
 import type { ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { getCurrentUser } from "@/lib/auth";
 import RoleGuard from "@/components/RoleGuard";
 import OrgSwitcherClient from "@/components/OrgSwitcherClient"; // <- client wrapper
@@ -13,7 +14,16 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <div className="min-h-screen flex bg-bg">
       {/* Sidebar */}
       <aside className="hidden md:block w-60 bg-white border-r border-border p-4">
-        <h2 className="text-xl font-bold mb-4">Goshawk AI</h2>
+        <div className="mb-4">
+          <Image
+            src="/goshawk-ai-logo.png"
+            alt="Goshawk AI"
+            width={120}
+            height={36}
+            className="h-9 w-auto"
+            priority
+          />
+        </div>
         <nav className="space-y-2">
           <Link href="/app" className="block p-2 rounded hover:bg-bg">Dashboard</Link>
           <Link href="/app/calls" className="block p-2 rounded hover:bg-bg">Calls</Link>

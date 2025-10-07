@@ -4,6 +4,7 @@ import { getSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -35,7 +36,16 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Goshawk AI</h1>
+          <div className="flex justify-center mb-4">
+            <Image
+              src="/goshawk-ai-logo.png"
+              alt="Goshawk AI"
+              width={200}
+              height={60}
+              className="h-16 w-auto"
+              priority
+            />
+          </div>
           <p className="text-lg text-gray-600 mb-8">
             AI-powered business management platform
           </p>
