@@ -42,13 +42,46 @@ export async function sendActivationEmail(data: ActivationEmailData): Promise<vo
     return
   }
 
-  // In production, you would send real emails here
-  // Example with Resend, SendGrid, or other email service
-  console.log('📧 Activation Email Details:')
-  console.log(`   To: ${email}`)
-  console.log(`   Name: ${name}`)
-  console.log(`   Activation Code: ${activationToken}`)
-  console.log(`   Activation URL: ${activationUrl}`)
+  // In production, send real emails with Resend
+  try {
+    const { Resend } = await import('resend')
+    const resend = new Resend(process.env.RESEND_API_KEY)
+
+    await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'noreply@yourdomain.com',
+      to: [email],
+      subject: 'Sign in to your account',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Sign in to your account</h2>
+          <p>Hello ${name || 'there'},</p>
+          <p>Click the button below to sign in to your account:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${activationUrl}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+              Sign In
+            </a>
+          </div>
+          <p>Or copy and paste this link in your browser:</p>
+          <p style="word-break: break-all; color: #666;">${activationUrl}</p>
+          <p>This link will expire in 24 hours.</p>
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 14px;">
+            If you didn't request this email, you can safely ignore it.
+          </p>
+        </div>
+      `,
+    })
+
+    console.log('✅ Activation email sent successfully to:', email)
+  } catch (error) {
+    console.error('❌ Failed to send activation email:', error)
+    // Fallback to logging for debugging
+    console.log('📧 Activation Email Details (fallback):')
+    console.log(`   To: ${email}`)
+    console.log(`   Name: ${name}`)
+    console.log(`   Activation Code: ${activationToken}`)
+    console.log(`   Activation URL: ${activationUrl}`)
+  }
 }
 
 export async function verifyActivationToken(token: string): Promise<{ success: boolean; user?: any; error?: string }> {
