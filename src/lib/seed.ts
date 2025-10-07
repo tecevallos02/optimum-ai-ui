@@ -50,13 +50,16 @@ export function seedContacts(): Contact[] {
 }
 
 export function seedKpis(): KPI {
+  const callsHandled = 320;
+  const bookings = 45;
+  const conversionRate = callsHandled > 0 ? (bookings / callsHandled) * 100 : 0;
+  
   return {
-    callsHandled: 320,
-    bookings: 45,
+    callsHandled,
+    bookings,
     avgHandleTime: 220,
-    csat: 4.5,
-    minutesUsed: 1050,
-    minutesLimit: 1200,
+    conversionRate: Math.round(conversionRate * 10) / 10, // Round to 1 decimal place
+    complaints: 8,
     estimatedSavings: 920
   };
 }
