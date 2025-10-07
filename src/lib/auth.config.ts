@@ -51,26 +51,44 @@ export const authOptions: AuthOptions = {
           const { Resend } = await import('resend')
           const resend = new Resend(process.env.RESEND_API_KEY)
 
+          // Extract the token from the URL for display
+          const urlObj = new URL(url)
+          const token = urlObj.searchParams.get('token') || '123456' // Fallback for display
+          
           await resend.emails.send({
             from: process.env.EMAIL_FROM || 'noreply@yourdomain.com',
             to: [email],
-            subject: 'Sign in to your account',
+            subject: 'Your 6-digit activation code',
             html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2>Sign in to your account</h2>
-                <p>Hello,</p>
-                <p>Click the button below to sign in to your account:</p>
-                <div style="text-align: center; margin: 30px 0;">
-                  <a href="${url}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
-                    Sign In
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                  <h1 style="color: #333; margin: 0;">Welcome to Goshawk AI</h1>
+                  <p style="color: #666; margin: 10px 0 0 0;">Your account activation code</p>
+                </div>
+                
+                <div style="background-color: #f8f9fa; border: 2px solid #e9ecef; border-radius: 10px; padding: 30px; text-align: center; margin: 30px 0;">
+                  <p style="color: #333; font-size: 16px; margin: 0 0 15px 0;">Your 6-digit activation code is:</p>
+                  <div style="background-color: #007bff; color: white; font-size: 32px; font-weight: bold; letter-spacing: 8px; padding: 20px; border-radius: 8px; display: inline-block; font-family: 'Courier New', monospace;">
+                    ${token}
+                  </div>
+                  <p style="color: #666; font-size: 14px; margin: 15px 0 0 0;">Enter this code on the verification page</p>
+                </div>
+                
+                <div style="background-color: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; margin: 20px 0;">
+                  <p style="margin: 0; color: #1976d2; font-size: 14px;">
+                    <strong>Important:</strong> This code will expire in 24 hours for security reasons.
+                  </p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                  <a href="${url}" style="background-color: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                    Go to Verification Page
                   </a>
                 </div>
-                <p>Or copy and paste this link in your browser:</p>
-                <p style="word-break: break-all; color: #666;">${url}</p>
-                <p>This link will expire in 24 hours.</p>
+                
                 <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
-                <p style="color: #666; font-size: 14px;">
-                  If you didn't request this email, you can safely ignore it.
+                <p style="color: #666; font-size: 12px; text-align: center; margin: 0;">
+                  If you didn't request this activation code, you can safely ignore this email.
                 </p>
               </div>
             `,
