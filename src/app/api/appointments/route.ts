@@ -1,17 +1,35 @@
 import { NextResponse } from "next/server";
-import { requireUser, getCurrentOrgId } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    await requireUser();
-    const currentOrgId = await getCurrentOrgId();
+    const user = await requireUser();
     
-    if (!currentOrgId) {
-      return NextResponse.json(
-        { error: "No organization selected" },
-        { status: 400 }
-      );
+    // Get user's organization and ensure it exists in the database
+    const userData = await prisma.user.findFirst({
+      where: { id: user.id }
+    }) as any;
+    
+    const orgName = userData?.organization || 'Default Organization'
+    
+    // Ensure organization exists in the database
+    let org = await prisma.organization.findFirst({
+      where: { name: orgName }
+    })
+    
+    if (!org) {
+      console.log('Creating organization for appointments GET:', orgName);
+      org = await prisma.organization.create({
+        data: {
+          name: orgName,
+        }
+      })
     }
+    
+    const currentOrgId = org.id
 
     // For now, return mock data with realistic appointment scenarios
     // In a real implementation, this would fetch from Google Calendar API
