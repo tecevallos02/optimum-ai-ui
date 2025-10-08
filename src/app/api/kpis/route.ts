@@ -41,19 +41,19 @@ export async function GET() {
     });
     console.log('KPI API: Complaints count:', complaintsCount);
     
-    // For now, keep other KPIs as mock data
-    // In a real implementation, these would also be calculated from actual data
-    const callsHandled = 42;
-    const bookings = 11;
-    const conversionRate = callsHandled > 0 ? (bookings / callsHandled) * 100 : 0;
+    // For now, keep other KPIs as 0 until real data is implemented
+    // In a real implementation, these would be calculated from actual data
+    const callsHandled = 0;
+    const bookings = 0;
+    const conversionRate = 0;
     
     const data = {
       callsHandled,
       bookings,
-      avgHandleTime: 73,
-      conversionRate: Math.round(conversionRate * 10) / 10, // Round to 1 decimal place
+      avgHandleTime: 0,
+      conversionRate: 0,
       complaints: complaintsCount, // Use real complaints count
-      estimatedSavings: 1840,
+      estimatedSavings: 0,
     };
     
     console.log('KPI API: Returning data:', data);
@@ -61,18 +61,18 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching KPIs:', error);
     
-    // Fallback to mock data if there's an error
-    const callsHandled = 42;
-    const bookings = 11;
-    const conversionRate = callsHandled > 0 ? (bookings / callsHandled) * 100 : 0;
+    // Fallback to 0 if there's an error
+    const callsHandled = 0;
+    const bookings = 0;
+    const conversionRate = 0;
     
     const data = {
       callsHandled,
       bookings,
-      avgHandleTime: 73,
-      conversionRate: Math.round(conversionRate * 10) / 10,
+      avgHandleTime: 0,
+      conversionRate: 0,
       complaints: 0, // Fallback to 0 if error
-      estimatedSavings: 1840,
+      estimatedSavings: 0,
     };
     
     console.log('KPI API: Returning fallback data:', data);
