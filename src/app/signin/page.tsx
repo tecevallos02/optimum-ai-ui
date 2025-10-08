@@ -31,7 +31,11 @@ function SignInContent() {
   const handleProviderSignIn = async (provider: string) => {
     setIsLoading(true)
     try {
-      const result = await signIn(provider, { callbackUrl, redirect: false })
+      // For OAuth providers, redirect to organization setup page
+      const result = await signIn(provider, { 
+        callbackUrl: `/oauth-signup?callbackUrl=${encodeURIComponent(callbackUrl)}`, 
+        redirect: true 
+      })
       if (result?.error) {
         console.error('Sign in error:', result.error)
         alert(`Sign in failed: ${result.error}`)
