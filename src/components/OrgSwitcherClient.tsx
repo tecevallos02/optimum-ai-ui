@@ -27,8 +27,22 @@ export default function OrgSwitcherClient() {
     }
   }, [userData]);
 
-  if (!session || !userData || !userData.orgs || userData.orgs.length === 0) {
-    return <div className="text-sm text-gray-500">No organizations</div>;
+  if (!session || !userData) {
+    return <div className="text-sm text-gray-500">Loading...</div>;
+  }
+
+  if (!userData.orgs || userData.orgs.length === 0) {
+    return (
+      <div className="text-sm text-gray-500">
+        No organizations found. 
+        <button 
+          onClick={() => mutate()} 
+          className="ml-2 text-blue-600 hover:text-blue-800 underline"
+        >
+          Refresh
+        </button>
+      </div>
+    );
   }
 
   // If no current org is set, use the first org
