@@ -5,18 +5,10 @@ import { logAudit } from "@/lib/audit"
 
 const prisma = new PrismaClient()
 
-// GET /api/contacts - List contacts for current organization
+// GET /api/contacts - List contacts for current user
 export async function GET(request: NextRequest) {
   try {
-    await requireUser()
-    const currentOrgId = await getCurrentOrgId()
-    
-    if (!currentOrgId) {
-      return NextResponse.json(
-        { error: "No organization selected" },
-        { status: 400 }
-      )
-    }
+    const user = await requireUser()
     
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -25,8 +17,15 @@ export async function GET(request: NextRequest) {
     
     const skip = (page - 1) * limit
     
+    // Create a simple orgId based on user's organization name
+    const userData = await prisma.user.findFirst({
+      where: { id: user.id }
+    })
+    
+    const orgId = (userData as any)?.organization ? `org-${(userData as any).organization.toLowerCase().replace(/\s+/g, '-')}` : 'default-org'
+    
     // Build where clause
-    const where: Record<string, unknown> = { orgId: currentOrgId }
+    const where: Record<string, unknown> = { orgId }
     
     if (search) {
       where.OR = [
@@ -68,14 +67,13 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const user = await requireUser()
-    const currentOrgId = await getCurrentOrgId()
     
-    if (!currentOrgId) {
-      return NextResponse.json(
-        { error: "No organization selected" },
-        { status: 400 }
-      )
-    }
+    // Get user's organization to create orgId
+    const userData = await prisma.user.findFirst({
+      where: { id: user.id }
+    })
+    
+    const orgId = (userData as any)?.organization ? `org-${(userData as any).organization.toLowerCase().replace(/\s+/g, '-')}` : 'default-org'
     
     const body = await request.json()
     
@@ -88,7 +86,7 @@ export async function POST(request: NextRequest) {
     
     const contact = await prisma.contact.create({
       data: {
-        orgId: currentOrgId,
+        orgId: orgId,
         name: body.name.trim(),
         email: body.email?.trim() || null,
         phone: body.phone?.trim() || null,
@@ -98,7 +96,7 @@ export async function POST(request: NextRequest) {
     })
     
     // Log audit event
-    await logAudit('contact:created', user.id, currentOrgId, contact.id)
+    await logAudit('contact:created', user.id, orgId, contact.id)
     
     return NextResponse.json(contact, { status: 201 })
   } catch (error) {

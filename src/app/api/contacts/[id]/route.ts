@@ -12,21 +12,20 @@ export async function PATCH(
 ) {
   try {
     const user = await requireUser()
-    const currentOrgId = await getCurrentOrgId()
     const { id } = await params
     
-    if (!currentOrgId) {
-      return NextResponse.json(
-        { error: "No organization selected" },
-        { status: 400 }
-      )
-    }
+    // Get user's organization to create orgId
+    const userData = await prisma.user.findFirst({
+      where: { id: user.id }
+    })
     
-    // Verify contact belongs to current organization
+    const orgId = (userData as any)?.organization ? `org-${(userData as any).organization.toLowerCase().replace(/\s+/g, '-')}` : 'default-org'
+    
+    // Verify contact belongs to current user's organization
     const existingContact = await prisma.contact.findFirst({
       where: {
         id,
-        orgId: currentOrgId,
+        orgId: orgId,
       },
     })
     
@@ -52,7 +51,7 @@ export async function PATCH(
     })
     
     // Log audit event
-    await logAudit('contact:updated', user.id, currentOrgId, id)
+    await logAudit('contact:updated', user.id, orgId, id)
     
     return NextResponse.json(contact)
   } catch (error) {
@@ -71,21 +70,20 @@ export async function DELETE(
 ) {
   try {
     const user = await requireUser()
-    const currentOrgId = await getCurrentOrgId()
     const { id } = await params
     
-    if (!currentOrgId) {
-      return NextResponse.json(
-        { error: "No organization selected" },
-        { status: 400 }
-      )
-    }
+    // Get user's organization to create orgId
+    const userData = await prisma.user.findFirst({
+      where: { id: user.id }
+    })
     
-    // Verify contact belongs to current organization
+    const orgId = (userData as any)?.organization ? `org-${(userData as any).organization.toLowerCase().replace(/\s+/g, '-')}` : 'default-org'
+    
+    // Verify contact belongs to current user's organization
     const existingContact = await prisma.contact.findFirst({
       where: {
         id,
-        orgId: currentOrgId,
+        orgId: orgId,
       },
     })
     
@@ -101,7 +99,7 @@ export async function DELETE(
     })
     
     // Log audit event
-    await logAudit('contact:deleted', user.id, currentOrgId, id)
+    await logAudit('contact:deleted', user.id, orgId, id)
     
     return new NextResponse(null, { status: 204 })
   } catch (error) {
