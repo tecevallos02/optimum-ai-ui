@@ -21,7 +21,7 @@ if (!process.env.NEXTAUTH_SECRET) {
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: {
-    strategy: "database",
+    strategy: "jwt",
   },
   providers: [
     // Only enable providers with valid credentials

@@ -13,14 +13,36 @@ export default function OrgSwitcherClient() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   
-  // Debug logging
-  console.log('OrgSwitcherClient - Session status:', status);
-  console.log('OrgSwitcherClient - Session data:', session);
   
   // Fetch user data including orgs and current org
   const { data: userData, mutate } = useSWR(
     session ? '/api/me' : null,
-    (url: string) => fetch(url).then(res => res.json())
+    async (url: string) => {
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      // If no organizations found, try to refresh
+      if (data && (!data.orgs || data.orgs.length === 0)) {
+        console.log('No organizations found, attempting to refresh...');
+        try {
+          const refreshResponse = await fetch('/api/refresh-orgs', { method: 'POST' });
+          const refreshData = await refreshResponse.json();
+          if (refreshData.success && refreshData.orgs.length > 0) {
+            console.log('Refreshed organizations:', refreshData.orgs);
+            return {
+              ...data,
+              orgs: refreshData.orgs,
+              currentOrgId: refreshData.currentOrgId,
+              role: refreshData.role
+            };
+          }
+        } catch (error) {
+          console.error('Error refreshing organizations:', error);
+        }
+      }
+      
+      return data;
+    }
   );
 
   const [currentOrgId, setCurrentOrgId] = useState<string | null>(null);
@@ -31,11 +53,12 @@ export default function OrgSwitcherClient() {
     }
   }, [userData]);
 
-  // Don't show anything while session is loading or if not authenticated
+  // Show loading state while session is loading
   if (status === 'loading') {
-    return null;
+    return <div className="text-sm text-gray-500">Loading...</div>;
   }
   
+  // Don't show anything if not authenticated
   if (status === 'unauthenticated' || !session) {
     return null;
   }
