@@ -9,9 +9,13 @@ import useSWR from "swr";
 // type Org = { id: string; name: string; role: string };
 
 export default function OrgSwitcherClient() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  
+  // Debug logging
+  console.log('OrgSwitcherClient - Session status:', status);
+  console.log('OrgSwitcherClient - Session data:', session);
   
   // Fetch user data including orgs and current org
   const { data: userData, mutate } = useSWR(
@@ -27,14 +31,13 @@ export default function OrgSwitcherClient() {
     }
   }, [userData]);
 
-  if (!session) {
-    return (
-      <div className="text-sm text-gray-500">
-        <a href="/signin" className="text-blue-600 hover:text-blue-800 underline">
-          Please log in
-        </a>
-      </div>
-    );
+  // Don't show anything while session is loading or if not authenticated
+  if (status === 'loading') {
+    return null;
+  }
+  
+  if (status === 'unauthenticated' || !session) {
+    return null;
   }
 
   if (!userData) {
