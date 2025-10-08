@@ -19,7 +19,23 @@ export async function PATCH(
       where: { id: user.id }
     })
     
-    const orgId = (userData as any)?.organization ? `org-${(userData as any).organization.toLowerCase().replace(/\s+/g, '-')}` : 'default-org'
+    const orgName = (userData as any)?.organization || 'Default Organization'
+    
+    // Ensure organization exists in the database
+    let org = await prisma.organization.findFirst({
+      where: { name: orgName }
+    })
+    
+    if (!org) {
+      console.log('Creating organization for PATCH:', orgName);
+      org = await prisma.organization.create({
+        data: {
+          name: orgName,
+        }
+      })
+    }
+    
+    const orgId = org.id
     
     // Verify contact belongs to current user's organization
     const existingContact = await prisma.contact.findFirst({
@@ -77,7 +93,23 @@ export async function DELETE(
       where: { id: user.id }
     })
     
-    const orgId = (userData as any)?.organization ? `org-${(userData as any).organization.toLowerCase().replace(/\s+/g, '-')}` : 'default-org'
+    const orgName = (userData as any)?.organization || 'Default Organization'
+    
+    // Ensure organization exists in the database
+    let org = await prisma.organization.findFirst({
+      where: { name: orgName }
+    })
+    
+    if (!org) {
+      console.log('Creating organization for PATCH:', orgName);
+      org = await prisma.organization.create({
+        data: {
+          name: orgName,
+        }
+      })
+    }
+    
+    const orgId = org.id
     
     // Verify contact belongs to current user's organization
     const existingContact = await prisma.contact.findFirst({

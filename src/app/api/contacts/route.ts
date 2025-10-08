@@ -17,12 +17,28 @@ export async function GET(request: NextRequest) {
     
     const skip = (page - 1) * limit
     
-    // Create a simple orgId based on user's organization name
+    // Get user's organization and ensure it exists in the database
     const userData = await prisma.user.findFirst({
       where: { id: user.id }
     })
     
-    const orgId = (userData as any)?.organization ? `org-${(userData as any).organization.toLowerCase().replace(/\s+/g, '-')}` : 'default-org'
+    const orgName = (userData as any)?.organization || 'Default Organization'
+    
+    // Ensure organization exists in the database
+    let org = await prisma.organization.findFirst({
+      where: { name: orgName }
+    })
+    
+    if (!org) {
+      console.log('Creating organization for GET:', orgName);
+      org = await prisma.organization.create({
+        data: {
+          name: orgName,
+        }
+      })
+    }
+    
+    const orgId = org.id
     
     // Build where clause
     const where: Record<string, unknown> = { orgId }
@@ -75,7 +91,25 @@ export async function POST(request: NextRequest) {
       where: { id: user.id }
     })
     
-    const orgId = (userData as any)?.organization ? `org-${(userData as any).organization.toLowerCase().replace(/\s+/g, '-')}` : 'default-org'
+    const orgName = (userData as any)?.organization || 'Default Organization'
+    const orgSlug = `org-${orgName.toLowerCase().replace(/\s+/g, '-')}`
+    
+    // Ensure organization exists in the database
+    let org = await prisma.organization.findFirst({
+      where: { name: orgName }
+    })
+    
+    if (!org) {
+      console.log('Creating organization:', orgName);
+      org = await prisma.organization.create({
+        data: {
+          name: orgName,
+        }
+      })
+    }
+    
+    const orgId = org.id
+    console.log('Using orgId:', orgId);
     
     const body = await request.json()
     console.log('Request body:', body);
