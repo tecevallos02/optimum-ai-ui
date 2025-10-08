@@ -133,7 +133,10 @@ export default function ContactsPage() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold">Contacts</h1>
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={() => {
+            console.log('Opening add contact modal');
+            setShowAddModal(true);
+          }}
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
         >
           Add Contact
@@ -148,7 +151,10 @@ export default function ContactsPage() {
 
       {showAddModal && (
         <AddContactModal
-          onClose={() => setShowAddModal(false)}
+          onClose={() => {
+            console.log('Closing add contact modal');
+            setShowAddModal(false);
+          }}
           onSave={handleAddContact}
         />
       )}
@@ -235,6 +241,11 @@ function AddContactModal({ onClose, onSave }: {
             </button>
             <button
               type="submit"
+              onClick={(e) => {
+                console.log('Add Contact button clicked');
+                e.preventDefault();
+                handleSubmit(e);
+              }}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
               Add Contact
