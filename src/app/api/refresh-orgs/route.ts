@@ -10,22 +10,30 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get fresh membership data
-    const memberships = await prisma.membership.findMany({
-      where: { userId: session.user.id },
-      include: { org: true },
-      orderBy: { org: { createdAt: 'asc' } },
+    // Get user data with organization name from User table
+    const userData = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        organization: true,
+      }
     });
 
-    const orgs = memberships.map(m => ({
-      id: m.org.id,
-      name: m.org.name,
-      role: m.role,
-      logo: m.org.logo,
-      createdAt: m.org.createdAt,
-    }));
+    if (!userData) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
-    // If user has organizations but no current org is set, use the first one
+    // Create a simple organization object from the user's organization field
+    const orgs = userData.organization ? [{
+      id: 'user-org',
+      name: userData.organization,
+      role: 'OWNER',
+      logo: null,
+      createdAt: new Date(),
+    }] : [];
+
     const currentOrgId = orgs.length > 0 ? orgs[0].id : null;
     const role = orgs.length > 0 ? orgs[0].role : null;
 

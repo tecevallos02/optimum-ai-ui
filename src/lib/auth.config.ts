@@ -185,89 +185,63 @@ export const authOptions: AuthOptions = {
         }
         
         try {
-          // Check if user has any memberships
-          const memberships = await prisma.membership.findMany({
-            where: { userId: user.id },
-            include: { org: true },
-            orderBy: { org: { createdAt: 'asc' } },
+          // Get user data with organization name
+          const userData = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: {
+              organization: true,
+            }
           })
           
-          // If user has no memberships, create a default organization for them
-          if (memberships.length === 0) {
-            console.log('Creating default organization for verified user:', user.email)
-            
-            // Create a default organization for the new user
-            const defaultOrg = await prisma.organization.create({
-              data: {
-                name: `${user.name || 'My'} Organization`,
-                createdAt: new Date(),
-              }
-            })
-            
-            // Create membership with OWNER role
-            await prisma.membership.create({
-              data: {
-                userId: user.id,
-                orgId: defaultOrg.id,
-                role: 'OWNER',
-              }
-            })
-            
-            // Add the new organization to token
+          if (userData?.organization) {
+            // User has organization name, create org object
             token.orgs = [{
-              id: defaultOrg.id,
-              name: defaultOrg.name,
+              id: 'user-org',
+              name: userData.organization,
               role: 'OWNER',
             }]
-            token.currentOrgId = defaultOrg.id
+            token.currentOrgId = 'user-org'
             
-            console.log('✅ Created organization and membership for user:', user.email)
+            console.log('✅ Found organization for user:', user.email, userData.organization)
           } else {
-            // User already has memberships
-            token.orgs = memberships.map(m => ({
-              id: m.org.id,
-              name: m.org.name,
-              role: m.role,
-            }))
+            // User has no organization, set empty
+            token.orgs = []
+            token.currentOrgId = null
             
-            // Set current org to first one if available
-            token.currentOrgId = memberships[0]?.org.id || null
+            console.log('No organization found for user:', user.email)
           }
         } catch (error) {
-          console.error('Error handling user memberships:', error)
-          // Fallback to mock data if database fails
-          token.orgs = [{
-            id: 'temp-org-1',
-            name: 'Test Organization',
-            role: 'OWNER',
-          }]
-          token.currentOrgId = 'temp-org-1'
+          console.error('Error handling user organization:', error)
+          // Fallback to empty if database fails
+          token.orgs = []
+          token.currentOrgId = null
         }
       }
       
       // Always refresh organization data on every JWT call
       if (token.userId && token.email) {
         try {
-          const memberships = await prisma.membership.findMany({
-            where: { userId: token.userId },
-            include: { org: true },
-            orderBy: { org: { createdAt: 'asc' } },
+          const userData = await prisma.user.findUnique({
+            where: { id: token.userId },
+            select: {
+              organization: true,
+            }
           })
           
-          if (memberships.length > 0) {
-            token.orgs = memberships.map(m => ({
-              id: m.org.id,
-              name: m.org.name,
-              role: m.role,
-            }))
+          if (userData?.organization) {
+            token.orgs = [{
+              id: 'user-org',
+              name: userData.organization,
+              role: 'OWNER',
+            }]
             
             // Set current org if not already set
             if (!token.currentOrgId) {
-              token.currentOrgId = memberships[0]?.org.id || null
+              token.currentOrgId = 'user-org'
             }
           }
         } catch (error) {
-          console.error('Error refreshing user memberships:', error)
+          console.error('Error refreshing user organization:', error)
         }
       }
       

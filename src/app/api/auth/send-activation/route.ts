@@ -53,32 +53,16 @@ export async function POST(request: NextRequest) {
       // Hash the password
       const hashedPassword = await hashPassword(password)
       
-      // Create new user
+      // Create new user with organization name
       user = await prisma.user.create({
         data: {
           email,
           name: name || `${firstName} ${lastName}`,
           firstName,
           lastName,
+          organization: organizationName, // Save organization name directly to User table
           password: hashedPassword,
           emailVerified: null, // Not verified yet
-        },
-      })
-
-      // Create organization for the new user
-      const organization = await prisma.organization.create({
-        data: {
-          name: organizationName,
-          createdAt: new Date(),
-        },
-      })
-
-      // Create membership with OWNER role
-      await prisma.membership.create({
-        data: {
-          userId: user.id,
-          orgId: organization.id,
-          role: 'OWNER',
         },
       })
 
@@ -94,6 +78,7 @@ export async function POST(request: NextRequest) {
             firstName: firstName || user.firstName,
             lastName: lastName || user.lastName,
             name: name || `${firstName} ${lastName}` || user.name,
+            organization: organizationName || user.organization,
           },
         })
       }

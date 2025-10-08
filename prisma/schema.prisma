@@ -40,6 +40,7 @@ model User {
   firstName          String?      // First name
   lastName           String?      // Last name
   email              String       @unique
+  organization       String?      // Organization name entered during signup
   password           String?      // Hashed password for email/password auth
   emailVerified      DateTime?
   image              String?
