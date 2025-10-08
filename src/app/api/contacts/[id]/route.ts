@@ -58,7 +58,7 @@ export async function PATCH(
     if (body.name !== undefined) updateData.name = body.name.trim()
     if (body.email !== undefined) updateData.email = body.email?.trim() || null
     if (body.phone !== undefined) updateData.phone = body.phone?.trim() || null
-    if (body.tags !== undefined) updateData.tags = JSON.stringify(body.tags || [])
+    if (body.tags !== undefined) updateData.tags = body.tags || []
     if (body.notes !== undefined) updateData.notes = body.notes?.trim() || null
     
     const contact = await prisma.contact.update({
