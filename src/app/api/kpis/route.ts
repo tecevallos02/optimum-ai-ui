@@ -8,6 +8,7 @@ const prisma = new PrismaClient();
 export async function GET() {
   try {
     const user = await requireUser();
+    console.log('KPI API: User authenticated:', user.email);
     
     // Get user's organization and ensure it exists in the database
     const userData = await prisma.user.findFirst({
@@ -15,6 +16,7 @@ export async function GET() {
     }) as any; // Type assertion for organization field
     
     const orgName = userData?.organization || 'Default Organization'
+    console.log('KPI API: User organization:', orgName);
     
     // Ensure organization exists in the database
     let org = await prisma.organization.findFirst({
@@ -31,11 +33,13 @@ export async function GET() {
     }
     
     const orgId = org.id
+    console.log('KPI API: Using orgId:', orgId);
     
     // Fetch real complaints count from database
     const complaintsCount = await prisma.complaint.count({
       where: { orgId: orgId }
     });
+    console.log('KPI API: Complaints count:', complaintsCount);
     
     // For now, keep other KPIs as mock data
     // In a real implementation, these would also be calculated from actual data
@@ -52,6 +56,7 @@ export async function GET() {
       estimatedSavings: 1840,
     };
     
+    console.log('KPI API: Returning data:', data);
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     console.error('Error fetching KPIs:', error);
@@ -70,6 +75,7 @@ export async function GET() {
       estimatedSavings: 1840,
     };
     
+    console.log('KPI API: Returning fallback data:', data);
     return NextResponse.json(data, { status: 200 });
   }
 }

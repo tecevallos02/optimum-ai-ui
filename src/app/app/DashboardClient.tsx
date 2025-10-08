@@ -1,23 +1,66 @@
 // path: src/app/app/DashboardClient.tsx  (Client Component)
 "use client";
 
+import { useState, useEffect } from "react";
 import KpiCard from "@/components/KpiCard";
 import CallsOverTime from "@/components/charts/CallsOverTime";
 import IntentsDistribution from "@/components/charts/IntentsDistribution";
 import UpcomingAppointments from "@/components/UpcomingAppointments";
 import type { KPI } from "@/lib/types";
+import { mockDb } from "@/lib/mockDb";
 
-type Props = {
-  kpis: KPI;
-  callsHandledSeries: { name: string; calls: number }[];
-  intentsSeries: { name: string; count: number }[];
-};
+export default function DashboardClient() {
+  const [kpis, setKpis] = useState<KPI>({
+    callsHandled: 0,
+    bookings: 0,
+    avgHandleTime: 0,
+    conversionRate: 0,
+    complaints: 0,
+    estimatedSavings: 0,
+  });
+  const [loading, setLoading] = useState(true);
 
-export default function DashboardClient({
-  kpis,
-  callsHandledSeries,
-  intentsSeries,
-}: Props) {
+  useEffect(() => {
+    const fetchKpis = async () => {
+      try {
+        const response = await fetch("/api/kpis");
+        if (response.ok) {
+          const data = await response.json();
+          setKpis(data);
+        } else {
+          console.error("Failed to fetch KPIs:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching KPIs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchKpis();
+  }, []);
+
+  // Build series data (safe if mockDb.savings is missing)
+  const savingsData = mockDb.savings || [];
+  const callsHandledSeries = savingsData.map((d) => ({
+    name: `M${d.month}`,
+    calls: d.timeSaved,
+  }));
+
+  const intentsSeries = [
+    { name: "book", count: 120 },
+    { name: "info", count: 80 },
+    { name: "cancel", count: 15 },
+  ];
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-semibold">Dashboard</h1>
+        <div className="text-sm text-muted">Loading...</div>
+      </div>
+    );
+  }
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Dashboard</h1>
