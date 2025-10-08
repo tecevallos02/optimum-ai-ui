@@ -245,6 +245,32 @@ export const authOptions: AuthOptions = {
         }
       }
       
+      // Always refresh organization data on every JWT call
+      if (token.userId && token.email) {
+        try {
+          const memberships = await prisma.membership.findMany({
+            where: { userId: token.userId },
+            include: { org: true },
+            orderBy: { org: { createdAt: 'asc' } },
+          })
+          
+          if (memberships.length > 0) {
+            token.orgs = memberships.map(m => ({
+              id: m.org.id,
+              name: m.org.name,
+              role: m.role,
+            }))
+            
+            // Set current org if not already set
+            if (!token.currentOrgId) {
+              token.currentOrgId = memberships[0]?.org.id || null
+            }
+          }
+        } catch (error) {
+          console.error('Error refreshing user memberships:', error)
+        }
+      }
+      
       return token
     },
     async session({ session, token }) {

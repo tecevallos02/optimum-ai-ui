@@ -42,6 +42,10 @@ export default function OrgSwitcherClient() {
       }
       
       return data;
+    },
+    {
+      refreshInterval: 5000, // Refresh every 5 seconds to catch new organizations
+      revalidateOnFocus: true,
     }
   );
 
