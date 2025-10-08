@@ -91,15 +91,15 @@ The fullEmail should include the greeting, personalized content, appointment det
 
       const response = completion.choices[0]?.message?.content
       if (response) {
+        // Clean the response to remove control characters that might break JSON parsing
+        const cleanedResponse = response
+          .replace(/[\x00-\x1F\x7F-\x9F]/g, '') // Remove control characters
+          .replace(/\n/g, '\\n') // Escape newlines
+          .replace(/\r/g, '\\r') // Escape carriage returns
+          .replace(/\t/g, '\\t') // Escape tabs
+          .trim()
+        
         try {
-          // Clean the response to remove control characters that might break JSON parsing
-          const cleanedResponse = response
-            .replace(/[\x00-\x1F\x7F-\x9F]/g, '') // Remove control characters
-            .replace(/\n/g, '\\n') // Escape newlines
-            .replace(/\r/g, '\\r') // Escape carriage returns
-            .replace(/\t/g, '\\t') // Escape tabs
-            .trim()
-          
           // Try to extract JSON from the response if it's wrapped in other text
           const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/)
           const jsonString = jsonMatch ? jsonMatch[0] : cleanedResponse
