@@ -27,7 +27,17 @@ export default function OrgSwitcherClient() {
     }
   }, [userData]);
 
-  if (!session || !userData) {
+  if (!session) {
+    return (
+      <div className="text-sm text-gray-500">
+        <a href="/signin" className="text-blue-600 hover:text-blue-800 underline">
+          Please log in
+        </a>
+      </div>
+    );
+  }
+
+  if (!userData) {
     return <div className="text-sm text-gray-500">Loading...</div>;
   }
 
