@@ -263,6 +263,12 @@ export const authOptions: AuthOptions = {
         } else {
           session.user.role = null
         }
+        
+        // Auto-set current org if user has organizations but no current org
+        if (token.orgs && token.orgs.length > 0 && !token.currentOrgId) {
+          session.user.currentOrgId = token.orgs[0].id
+          session.user.role = token.orgs[0].role
+        }
       }
       
       return session

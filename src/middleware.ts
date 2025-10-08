@@ -8,6 +8,24 @@ export default withAuth(
       return NextResponse.redirect(new URL('/app', req.url))
     }
     
+    // Auto-set current organization cookie if user has organizations but no current org
+    if (req.nextauth.token && req.nextUrl.pathname.startsWith('/app/')) {
+      const token = req.nextauth.token as any;
+      const currentOrgCookie = req.cookies.get('currentOrgId');
+      
+      if (token.orgs && token.orgs.length > 0 && !currentOrgCookie) {
+        const response = NextResponse.next();
+        response.cookies.set('currentOrgId', token.orgs[0].id, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 30, // 30 days
+          path: '/',
+        });
+        return response;
+      }
+    }
+    
     return NextResponse.next()
   },
   {

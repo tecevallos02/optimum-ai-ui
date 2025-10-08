@@ -33,6 +33,10 @@ export async function GET() {
     const currentMembership = memberships.find(m => m.orgId === currentOrgId);
     const role = currentMembership?.role || null;
     
+    // If user has organizations but no current org is set, use the first one
+    const effectiveCurrentOrgId = currentOrgId || (orgs.length > 0 ? orgs[0].id : null);
+    const effectiveRole = role || (orgs.length > 0 ? orgs[0].role : null);
+
     return NextResponse.json({
       user: {
         id: user.id,
@@ -40,8 +44,8 @@ export async function GET() {
         name: user.name,
       },
       orgs,
-      currentOrgId,
-      role,
+      currentOrgId: effectiveCurrentOrgId,
+      role: effectiveRole,
     }, { status: 200 });
   } catch (error) {
     console.error('Error fetching user data:', error);
