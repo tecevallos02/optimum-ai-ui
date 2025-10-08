@@ -16,22 +16,32 @@ export async function PUT(
     const { logo } = await request.json();
     const { id: orgId } = await params;
 
-    // Check if user has permission to update this organization
-    const membership = await prisma.membership.findFirst({
-      where: {
-        userId: session.user.id,
-        orgId: orgId,
-        role: { in: ["OWNER", "MANAGER"] }
-      }
+    // Get user's organization name
+    const userData = await prisma.user.findFirst({
+      where: { id: session.user.id }
     });
 
-    if (!membership) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!userData?.organization) {
+      return NextResponse.json({ error: "No organization found" }, { status: 404 });
+    }
+
+    // Find the organization by name (since we're using the new system)
+    let org = await prisma.organization.findFirst({
+      where: { name: userData.organization }
+    });
+
+    if (!org) {
+      // Create organization if it doesn't exist
+      org = await prisma.organization.create({
+        data: {
+          name: userData.organization,
+        }
+      });
     }
 
     // Update organization logo
     const updatedOrg = await prisma.organization.update({
-      where: { id: orgId },
+      where: { id: org.id },
       data: { logo },
       select: {
         id: true,
