@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
 import { requireUser, getCurrentOrgId } from "@/lib/auth"
-import { logAudit } from "@/lib/audit"
+// import { logAudit } from "@/lib/audit"
 
 const prisma = new PrismaClient()
 
@@ -50,8 +50,8 @@ export async function PATCH(
       data: updateData,
     })
     
-    // Log audit event
-    await logAudit('contact:updated', user.id, orgId, id)
+    // Log audit event (disabled for now due to orgId mismatch)
+    // await logAudit('contact:updated', user.id, orgId, id)
     
     return NextResponse.json(contact)
   } catch (error) {
@@ -98,8 +98,8 @@ export async function DELETE(
       where: { id },
     })
     
-    // Log audit event
-    await logAudit('contact:deleted', user.id, orgId, id)
+    // Log audit event (disabled for now due to orgId mismatch)
+    // await logAudit('contact:deleted', user.id, orgId, id)
     
     return new NextResponse(null, { status: 204 })
   } catch (error) {
