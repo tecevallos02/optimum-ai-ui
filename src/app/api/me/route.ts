@@ -25,6 +25,7 @@ export async function GET() {
       id: m.org.id,
       name: m.org.name,
       role: m.role,
+      logo: m.org.logo,
       createdAt: m.org.createdAt,
     }));
     
