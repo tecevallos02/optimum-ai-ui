@@ -78,7 +78,7 @@ The fullEmail should include the greeting, personalized content, appointment det
         messages: [
           {
             role: "system",
-            content: "You are a professional email assistant that creates warm, personalized appointment confirmation emails. Always respond with valid JSON format."
+            content: "You are a professional email assistant that creates warm, personalized appointment confirmation emails. You MUST respond with ONLY valid JSON format. Do not include any text before or after the JSON. Escape all special characters properly."
           },
           {
             role: "user",
@@ -92,7 +92,19 @@ The fullEmail should include the greeting, personalized content, appointment det
       const response = completion.choices[0]?.message?.content
       if (response) {
         try {
-          const parsedResponse = JSON.parse(response)
+          // Clean the response to remove control characters that might break JSON parsing
+          const cleanedResponse = response
+            .replace(/[\x00-\x1F\x7F-\x9F]/g, '') // Remove control characters
+            .replace(/\n/g, '\\n') // Escape newlines
+            .replace(/\r/g, '\\r') // Escape carriage returns
+            .replace(/\t/g, '\\t') // Escape tabs
+            .trim()
+          
+          // Try to extract JSON from the response if it's wrapped in other text
+          const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/)
+          const jsonString = jsonMatch ? jsonMatch[0] : cleanedResponse
+          
+          const parsedResponse = JSON.parse(jsonString)
           personalizedContent = parsedResponse.personalizedContent || 'We\'re looking forward to meeting with you!'
           emailSubject = parsedResponse.subject || emailSubject
           
@@ -129,6 +141,8 @@ This is an automated confirmation email. If you have any questions or need to re
           return NextResponse.json(emailTemplate, { status: 200 })
         } catch (parseError) {
           console.error('Error parsing OpenAI response:', parseError)
+          console.error('Raw response:', response)
+          console.error('Cleaned response:', cleanedResponse)
           // Fall back to basic template
         }
       }
