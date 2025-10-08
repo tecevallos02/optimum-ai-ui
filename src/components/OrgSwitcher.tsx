@@ -90,14 +90,12 @@ export default function OrgSwitcher({
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <div className="flex items-center space-x-3">
-        <div className="text-sm font-medium text-gray-700">Organization</div>
-        <div 
-          className={`relative cursor-pointer transition-all duration-200 hover:scale-105 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-          onClick={() => !disabled && setIsOpen(!isOpen)}
-        >
-          {/* Premium Organization Card */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 min-w-[200px]">
+      <div 
+        className={`relative cursor-pointer transition-all duration-200 hover:scale-105 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+      >
+        {/* Premium Organization Card */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 min-w-[200px]">
             <div className="flex items-center space-x-3">
               {/* Organization Logo/Icon */}
               <div className="w-10 h-10 rounded-full shadow-md overflow-hidden flex items-center justify-center">
@@ -145,7 +143,6 @@ export default function OrgSwitcher({
             </div>
           </div>
         </div>
-      </div>
 
       {/* Dropdown Menu */}
       {isOpen && (
