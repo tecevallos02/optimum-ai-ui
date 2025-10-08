@@ -20,6 +20,9 @@ if (!process.env.NEXTAUTH_SECRET) {
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: "database",
+  },
   providers: [
     // Only enable providers with valid credentials
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && 
