@@ -65,8 +65,10 @@ export async function GET(request: NextRequest) {
 
 // POST /api/contacts - Create new contact
 export async function POST(request: NextRequest) {
+  console.log('POST /api/contacts called');
   try {
     const user = await requireUser()
+    console.log('User authenticated:', user.email);
     
     // Get user's organization to create orgId
     const userData = await prisma.user.findFirst({
@@ -76,14 +78,17 @@ export async function POST(request: NextRequest) {
     const orgId = (userData as any)?.organization ? `org-${(userData as any).organization.toLowerCase().replace(/\s+/g, '-')}` : 'default-org'
     
     const body = await request.json()
+    console.log('Request body:', body);
     
     if (!body.name || typeof body.name !== 'string') {
+      console.log('Validation failed: Name is required');
       return NextResponse.json(
         { error: "Name is required" },
         { status: 400 }
       )
     }
     
+    console.log('Creating contact with orgId:', orgId);
     const contact = await prisma.contact.create({
       data: {
         orgId: orgId,
@@ -94,6 +99,8 @@ export async function POST(request: NextRequest) {
         notes: body.notes?.trim() || null,
       },
     })
+    
+    console.log('Contact created successfully:', contact);
     
     // Log audit event (disabled for now due to orgId mismatch)
     // await logAudit('contact:created', user.id, orgId, contact.id)

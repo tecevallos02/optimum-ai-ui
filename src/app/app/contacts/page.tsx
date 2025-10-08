@@ -40,6 +40,7 @@ export default function ContactsPage() {
   }, []);
 
   const handleAddContact = async (contactData: Omit<Contact, 'id' | 'orgId' | 'createdAt' | 'updatedAt'>) => {
+    console.log('handleAddContact called with:', contactData);
     try {
       const response = await fetch("/api/contacts", {
         method: "POST",
@@ -47,9 +48,16 @@ export default function ContactsPage() {
         body: JSON.stringify(contactData),
       });
       
+      console.log('API response status:', response.status);
+      console.log('API response ok:', response.ok);
+      
       if (response.ok) {
+        console.log('Contact added successfully, refreshing list...');
         await fetchContacts();
         setShowAddModal(false);
+      } else {
+        const errorData = await response.text();
+        console.error('API error response:', errorData);
       }
     } catch (error) {
       console.error("Failed to add contact:", error);
@@ -171,6 +179,7 @@ function AddContactModal({ onClose, onSave }: {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('AddContactModal: Form submitted with data:', formData);
     onSave(formData);
   };
 
