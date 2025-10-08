@@ -68,7 +68,8 @@ export default function OrgSwitcherClient() {
       orgs={userData.orgs.map((org: any) => ({
         id: org.id,
         name: org.name,
-        role: org.role
+        role: org.role,
+        logo: org.logo
       }))}
       currentOrgId={effectiveCurrentOrgId}
       onChange={handleChange}

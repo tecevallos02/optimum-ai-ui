@@ -9,23 +9,28 @@ async function main() {
   const organizations = [
     {
       name: 'Acme Dental Practice',
-      description: 'Family dental practice serving the community for 20+ years'
+      description: 'Family dental practice serving the community for 20+ years',
+      logo: '/logos/dental-logo.svg'
     },
     {
       name: 'TechStart Solutions',
-      description: 'Software development company specializing in web applications'
+      description: 'Software development company specializing in web applications',
+      logo: '/logos/tech-logo.svg'
     },
     {
       name: 'Green Valley Law Firm',
-      description: 'Full-service law firm with expertise in business and real estate'
+      description: 'Full-service law firm with expertise in business and real estate',
+      logo: '/logos/law-logo.svg'
     },
     {
       name: 'Sunrise Medical Center',
-      description: 'Multi-specialty medical practice with 15+ providers'
+      description: 'Multi-specialty medical practice with 15+ providers',
+      logo: '/logos/medical-logo.svg'
     },
     {
       name: 'Elite Fitness Studio',
-      description: 'Premium fitness and wellness center with personal training'
+      description: 'Premium fitness and wellness center with personal training',
+      logo: '/logos/fitness-logo.svg'
     }
   ]
 
@@ -35,6 +40,7 @@ async function main() {
     const org = await prisma.organization.create({
       data: {
         name: orgData.name,
+        logo: orgData.logo
       }
     })
     createdOrgs.push(org)

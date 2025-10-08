@@ -65,6 +65,7 @@ model VerificationToken {
 model Organization {
   id          String       @id @default(cuid())
   name        String
+  logo        String?      // URL or path to organization logo
   createdAt   DateTime     @default(now())
   auditLogs   AuditLog[]
   contacts    Contact[]

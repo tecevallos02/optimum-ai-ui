@@ -3,7 +3,7 @@
 
 import { useState, useRef, useEffect } from "react";
 
-type Org = { id: string; name: string; role?: string };
+type Org = { id: string; name: string; role?: string; logo?: string };
 
 export default function OrgSwitcher({
   orgs,
@@ -99,9 +99,29 @@ export default function OrgSwitcher({
           {/* Premium Organization Card */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 min-w-[200px]">
             <div className="flex items-center space-x-3">
-              {/* Organization Icon */}
-              <div className={`w-10 h-10 rounded-full ${getRoleColor(currentOrg.role)} flex items-center justify-center text-white shadow-md`}>
-                {getRoleIcon(currentOrg.role)}
+              {/* Organization Logo/Icon */}
+              <div className="w-10 h-10 rounded-full shadow-md overflow-hidden flex items-center justify-center">
+                {currentOrg.logo ? (
+                  <img 
+                    src={currentOrg.logo} 
+                    alt={`${currentOrg.name} logo`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback to role icon if logo fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const parent = target.parentElement;
+                      if (parent) {
+                        parent.className = `w-10 h-10 rounded-full ${getRoleColor(currentOrg.role)} flex items-center justify-center text-white shadow-md`;
+                        parent.innerHTML = getRoleIcon(currentOrg.role)?.props.children || '';
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className={`w-full h-full ${getRoleColor(currentOrg.role)} flex items-center justify-center text-white`}>
+                    {getRoleIcon(currentOrg.role)}
+                  </div>
+                )}
               </div>
               
               {/* Organization Info */}
@@ -140,9 +160,29 @@ export default function OrgSwitcher({
                   }`}
                   onClick={() => handleOrgSelect(org.id)}
                 >
-                  {/* Organization Icon */}
-                  <div className={`w-8 h-8 rounded-full ${getRoleColor(org.role)} flex items-center justify-center text-white text-sm`}>
-                    {getRoleIcon(org.role)}
+                  {/* Organization Logo/Icon */}
+                  <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center">
+                    {org.logo ? (
+                      <img 
+                        src={org.logo} 
+                        alt={`${org.name} logo`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback to role icon if logo fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.className = `w-8 h-8 rounded-full ${getRoleColor(org.role)} flex items-center justify-center text-white text-sm`;
+                            parent.innerHTML = getRoleIcon(org.role)?.props.children || '';
+                          }
+                        }}
+                      />
+                    ) : (
+                      <div className={`w-full h-full ${getRoleColor(org.role)} flex items-center justify-center text-white text-sm`}>
+                        {getRoleIcon(org.role)}
+                      </div>
+                    )}
                   </div>
                   
                   {/* Organization Info */}
