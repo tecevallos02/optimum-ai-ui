@@ -65,7 +65,11 @@ export default function OrgSwitcherClient() {
 
   return (
     <OrgSwitcher
-      orgs={userData.orgs}
+      orgs={userData.orgs.map((org: any) => ({
+        id: org.id,
+        name: org.name,
+        role: org.role
+      }))}
       currentOrgId={effectiveCurrentOrgId}
       onChange={handleChange}
       disabled={isPending}
