@@ -11,28 +11,40 @@ export async function POST() {
     }
 
     // Get user data with organization name from User table
-    const userData = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        organization: true,
-      }
-    });
+    const userData = await prisma.user.findFirst({
+      where: { id: session.user.id }
+    }) as any;
 
     if (!userData) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Create a simple organization object from the user's organization field
-    const orgs = userData.organization ? [{
-      id: 'user-org',
-      name: userData.organization,
-      role: 'OWNER',
-      logo: null,
-      createdAt: new Date(),
-    }] : [];
+    // Get the actual organization data from the Organization table
+    let orgs: any[] = [];
+    if (userData.organization) {
+      const org = await prisma.organization.findFirst({
+        where: { name: userData.organization }
+      }) as any;
+      
+      if (org) {
+        orgs = [{
+          id: org.id,
+          name: org.name,
+          role: 'OWNER',
+          logo: org.logo,
+          createdAt: org.createdAt,
+        }];
+      } else {
+        // Fallback if organization doesn't exist in Organization table
+        orgs = [{
+          id: 'user-org',
+          name: userData.organization,
+          role: 'OWNER',
+          logo: null,
+          createdAt: new Date(),
+        }];
+      }
+    }
 
     const currentOrgId = orgs.length > 0 ? orgs[0].id : null;
     const role = orgs.length > 0 ? orgs[0].role : null;
