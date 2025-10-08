@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,7 @@ export async function PUT(
     }
 
     const { logo } = await request.json();
-    const orgId = params.id;
+    const { id: orgId } = await params;
 
     // Check if user has permission to update this organization
     const membership = await prisma.membership.findFirst({
