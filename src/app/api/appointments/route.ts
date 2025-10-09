@@ -31,74 +31,29 @@ export async function GET() {
     
     const currentOrgId = org.id
 
-    // For now, return mock data with realistic appointment scenarios
-    // In a real implementation, this would fetch from Google Calendar API
-    const data = [
-      {
-        id: "appt_1",
-        orgId: currentOrgId,
-        googleEventId: "gcal_1",
-        title: "Dental Cleaning",
-        customerName: "Sarah Johnson",
-        customerPhone: "555-1234",
-        customerEmail: "sarah.johnson@email.com",
-        startsAt: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
-        endsAt: new Date(Date.now() + 2.5 * 60 * 60 * 1000).toISOString(),
-        status: "confirmed" as const,
-        source: "phone" as const,
-        notes: "Patient mentioned sensitivity in lower left molars and wants to discuss whitening options.",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: "appt_2",
-        orgId: currentOrgId,
-        googleEventId: "gcal_2",
-        title: "Website Consultation",
-        customerName: "Michael Chen",
-        customerPhone: "555-5678",
-        customerEmail: "m.chen@techcorp.com",
-        startsAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
-        endsAt: new Date(Date.now() + 24.5 * 60 * 60 * 1000).toISOString(),
-        status: "scheduled" as const,
-        source: "web" as const,
-        notes: "Initial consultation for website redesign project. Client wants to discuss e-commerce integration and mobile responsiveness.",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: "appt_3",
-        orgId: currentOrgId,
-        googleEventId: "gcal_3",
-        title: "Legal Consultation",
-        customerName: "Emily Rodriguez",
-        customerPhone: "555-9012",
-        customerEmail: "emily.r@lawfirm.com",
-        startsAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
-        endsAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 60 * 60 * 1000).toISOString(),
-        status: "confirmed" as const,
-        source: "agent" as const,
-        notes: "Legal consultation regarding property dispute. Client needs advice on boundary issues and potential litigation.",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: "appt_4",
-        orgId: currentOrgId,
-        googleEventId: "gcal_4",
-        title: "Personal Training",
-        customerName: "David Thompson",
-        customerPhone: "555-3456",
-        customerEmail: "david.t@fitness.com",
-        startsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week from now
-        endsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + 45 * 60 * 1000).toISOString(),
-        status: "scheduled" as const,
-        source: "imported" as const,
-        notes: "Personal training session. Client wants to focus on strength training and discuss nutrition plan for weight loss goals.",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-    ];
+    // Fetch appointments from database
+    const appointments = await prisma.appointment.findMany({
+      where: { orgId: currentOrgId },
+      orderBy: { startsAt: 'asc' }
+    });
+
+    // Convert database format to API format
+    const data = appointments.map(appointment => ({
+      id: appointment.id,
+      orgId: appointment.orgId,
+      googleEventId: appointment.googleEventId,
+      title: appointment.title,
+      customerName: appointment.customerName,
+      customerPhone: appointment.customerPhone,
+      customerEmail: appointment.customerEmail,
+      startsAt: appointment.startsAt.toISOString(),
+      endsAt: appointment.endsAt.toISOString(),
+      status: appointment.status.toLowerCase(),
+      source: appointment.source.toLowerCase(),
+      notes: appointment.notes,
+      createdAt: appointment.createdAt.toISOString(),
+      updatedAt: appointment.updatedAt.toISOString(),
+    }));
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
@@ -138,27 +93,52 @@ export async function POST(request: NextRequest) {
     const currentOrgId = org.id
     const body = await request.json();
 
-    // Create new appointment (mock implementation)
-    const newAppointment = {
-      id: `appt_${Date.now()}`,
-      orgId: currentOrgId,
-      googleEventId: body.googleEventId || undefined,
-      title: body.title,
-      customerName: body.customerName,
-      customerPhone: body.customerPhone || undefined,
-      customerEmail: body.customerEmail || undefined,
-      startsAt: body.startsAt,
-      endsAt: body.endsAt,
-      status: body.status || 'scheduled',
-      source: body.source || 'agent',
-      notes: body.notes || undefined,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+    // Validate required fields
+    if (!body.title || !body.customerName || !body.startsAt || !body.endsAt) {
+      return NextResponse.json(
+        { error: "Missing required fields: title, customerName, startsAt, endsAt" },
+        { status: 400 }
+      );
+    }
+
+    // Create new appointment in database
+    const newAppointment = await prisma.appointment.create({
+      data: {
+        orgId: currentOrgId,
+        googleEventId: body.googleEventId || null,
+        title: body.title,
+        customerName: body.customerName,
+        customerPhone: body.customerPhone || null,
+        customerEmail: body.customerEmail || null,
+        startsAt: new Date(body.startsAt),
+        endsAt: new Date(body.endsAt),
+        status: body.status?.toUpperCase() || 'SCHEDULED',
+        source: body.source?.toUpperCase() || 'AGENT',
+        notes: body.notes || null,
+      }
+    });
+
+    // Convert to API format
+    const responseData = {
+      id: newAppointment.id,
+      orgId: newAppointment.orgId,
+      googleEventId: newAppointment.googleEventId,
+      title: newAppointment.title,
+      customerName: newAppointment.customerName,
+      customerPhone: newAppointment.customerPhone,
+      customerEmail: newAppointment.customerEmail,
+      startsAt: newAppointment.startsAt.toISOString(),
+      endsAt: newAppointment.endsAt.toISOString(),
+      status: newAppointment.status.toLowerCase(),
+      source: newAppointment.source.toLowerCase(),
+      notes: newAppointment.notes,
+      createdAt: newAppointment.createdAt.toISOString(),
+      updatedAt: newAppointment.updatedAt.toISOString(),
     };
 
-    console.log('Created new appointment:', newAppointment);
+    console.log('Created new appointment:', responseData);
 
-    return NextResponse.json(newAppointment, { status: 201 });
+    return NextResponse.json(responseData, { status: 201 });
   } catch (error) {
     console.error('Error creating appointment:', error);
     return NextResponse.json(

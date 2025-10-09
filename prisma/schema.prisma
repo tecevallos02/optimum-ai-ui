@@ -36,12 +36,12 @@ model Session {
 
 model User {
   id                 String       @id @default(cuid())
-  name               String?      // Full name (for backward compatibility)
-  firstName          String?      // First name
-  lastName           String?      // Last name
+  name               String?
+  firstName          String?
+  lastName           String?
   email              String       @unique
-  organization       String?      // Organization name entered during signup
-  password           String?      // Hashed password for email/password auth
+  organization       String?
+  password           String?
   emailVerified      DateTime?
   image              String?
   activationToken    String?      @unique
@@ -64,15 +64,16 @@ model VerificationToken {
 }
 
 model Organization {
-  id          String       @id @default(cuid())
-  name        String
-  logo        String?      // URL or path to organization logo
-  createdAt   DateTime     @default(now())
-  auditLogs   AuditLog[]
-  contacts    Contact[]
-  complaints  Complaint[]
-  invitations Invitation[]
-  memberships Membership[]
+  id           String        @id @default(cuid())
+  name         String
+  logo         String?
+  createdAt    DateTime      @default(now())
+  appointments Appointment[]
+  auditLogs    AuditLog[]
+  complaints   Complaint[]
+  contacts     Contact[]
+  invitations  Invitation[]
+  memberships  Membership[]
 }
 
 model Membership {
@@ -127,15 +128,33 @@ model Contact {
 }
 
 model Complaint {
-  id            String       @id @default(cuid())
+  id            String          @id @default(cuid())
   orgId         String
   phoneNumber   String
   callTimestamp DateTime
   description   String?
   status        ComplaintStatus @default(OPEN)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  org           Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  org           Organization    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+}
+
+model Appointment {
+  id            String            @id @default(cuid())
+  orgId         String
+  title         String
+  customerName  String
+  customerPhone String?
+  customerEmail String?
+  startsAt      DateTime
+  endsAt        DateTime
+  status        AppointmentStatus @default(SCHEDULED)
+  source        AppointmentSource @default(AGENT)
+  notes         String?
+  googleEventId String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  org           Organization      @relation(fields: [orgId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
@@ -148,4 +167,19 @@ enum ComplaintStatus {
   OPEN
   RESOLVED
   CLOSED
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELED
+  NO_SHOW
+}
+
+enum AppointmentSource {
+  WEB
+  PHONE
+  AGENT
+  IMPORTED
 }
