@@ -103,13 +103,13 @@ export default function CalendarGrid({
   if (appointments.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-          <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+          <svg className="w-12 h-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No appointments scheduled</h3>
-        <p className="text-gray-500 mb-4">Get started by creating your first appointment.</p>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No appointments scheduled</h3>
+        <p className="text-gray-500 dark:text-gray-400 mb-4">Get started by creating your first appointment.</p>
       </div>
     );
   }
@@ -117,10 +117,10 @@ export default function CalendarGrid({
   return (
     <>
       {/* Calendar Header */}
-      <div className="bg-white rounded-2xl shadow-md border border-gray-200 mb-6">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 mb-6">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-4">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               {currentDate.toLocaleDateString('en-US', { 
                 month: 'long', 
                 year: 'numeric' 
@@ -132,8 +132,8 @@ export default function CalendarGrid({
                 onClick={() => setView('month')}
                 className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                   view === 'month' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                 }`}
               >
                 Month
@@ -142,8 +142,8 @@ export default function CalendarGrid({
                 onClick={() => setView('week')}
                 className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                   view === 'week' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                 }`}
               >
                 Week
@@ -152,8 +152,8 @@ export default function CalendarGrid({
                 onClick={() => setView('day')}
                 className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                   view === 'day' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                 }`}
               >
                 Day
@@ -164,7 +164,7 @@ export default function CalendarGrid({
           <div className="flex items-center gap-2">
             <button
               onClick={() => navigate('prev')}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -172,13 +172,13 @@ export default function CalendarGrid({
             </button>
             <button
               onClick={goToToday}
-              className="px-3 py-1 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-3 py-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               Today
             </button>
             <button
               onClick={() => navigate('next')}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -207,13 +207,13 @@ export default function CalendarGrid({
                 return (
                   <div
                     key={index}
-                    className={`min-h-[120px] p-2 border border-gray-100 ${
-                      isCurrentMonthDay ? 'bg-white' : 'bg-gray-50'
+                    className={`min-h-[120px] p-2 border border-gray-100 dark:border-gray-700 ${
+                      isCurrentMonthDay ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900'
                     } ${isTodayDate ? 'ring-2 ring-blue-500' : ''}`}
                     onClick={() => onSelectSlot?.(date, new Date(date.getTime() + 24 * 60 * 60 * 1000))}
                   >
                     <div className={`text-sm font-medium mb-1 ${
-                      isCurrentMonthDay ? 'text-gray-900' : 'text-gray-400'
+                      isCurrentMonthDay ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-600'
                     } ${isTodayDate ? 'text-blue-600' : ''}`}>
                       {date.getDate()}
                     </div>
@@ -292,9 +292,9 @@ export default function CalendarGrid({
                 const isTodayDate = isToday(date);
 
                 return (
-                  <div key={index} className="border border-gray-200 rounded-lg p-4">
+                  <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
                     <div className={`text-lg font-semibold mb-3 ${
-                      isTodayDate ? 'text-blue-600' : 'text-gray-900'
+                      isTodayDate ? 'text-blue-600' : 'text-gray-900 dark:text-gray-100'
                     }`}>
                       {date.toLocaleDateString('en-US', { 
                         weekday: 'long', 
@@ -304,7 +304,7 @@ export default function CalendarGrid({
                     </div>
                     
                     {dayAppointments.length === 0 ? (
-                      <div className="text-gray-500 text-sm py-4 text-center">
+                      <div className="text-gray-500 dark:text-gray-400 text-sm py-4 text-center">
                         No appointments scheduled
                       </div>
                     ) : (
@@ -317,12 +317,12 @@ export default function CalendarGrid({
                             <div
                               key={appointment.id}
                               onClick={() => setSelectedAppointment(appointment)}
-                              className="p-3 rounded-lg border border-gray-200 hover:shadow-md transition-all cursor-pointer"
+                              className="p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all cursor-pointer bg-white dark:bg-gray-700"
                             >
                               <div className="flex items-center justify-between">
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 mb-1">
-                                    <h4 className="font-medium text-gray-900 truncate">
+                                    <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate">
                                       {appointment.title}
                                     </h4>
                                     <div className={`w-2 h-2 rounded-full ${statusColor.dot}`} />
@@ -335,7 +335,7 @@ export default function CalendarGrid({
                                       </span>
                                     )}
                                   </div>
-                                  <p className="text-sm text-gray-600">
+                                  <p className="text-sm text-gray-600 dark:text-gray-400">
                                     {formatTime(appointment.startsAt)} - {formatTime(appointment.endsAt)} • {appointment.customerName}
                                   </p>
                                 </div>
