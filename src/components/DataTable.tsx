@@ -41,12 +41,12 @@ export default function DataTable<T extends Record<string, unknown>>({
 
   return (
     <div className="w-full">
-      <div className="overflow-x-auto rounded-xl border border-border bg-white">
+      <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <table className="min-w-full text-sm">
-          <thead className="bg-bg text-left">
+          <thead className="bg-gray-50 dark:bg-gray-700 text-left">
             <tr>
               {columns.map((c) => (
-                <th key={c.key} className="px-4 py-3 font-semibold">
+                <th key={c.key} className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">
                   {c.header}
                 </th>
               ))}
@@ -55,15 +55,15 @@ export default function DataTable<T extends Record<string, unknown>>({
           <tbody>
             {pageData.length === 0 ? (
               <tr>
-                <td className="px-4 py-6 text-muted" colSpan={columns.length}>
+                <td className="px-4 py-6 text-gray-500 dark:text-gray-400" colSpan={columns.length}>
                   No data to display.
                 </td>
               </tr>
             ) : (
               pageData.map((row, idx) => (
-                <tr key={String((row as Record<string, unknown>).id) || idx} className="border-t border-border">
+                <tr key={String((row as Record<string, unknown>).id) || idx} className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                   {columns.map((c) => (
-                    <td key={c.key} className="px-4 py-3">
+                    <td key={c.key} className="px-4 py-3 text-gray-900 dark:text-gray-100">
                       {c.render
                         ? c.render(row)
                         : String((row as Record<string, unknown>)[c.key] ?? "")}
@@ -78,33 +78,33 @@ export default function DataTable<T extends Record<string, unknown>>({
 
       {/* Pager */}
       <div className="mt-3 flex items-center justify-between text-sm">
-        <span className="text-muted">
+        <span className="text-gray-500 dark:text-gray-400">
           Page {pageCount === 0 ? 0 : safePage + 1} of {pageCount}
         </span>
         <div className="space-x-2">
           <button
-            className="rounded border px-3 py-1 disabled:opacity-50"
+            className="rounded border border-gray-300 dark:border-gray-600 px-3 py-1 disabled:opacity-50 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
             onClick={() => setPage(0)}
             disabled={safePage <= 0}
           >
             « First
           </button>
           <button
-            className="rounded border px-3 py-1 disabled:opacity-50"
+            className="rounded border border-gray-300 dark:border-gray-600 px-3 py-1 disabled:opacity-50 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
             onClick={() => setPage((p) => Math.max(0, p - 1))}
             disabled={safePage <= 0}
           >
             ‹ Prev
           </button>
           <button
-            className="rounded border px-3 py-1 disabled:opacity-50"
+            className="rounded border border-gray-300 dark:border-gray-600 px-3 py-1 disabled:opacity-50 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
             onClick={() => setPage((p) => p + 1)}
             disabled={safePage >= pageCount - 1}
           >
             Next ›
           </button>
           <button
-            className="rounded border px-3 py-1 disabled:opacity-50"
+            className="rounded border border-gray-300 dark:border-gray-600 px-3 py-1 disabled:opacity-50 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
             onClick={() => setPage(pageCount - 1)}
             disabled={safePage >= pageCount - 1}
           >
