@@ -6,7 +6,7 @@ import { getCurrentUser } from "@/lib/auth";
 import RoleGuard from "@/components/RoleGuard";
 import OrgSwitcherClient from "@/components/OrgSwitcherClient"; // <- client wrapper
 import LogoutButton from "../../components/LogoutButton";
-import ThemeToggle from "@/components/ThemeToggle";
+import ClientOnlyThemeToggle from "@/components/ClientOnlyThemeToggle";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
@@ -56,7 +56,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
                 {user?.role}
               </span>
             </RoleGuard>
-            <ThemeToggle />
+            <ClientOnlyThemeToggle />
             <LogoutButton />
           </div>
         </header>
