@@ -142,6 +142,18 @@ export default function AppointmentDetailsDrawer({
                 </div>
               </div>
 
+              {/* Description */}
+              {appointment.description && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
+                    Description
+                  </h4>
+                  <p className="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg">
+                    {appointment.description}
+                  </p>
+                </div>
+              )}
+
               {/* Notes */}
               {appointment.notes && (
                 <div>
@@ -219,8 +231,8 @@ export default function AppointmentDetailsDrawer({
         <CancelAppointmentModal
           appointment={appointment}
           onClose={() => setShowCancelModal(false)}
-          onConfirm={() => {
-            onDelete(appointment.id);
+          onConfirm={(updatedAppointment) => {
+            onUpdate(updatedAppointment);
             setShowCancelModal(false);
             onClose();
           }}

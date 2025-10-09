@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Appointment } from '@/lib/types'
+import EditableEmailDialog from '@/components/email/EditableEmailDialog'
 
 interface EmailTemplate {
   id: string
@@ -17,6 +18,8 @@ export default function EmailPage() {
   const [emailTemplate, setEmailTemplate] = useState<EmailTemplate | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [showEditableDialog, setShowEditableDialog] = useState(false)
+  const [editableTemplate, setEditableTemplate] = useState<EmailTemplate | null>(null)
 
   useEffect(() => {
     fetchAppointments()
@@ -39,7 +42,7 @@ export default function EmailPage() {
     }
   }
 
-  const generateEmail = async (appointment: Appointment) => {
+  const generateEmail = async (appointment: Appointment, isApology = false) => {
     setIsGenerating(true)
     try {
       const response = await fetch('/api/email/generate', {
@@ -53,13 +56,16 @@ export default function EmailPage() {
           attendeeEmail: appointment.customerEmail || '',
           appointmentDate: appointment.startsAt,
           appointmentEnd: appointment.endsAt,
-          description: appointment.notes,
+          description: appointment.description || appointment.notes,
+          status: appointment.status,
+          isApology: isApology,
         }),
       })
 
       if (response.ok) {
         const template = await response.json()
-        setEmailTemplate(template)
+        setEditableTemplate(template)
+        setShowEditableDialog(true)
       } else {
         console.error('Failed to generate email')
       }
@@ -69,6 +75,21 @@ export default function EmailPage() {
       setIsGenerating(false)
     }
   }
+
+  const handleEditableConfirm = (subject: string, content: string) => {
+    if (!selectedAppointment) return;
+    
+    const template: EmailTemplate = {
+      id: Date.now().toString(),
+      appointmentId: selectedAppointment.id,
+      subject,
+      content,
+      generatedAt: new Date().toISOString(),
+    };
+    
+    setEmailTemplate(template);
+    setShowEditableDialog(false);
+  };
 
   const sendEmail = async () => {
     if (!emailTemplate || !selectedAppointment) return
@@ -207,13 +228,25 @@ export default function EmailPage() {
                 )}
               </div>
 
-              <button
-                onClick={() => generateEmail(selectedAppointment)}
-                disabled={isGenerating}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isGenerating ? 'Generating...' : 'Generate AI Email'}
-              </button>
+              <div className="space-y-2">
+                <button
+                  onClick={() => generateEmail(selectedAppointment)}
+                  disabled={isGenerating}
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isGenerating ? 'Generating...' : 'Generate AI Email'}
+                </button>
+                
+                {selectedAppointment.status === 'canceled' && (
+                  <button
+                    onClick={() => generateEmail(selectedAppointment, true)}
+                    disabled={isGenerating}
+                    className="w-full bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isGenerating ? 'Generating...' : 'Generate Apology Email'}
+                  </button>
+                )}
+              </div>
 
               {emailTemplate && (
                 <div className="space-y-4">
@@ -281,6 +314,16 @@ export default function EmailPage() {
           )}
         </div>
       </div>
+
+      {/* Editable Email Dialog */}
+      {showEditableDialog && editableTemplate && selectedAppointment && (
+        <EditableEmailDialog
+          appointment={selectedAppointment}
+          emailTemplate={editableTemplate}
+          onClose={() => setShowEditableDialog(false)}
+          onConfirm={handleEditableConfirm}
+        />
+      )}
     </div>
   )
 }

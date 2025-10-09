@@ -150,6 +150,7 @@ model Appointment {
   endsAt        DateTime
   status        AppointmentStatus @default(SCHEDULED)
   source        AppointmentSource @default(AGENT)
+  description   String?
   notes         String?
   googleEventId String?
   createdAt     DateTime          @default(now())

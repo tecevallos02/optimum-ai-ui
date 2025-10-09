@@ -27,6 +27,7 @@ export type Appointment = {
   endsAt: string;
   status: 'scheduled' | 'confirmed' | 'completed' | 'canceled' | 'no_show';
   source?: 'web' | 'phone' | 'agent' | 'imported';
+  description?: string;
   notes?: string;
   createdAt: string;
   updatedAt: string;

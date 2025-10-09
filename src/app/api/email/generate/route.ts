@@ -3,7 +3,7 @@ import OpenAI from 'openai'
 
 export async function POST(request: NextRequest) {
   try {
-    const { appointmentId, attendeeName, attendeeEmail, appointmentDate, appointmentEnd, description } = await request.json()
+    const { appointmentId, attendeeName, attendeeEmail, appointmentDate, appointmentEnd, description, status, isApology } = await request.json()
 
     if (!appointmentId || !attendeeName || !attendeeEmail || !appointmentDate) {
       return NextResponse.json(
@@ -46,27 +46,42 @@ export async function POST(request: NextRequest) {
       })
 
       // Create a prompt for OpenAI to generate personalized email content
-      const prompt = `You are a professional assistant helping to write appointment confirmation emails. 
+      const isCanceled = status === 'canceled';
+      const isApologyEmail = isApology === true;
+      
+      let emailType = 'confirmation';
+      let tone = 'warm and professional';
+      
+      if (isCanceled && isApologyEmail) {
+        emailType = 'apology';
+        tone = 'apologetic and understanding';
+      } else if (isCanceled) {
+        emailType = 'cancellation notice';
+        tone = 'professional and clear';
+      }
 
-Generate a personalized, warm, and professional email confirmation based on the following appointment details:
+      const prompt = `You are a professional assistant helping to write appointment ${emailType} emails. 
+
+Generate a personalized, ${tone} email based on the following appointment details:
 
 **Appointment Information:**
 - Client Name: ${attendeeName}
 - Date: ${dateStr}
 - Time: ${timeStr} - ${endTimeStr}
 - Duration: ${Math.round((appointmentEndTime.getTime() - appointmentDateTime.getTime()) / (1000 * 60))} minutes
-- Description from phone call: ${description || 'No specific details provided'}
+- Description: ${description || 'No specific details provided'}
+- Status: ${status}
 
 **Requirements:**
-1. Write a warm, professional confirmation email
+1. Write a ${tone} ${emailType} email
 2. Reference specific details from the appointment description if provided
 3. Keep it concise but personal (2-3 sentences for the personalized part)
 4. Use a professional but friendly tone
-5. Make the client feel valued and prepared for their appointment
+5. ${isCanceled && isApologyEmail ? 'Express genuine regret and offer to reschedule' : isCanceled ? 'Clearly communicate the cancellation' : 'Make the client feel valued and prepared for their appointment'}
 
 **Format your response as JSON with these fields:**
 {
-  "subject": "Appointment Confirmation - [Date]",
+  "subject": "${isCanceled && isApologyEmail ? 'We apologize for the inconvenience' : isCanceled ? 'Appointment Cancellation Notice' : 'Appointment Confirmation'} - [Date]",
   "personalizedContent": "Your personalized message here",
   "fullEmail": "Complete email content here"
 }
@@ -152,34 +167,61 @@ This is an automated confirmation email. If you have any questions or need to re
     }
 
     // Fallback template if OpenAI fails or is not configured
-    personalizedContent = description 
-      ? `We're looking forward to meeting with you and discussing the details you shared during your call.`
-      : `We're looking forward to meeting with you!`
+    const isCanceled = status === 'canceled';
+    const isApologyEmail = isApology === true;
+    
+    if (isCanceled && isApologyEmail) {
+      personalizedContent = `We sincerely apologize for any inconvenience caused by the cancellation of your appointment. We understand this may have disrupted your schedule.`;
+      emailSubject = `We apologize for the inconvenience - ${dateStr}`;
+    } else if (isCanceled) {
+      personalizedContent = `We wanted to inform you that your appointment has been canceled.`;
+      emailSubject = `Appointment Cancellation Notice - ${dateStr}`;
+    } else {
+      personalizedContent = description 
+        ? `We're looking forward to meeting with you and discussing the details you shared during your call.`
+        : `We're looking forward to meeting with you!`;
+    }
 
-    const emailTemplate = {
-      id: `email_${appointmentId}_${Date.now()}`,
-      appointmentId,
-      subject: emailSubject,
-      content: `Dear ${attendeeName},
-
-Thank you for scheduling an appointment with us. We're excited to meet with you!
+    let emailContent = `Dear ${attendeeName},
 
 ${personalizedContent}
 
 **Appointment Details:**
 - Date: ${dateStr}
 - Time: ${timeStr} - ${endTimeStr}
-- Duration: ${Math.round((appointmentEndTime.getTime() - appointmentDateTime.getTime()) / (1000 * 60))} minutes
+- Duration: ${Math.round((appointmentEndTime.getTime() - appointmentDateTime.getTime()) / (1000 * 60))} minutes`;
+
+    if (isCanceled && isApologyEmail) {
+      emailContent += `
+
+We would be happy to reschedule your appointment at your convenience. Please contact us to arrange a new time that works better for you.
+
+We apologize again for any inconvenience.`;
+    } else if (isCanceled) {
+      emailContent += `
+
+If you have any questions or would like to reschedule, please don't hesitate to contact us.`;
+    } else {
+      emailContent += `
 
 We look forward to seeing you at your scheduled time. If you need to make any changes to your appointment or have any questions, please don't hesitate to reach out to us.
 
-Please arrive a few minutes early to ensure we can start on time.
+Please arrive a few minutes early to ensure we can start on time.`;
+    }
+
+    emailContent += `
 
 Best regards,
 Your Goshawk AI Team
 
 ---
-This is an automated confirmation email. If you have any questions or need to reschedule, please contact us directly.`,
+This is an automated email. If you have any questions or need to reschedule, please contact us directly.`;
+
+    const emailTemplate = {
+      id: `email_${appointmentId}_${Date.now()}`,
+      appointmentId,
+      subject: emailSubject,
+      content: emailContent,
       generatedAt: new Date().toISOString()
     }
 

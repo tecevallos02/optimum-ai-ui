@@ -50,6 +50,7 @@ export async function GET() {
       endsAt: appointment.endsAt.toISOString(),
       status: appointment.status.toLowerCase(),
       source: appointment.source.toLowerCase(),
+      description: appointment.description,
       notes: appointment.notes,
       createdAt: appointment.createdAt.toISOString(),
       updatedAt: appointment.updatedAt.toISOString(),
@@ -114,6 +115,7 @@ export async function POST(request: NextRequest) {
         endsAt: new Date(body.endsAt),
         status: body.status?.toUpperCase() || 'SCHEDULED',
         source: body.source?.toUpperCase() || 'AGENT',
+        description: body.description || null,
         notes: body.notes || null,
       }
     });
@@ -131,6 +133,7 @@ export async function POST(request: NextRequest) {
       endsAt: newAppointment.endsAt.toISOString(),
       status: newAppointment.status.toLowerCase(),
       source: newAppointment.source.toLowerCase(),
+      description: newAppointment.description,
       notes: newAppointment.notes,
       createdAt: newAppointment.createdAt.toISOString(),
       updatedAt: newAppointment.updatedAt.toISOString(),

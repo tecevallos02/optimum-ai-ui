@@ -6,7 +6,7 @@ import type { Appointment } from '@/lib/types';
 interface CancelAppointmentModalProps {
   appointment: Appointment;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (updatedAppointment: Appointment) => void;
 }
 
 export default function CancelAppointmentModal({
@@ -32,7 +32,8 @@ export default function CancelAppointmentModal({
       });
 
       if (response.ok) {
-        onConfirm();
+        const updatedAppointment = await response.json();
+        onConfirm(updatedAppointment);
       } else {
         throw new Error('Failed to cancel appointment');
       }
