@@ -13,8 +13,8 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex bg-bg">
       {/* Sidebar */}
-      <aside className="hidden md:block w-60 bg-white border-r border-border p-4">
-        <div className="mb-4">
+      <aside className="hidden md:block w-60 bg-white border-r border-border">
+        <div className="p-2">
           <Image
             src="/goshawk-ai-logo.png"
             alt="Goshawk AI"
@@ -24,6 +24,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             priority
           />
         </div>
+        <div className="px-4 pb-4">
         <nav className="space-y-1">
           <Link href="/app" className="block p-3 rounded-lg border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm">Dashboard</Link>
           <Link href="/app/calls" className="block p-3 rounded-lg border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm">Calls</Link>
@@ -34,6 +35,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           <Link href="/app/complaints" className="block p-3 rounded-lg border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm">Complaints</Link>
           <Link href="/app/config" className="block p-3 rounded-lg border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm">Config</Link>
         </nav>
+        </div>
       </aside>
 
       {/* Main content */}
