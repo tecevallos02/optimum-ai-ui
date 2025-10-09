@@ -88,10 +88,10 @@ export default function UpcomingAppointments({ className = '' }: UpcomingAppoint
   }
 
   return (
-    <div className={`bg-white p-6 rounded-xl shadow-card ${className}`}>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">Upcoming Appointments</h2>
-        <span className="text-sm text-gray-500">
+    <div className={`bg-white p-6 rounded-xl shadow-card border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-lg group ${className}`}>
+      <div className="flex items-center justify-between mb-6 border-b border-gray-50 pb-4 group-hover:border-gray-100 transition-colors duration-200">
+        <h2 className="text-xl font-semibold text-gray-900 group-hover:text-gray-800 transition-colors duration-200">Upcoming Appointments</h2>
+        <span className="text-sm text-gray-500 group-hover:text-gray-600 transition-colors duration-200">
           Next 2 weeks ({appointments.length} appointments)
         </span>
       </div>
@@ -110,7 +110,7 @@ export default function UpcomingAppointments({ className = '' }: UpcomingAppoint
           {appointments.slice(0, 6).map((appointment) => (
             <div
               key={appointment.id}
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-between p-4 border border-gray-100 rounded-lg hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm group"
             >
               <div className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
@@ -142,7 +142,7 @@ export default function UpcomingAppointments({ className = '' }: UpcomingAppoint
                 <div className="text-sm text-gray-600">
                   {formatTime(appointment.startsAt)} - {formatTime(appointment.endsAt)}
                 </div>
-                <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(appointment.status)}`}>
+                <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full border transition-all duration-200 group-hover:scale-105 ${getStatusColor(appointment.status)}`}>
                   {appointment.status}
                 </span>
               </div>

@@ -63,19 +63,22 @@ export default function DashboardClient() {
   }
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Dashboard</h1>
+      <div className="border-b border-gray-100 pb-4">
+        <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+        <p className="text-sm text-gray-500 mt-1">Welcome back! Here's what's happening today.</p>
+      </div>
 
       {/* Upcoming Appointments - Main Feature */}
       <UpcomingAppointments />
 
       {/* Charts Section */}
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white p-4 rounded-xl shadow-card">
-          <h2 className="font-semibold mb-2">Calls over Time</h2>
+        <div className="bg-white p-6 rounded-xl shadow-card border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-lg group">
+          <h2 className="font-semibold mb-4 text-gray-900 border-b border-gray-50 pb-2 group-hover:border-gray-100 transition-colors duration-200">Calls over Time</h2>
           <CallsOverTime data={callsHandledSeries} />
         </div>
-        <div className="bg-white p-4 rounded-xl shadow-card">
-          <h2 className="font-semibold mb-2">Intents Distribution</h2>
+        <div className="bg-white p-6 rounded-xl shadow-card border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-lg group">
+          <h2 className="font-semibold mb-4 text-gray-900 border-b border-gray-50 pb-2 group-hover:border-gray-100 transition-colors duration-200">Intents Distribution</h2>
           <IntentsDistribution data={intentsSeries} />
         </div>
       </div>
