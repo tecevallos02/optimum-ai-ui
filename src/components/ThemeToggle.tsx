@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 export default function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   
   useEffect(() => {
     setMounted(true);
@@ -19,11 +20,14 @@ export default function ThemeToggle() {
     );
   }
 
-  const { theme, toggleTheme } = useTheme();
+  const handleToggle = () => {
+    console.log('ThemeToggle clicked, current theme:', theme);
+    toggleTheme();
+  };
 
   return (
     <button
-      onClick={toggleTheme}
+      onClick={handleToggle}
       className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 hover:shadow-sm"
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
     >
