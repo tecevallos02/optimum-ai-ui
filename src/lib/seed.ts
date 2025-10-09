@@ -66,7 +66,7 @@ export function seedKpis(): KPI {
     bookings,
     avgHandleTime: 220,
     conversionRate: Math.round(conversionRate * 10) / 10, // Round to 1 decimal place
-    complaints: 8,
+    callsEscalated: 8,
     estimatedSavings: 920
   };
 }
