@@ -14,7 +14,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <div className="min-h-screen flex bg-bg">
       {/* Sidebar */}
       <aside className="hidden md:block w-60 bg-white border-r border-border p-4">
-        <div className="mb-6 p-4 bg-white rounded-xl border border-gray-100">
+        <div className="mb-4">
           <Image
             src="/goshawk-ai-logo.png"
             alt="Goshawk AI"
