@@ -28,10 +28,17 @@ export function seedAppointments(): Appointment[] {
     id: `appt_${i + 1}`,
     orgId: 'org_1',
     googleEventId: `gcal_evt_${i + 1}`,
-    start: formatISO(subDays(new Date(), i), { representation: 'complete' }),
-    end: formatISO(subDays(new Date(), i), { representation: 'complete' }),
-    attendee: { name: `Attendee ${i + 1}`, email: `attendee${i + 1}@demo.com`, phone: '1234567890' },
-    status: 'confirmed'
+    title: `Appointment ${i + 1}`,
+    customerName: `Customer ${i + 1}`,
+    customerPhone: '1234567890',
+    customerEmail: `customer${i + 1}@demo.com`,
+    startsAt: formatISO(subDays(new Date(), i), { representation: 'complete' }),
+    endsAt: formatISO(subDays(new Date(), i), { representation: 'complete' }),
+    status: 'confirmed' as const,
+    source: 'agent' as const,
+    notes: `Notes for appointment ${i + 1}`,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   }));
 }
 

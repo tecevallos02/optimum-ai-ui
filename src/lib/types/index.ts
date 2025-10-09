@@ -18,11 +18,18 @@ export type Call = {
 export type Appointment = {
   id: string;
   orgId: string;
-  googleEventId: string;
-  start: string;
-  end: string;
-  attendee: { name: string; email: string; phone: string };
-  status: "confirmed" | "cancelled" | "pending";
+  googleEventId?: string;
+  title: string;
+  customerName: string;
+  customerPhone?: string;
+  customerEmail?: string;
+  startsAt: string;
+  endsAt: string;
+  status: 'scheduled' | 'confirmed' | 'completed' | 'canceled' | 'no_show';
+  source?: 'web' | 'phone' | 'agent' | 'imported';
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Contact = {

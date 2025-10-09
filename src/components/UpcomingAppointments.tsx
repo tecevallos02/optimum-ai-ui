@@ -26,10 +26,10 @@ export default function UpcomingAppointments({ className = '' }: UpcomingAppoint
         const twoWeeksFromNow = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000)
         
         const upcomingAppointments = data.filter((appointment: Appointment) => {
-          const appointmentDate = new Date(appointment.start)
+          const appointmentDate = new Date(appointment.startsAt)
           return appointmentDate >= now && appointmentDate <= twoWeeksFromNow
         }).sort((a: Appointment, b: Appointment) => 
-          new Date(a.start).getTime() - new Date(b.start).getTime()
+          new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
         )
         
         setAppointments(upcomingAppointments)
@@ -63,10 +63,14 @@ export default function UpcomingAppointments({ className = '' }: UpcomingAppoint
     switch (status) {
       case 'confirmed':
         return 'bg-green-100 text-green-800'
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'cancelled':
+      case 'scheduled':
+        return 'bg-blue-100 text-blue-800'
+      case 'completed':
+        return 'bg-gray-100 text-gray-800'
+      case 'canceled':
         return 'bg-red-100 text-red-800'
+      case 'no_show':
+        return 'bg-orange-100 text-orange-800'
       default:
         return 'bg-gray-100 text-gray-800'
     }
@@ -118,23 +122,25 @@ export default function UpcomingAppointments({ className = '' }: UpcomingAppoint
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900">
-                    {appointment.attendee.name}
+                    {appointment.title}
                   </h3>
                   <p className="text-sm text-gray-600">
-                    {appointment.attendee.email}
+                    {appointment.customerName}
                   </p>
-                  <p className="text-sm text-gray-500">
-                    {appointment.attendee.phone}
-                  </p>
+                  {appointment.customerPhone && (
+                    <p className="text-sm text-gray-500">
+                      {appointment.customerPhone}
+                    </p>
+                  )}
                 </div>
               </div>
               
               <div className="text-right">
                 <div className="text-sm font-medium text-gray-900">
-                  {formatDate(appointment.start)}
+                  {formatDate(appointment.startsAt)}
                 </div>
                 <div className="text-sm text-gray-600">
-                  {formatTime(appointment.start)} - {formatTime(appointment.end)}
+                  {formatTime(appointment.startsAt)} - {formatTime(appointment.endsAt)}
                 </div>
                 <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(appointment.status)}`}>
                   {appointment.status}

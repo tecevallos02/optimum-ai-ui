@@ -49,11 +49,11 @@ export default function EmailPage() {
         },
         body: JSON.stringify({
           appointmentId: appointment.id,
-          attendeeName: appointment.attendee.name,
-          attendeeEmail: appointment.attendee.email,
-          appointmentDate: appointment.start,
-          appointmentEnd: appointment.end,
-          description: (appointment as any).description,
+          attendeeName: appointment.customerName,
+          attendeeEmail: appointment.customerEmail || '',
+          appointmentDate: appointment.startsAt,
+          appointmentEnd: appointment.endsAt,
+          description: appointment.notes,
         }),
       })
 
@@ -80,7 +80,7 @@ export default function EmailPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          to: selectedAppointment.attendee.email,
+          to: selectedAppointment.customerEmail || '',
           subject: emailTemplate.subject,
           content: emailTemplate.content,
         }),
@@ -132,14 +132,14 @@ export default function EmailPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-medium text-gray-900">
-                      {appointment.attendee.name}
+                      {appointment.customerName}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {appointment.attendee.email}
+                      {appointment.customerEmail || 'No email provided'}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {new Date(appointment.start).toLocaleDateString()} at{' '}
-                      {new Date(appointment.start).toLocaleTimeString([], {
+                      {new Date(appointment.startsAt).toLocaleDateString()} at{' '}
+                      {new Date(appointment.startsAt).toLocaleTimeString([], {
                         hour: '2-digit',
                         minute: '2-digit',
                       })}
@@ -149,9 +149,15 @@ export default function EmailPage() {
                     className={`px-2 py-1 text-xs rounded-full ${
                       appointment.status === 'confirmed'
                         ? 'bg-green-100 text-green-800'
-                        : appointment.status === 'pending'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
+                        : appointment.status === 'scheduled'
+                        ? 'bg-blue-100 text-blue-800'
+                        : appointment.status === 'completed'
+                        ? 'bg-gray-100 text-gray-800'
+                        : appointment.status === 'canceled'
+                        ? 'bg-red-100 text-red-800'
+                        : appointment.status === 'no_show'
+                        ? 'bg-orange-100 text-orange-800'
+                        : 'bg-gray-100 text-gray-800'
                     }`}
                   >
                     {appointment.status}
@@ -173,23 +179,23 @@ export default function EmailPage() {
                   Selected Appointment
                 </h3>
                 <p className="text-sm text-gray-600">
-                  <strong>Name:</strong> {selectedAppointment.attendee.name}
+                  <strong>Name:</strong> {selectedAppointment.customerName}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>Email:</strong> {selectedAppointment.attendee.email}
+                  <strong>Email:</strong> {selectedAppointment.customerEmail || 'No email provided'}
                 </p>
                 <p className="text-sm text-gray-600">
                   <strong>Date:</strong>{' '}
-                  {new Date(selectedAppointment.start).toLocaleDateString()}
+                  {new Date(selectedAppointment.startsAt).toLocaleDateString()}
                 </p>
                 <p className="text-sm text-gray-600">
                   <strong>Time:</strong>{' '}
-                  {new Date(selectedAppointment.start).toLocaleTimeString([], {
+                  {new Date(selectedAppointment.startsAt).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}{' '}
                   -{' '}
-                  {new Date(selectedAppointment.end).toLocaleTimeString([], {
+                  {new Date(selectedAppointment.endsAt).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}
