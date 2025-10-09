@@ -8,7 +8,9 @@ import DataTable, { Column } from "@/components/DataTable";
 
 export default function CallsPage() {
   const [calls, setCalls] = useState<Call[]>([]);
+  const [filteredCalls, setFilteredCalls] = useState<Call[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
     let mounted = true;
@@ -23,6 +25,29 @@ export default function CallsPage() {
     };
   }, []);
 
+  // Filter calls based on selected filter
+  useEffect(() => {
+    if (filter === "all") {
+      setFilteredCalls(calls);
+    } else {
+      const filtered = calls.filter((call) => {
+        switch (filter) {
+          case "escalated":
+            return call.escalated === true;
+          case "booked":
+            return call.disposition === "booked";
+          case "canceled":
+            return call.disposition === "canceled";
+          case "info":
+            return call.disposition === "info_questioning";
+          default:
+            return true;
+        }
+      });
+      setFilteredCalls(filtered);
+    }
+  }, [calls, filter]);
+
   const columns: Column<Call>[] = [
     {
       key: "startedAt",
@@ -33,6 +58,11 @@ export default function CallsPage() {
     { key: "status", header: "Status" },
     { key: "disposition", header: "Disposition" },
     {
+      key: "escalated",
+      header: "Escalated",
+      render: (r) => r.escalated ? "Yes" : "No",
+    },
+    {
       key: "tags",
       header: "Tags",
       render: (r) => (r.tags ?? []).join(", "),
@@ -41,11 +71,30 @@ export default function CallsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-4">Calls</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold">Calls</h1>
+        <div className="flex items-center gap-4">
+          <label htmlFor="filter" className="text-sm font-medium text-gray-700">
+            Filter by:
+          </label>
+          <select
+            id="filter"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+          >
+            <option value="all">All Calls</option>
+            <option value="escalated">Calls Escalated</option>
+            <option value="booked">Booked</option>
+            <option value="canceled">Canceled</option>
+            <option value="info">Info Questioning</option>
+          </select>
+        </div>
+      </div>
       {loading ? (
         <div className="text-sm text-muted">Loading…</div>
       ) : (
-        <DataTable<Call> data={calls} columns={columns} pageSize={10} />
+        <DataTable<Call> data={filteredCalls} columns={columns} pageSize={10} />
       )}
     </div>
   );

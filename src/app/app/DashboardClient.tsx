@@ -15,7 +15,7 @@ export default function DashboardClient() {
     bookings: 0,
     avgHandleTime: 0,
     conversionRate: 0,
-    complaints: 0,
+    callsEscalated: 0,
     estimatedSavings: 0,
   });
   const [loading, setLoading] = useState(true);
@@ -89,7 +89,7 @@ export default function DashboardClient() {
         <KpiCard label="Appointments" value={kpis.bookings} />
         <KpiCard label="Avg Handle Time (s)" value={kpis.avgHandleTime} />
         <KpiCard label="Conversion Rate" value={`${kpis.conversionRate}%`} />
-        <KpiCard label="Complaints" value={kpis.complaints} />
+        <KpiCard label="Calls Escalated" value={kpis.callsEscalated} />
         <KpiCard label="Estimated Savings ($)" value={`$${kpis.estimatedSavings}`} />
       </div>
     </div>

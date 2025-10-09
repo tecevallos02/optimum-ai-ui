@@ -27,12 +27,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         <div className="px-4 pb-4">
         <nav className="space-y-1">
           <Link href="/app" className="block p-3 rounded-lg border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm">Dashboard</Link>
-          <Link href="/app/calls" className="block p-3 rounded-lg border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm">Calls</Link>
           <Link href="/app/calendar" className="block p-3 rounded-lg border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm">Calendar</Link>
           <Link href="/app/email" className="block p-3 rounded-lg border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm">Email</Link>
           <Link href="/app/savings" className="block p-3 rounded-lg border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm">Savings</Link>
           <Link href="/app/contacts" className="block p-3 rounded-lg border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm">Contacts</Link>
-          <Link href="/app/complaints" className="block p-3 rounded-lg border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm">Complaints</Link>
+          <Link href="/app/calls" className="block p-3 rounded-lg border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm">Calls</Link>
           <Link href="/app/config" className="block p-3 rounded-lg border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 hover:shadow-sm">Config</Link>
         </nav>
         </div>

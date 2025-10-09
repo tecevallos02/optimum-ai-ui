@@ -13,6 +13,7 @@ export type Call = {
   contactId: string;
   costSeconds: number;
   tags: string[];
+  escalated?: boolean;
 };
 
 export type Appointment = {
@@ -62,7 +63,7 @@ export type KPI = {
   bookings: number;
   avgHandleTime: number;
   conversionRate: number; // % of calls that resulted in bookings
-  complaints: number; // number of complaints
+  callsEscalated: number; // number of calls escalated to human
   estimatedSavings: number;
 };
 

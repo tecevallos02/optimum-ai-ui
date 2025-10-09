@@ -35,11 +35,10 @@ export async function GET() {
     const orgId = org.id
     console.log('KPI API: Using orgId:', orgId);
     
-    // Fetch real complaints count from database
-    const complaintsCount = await prisma.complaint.count({
-      where: { orgId: orgId }
-    });
-    console.log('KPI API: Complaints count:', complaintsCount);
+    // For now, return 0 for calls escalated since we don't have a call model yet
+    // TODO: Implement call model and escalation tracking
+    const callsEscalatedCount = 0;
+    console.log('KPI API: Calls escalated count:', callsEscalatedCount);
     
     // Fetch real appointments count (excluding canceled ones)
     const appointmentsCount = await prisma.appointment.count({
@@ -62,7 +61,7 @@ export async function GET() {
       bookings: appointmentsCount, // Use real appointments count (excluding canceled)
       avgHandleTime: 0,
       conversionRate: 0,
-      complaints: complaintsCount, // Use real complaints count
+      callsEscalated: callsEscalatedCount, // Use real calls escalated count
       estimatedSavings: 0,
     };
     
@@ -80,7 +79,7 @@ export async function GET() {
       bookings: 0, // Fallback to 0 if error
       avgHandleTime: 0,
       conversionRate: 0,
-      complaints: 0, // Fallback to 0 if error
+      callsEscalated: 0, // Fallback to 0 if error
       estimatedSavings: 0,
     };
     
