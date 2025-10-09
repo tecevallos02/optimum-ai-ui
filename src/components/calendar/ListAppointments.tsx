@@ -9,12 +9,14 @@ interface ListAppointmentsProps {
   appointments: Appointment[];
   onAppointmentUpdate: (appointment: Appointment) => void;
   onAppointmentDelete: (id: string) => void;
+  onAddContact?: (appointment: Appointment) => void;
 }
 
 export default function ListAppointments({ 
   appointments, 
   onAppointmentUpdate, 
-  onAppointmentDelete 
+  onAppointmentDelete,
+  onAddContact
 }: ListAppointmentsProps) {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
 
@@ -99,6 +101,19 @@ export default function ListAppointments({
                 </div>
 
                 <div className="ml-4 flex-shrink-0 flex items-center gap-1">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAddContact?.(appointment);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 text-green-400 hover:text-green-600 hover:bg-green-50 rounded-lg"
+                    title="Add to contacts"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                  </button>
+                  
                   <button
                     onClick={(e) => {
                       e.stopPropagation();

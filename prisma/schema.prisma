@@ -122,6 +122,7 @@ model Contact {
   phone     String?
   tags      String[]     @default([])
   notes     String?
+  source    String?      // Source of the contact (e.g., "calendar", "manual", "import")
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)

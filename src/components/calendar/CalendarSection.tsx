@@ -7,6 +7,8 @@ import CalendarGrid from './CalendarGrid';
 import ListAppointments from './ListAppointments';
 import NewAppointmentModal from './NewAppointmentModal';
 import Legend from '@/components/ui/Legend';
+import DuplicateContactModal from '@/components/contacts/DuplicateContactModal';
+import { useContacts } from '@/hooks/useContacts';
 
 interface CalendarSectionProps {
   appointments: Appointment[];
@@ -34,6 +36,15 @@ export default function CalendarSection({
     source: '',
     search: ''
   });
+
+  // Contact functionality
+  const { createContact, updateContact } = useContacts();
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [duplicateInfo, setDuplicateInfo] = useState<{
+    appointment: Appointment;
+    matchId: string;
+    matchFields: ('email' | 'phone' | 'name')[];
+  } | null>(null);
 
   // Initialize view from URL params
   useEffect(() => {
@@ -83,6 +94,56 @@ export default function CalendarSection({
 
   const handleSelectSlot = (start: Date, end: Date) => {
     setShowNewModal(true);
+  };
+
+  const handleAddContact = async (appointment: Appointment) => {
+    const contactData = {
+      fullName: appointment.customerName,
+      email: appointment.customerEmail || undefined,
+      phone: appointment.customerPhone || undefined,
+      notes: appointment.description || undefined,
+      source: 'calendar'
+    };
+
+    try {
+      const result = await createContact(contactData);
+      
+      if (result.success) {
+        // Show success toast
+        alert('Contact added successfully!');
+      } else if (result.duplicate) {
+        // Show duplicate modal
+        setDuplicateInfo({
+          appointment,
+          matchId: result.duplicate.matchId,
+          matchFields: result.duplicate.matchFields
+        });
+        setShowDuplicateModal(true);
+      }
+    } catch (error) {
+      console.error('Error adding contact:', error);
+      alert('Failed to add contact. Please try again.');
+    }
+  };
+
+  const handleDuplicateAddContact = async (contactData: any) => {
+    try {
+      await createContact(contactData);
+      alert('Contact added successfully!');
+    } catch (error) {
+      console.error('Error adding contact:', error);
+      alert('Failed to add contact. Please try again.');
+    }
+  };
+
+  const handleDuplicateReplaceContact = async (contactId: string, contactData: any) => {
+    try {
+      await updateContact(contactId, contactData);
+      alert('Contact replaced successfully!');
+    } catch (error) {
+      console.error('Error replacing contact:', error);
+      alert('Failed to replace contact. Please try again.');
+    }
   };
 
   return (
@@ -201,6 +262,7 @@ export default function CalendarSection({
             appointments={filteredAppointments}
             onAppointmentUpdate={onAppointmentUpdate}
             onAppointmentDelete={onAppointmentDelete}
+            onAddContact={handleAddContact}
           />
         ) : (
           <CalendarGrid
@@ -208,6 +270,7 @@ export default function CalendarSection({
             onAppointmentUpdate={onAppointmentUpdate}
             onAppointmentDelete={onAppointmentDelete}
             onSelectSlot={handleSelectSlot}
+            onAddContact={handleAddContact}
           />
         )}
       </div>
@@ -217,6 +280,18 @@ export default function CalendarSection({
         <NewAppointmentModal
           onClose={() => setShowNewModal(false)}
           onSave={handleNewAppointment}
+        />
+      )}
+
+      {/* Duplicate Contact Modal */}
+      {showDuplicateModal && duplicateInfo && (
+        <DuplicateContactModal
+          appointment={duplicateInfo.appointment}
+          matchId={duplicateInfo.matchId}
+          matchFields={duplicateInfo.matchFields}
+          onClose={() => setShowDuplicateModal(false)}
+          onAddContact={handleDuplicateAddContact}
+          onReplaceContact={handleDuplicateReplaceContact}
         />
       )}
     </div>

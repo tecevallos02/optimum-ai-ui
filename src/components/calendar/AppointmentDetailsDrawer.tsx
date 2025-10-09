@@ -12,13 +12,15 @@ interface AppointmentDetailsDrawerProps {
   onClose: () => void;
   onUpdate: (appointment: Appointment) => void;
   onDelete: (id: string) => void;
+  onAddContact?: (appointment: Appointment) => void;
 }
 
 export default function AppointmentDetailsDrawer({
   appointment,
   onClose,
   onUpdate,
-  onDelete
+  onDelete,
+  onAddContact
 }: AppointmentDetailsDrawerProps) {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
@@ -185,6 +187,13 @@ export default function AppointmentDetailsDrawer({
           {/* Actions */}
           <div className="border-t border-gray-200 p-6">
             <div className="flex flex-col gap-3">
+              <button
+                onClick={() => onAddContact?.(appointment)}
+                className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+              >
+                Add Contact
+              </button>
+              
               {appointment.status !== 'canceled' && appointment.status !== 'completed' && (
                 <>
                   <button

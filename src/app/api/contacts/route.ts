@@ -122,6 +122,47 @@ export async function POST(request: NextRequest) {
       )
     }
     
+    // Check for duplicates before creating
+    const whereConditions: any[] = [];
+    
+    if (body.email && body.email.trim()) {
+      whereConditions.push({ email: { equals: body.email.trim(), mode: 'insensitive' } });
+    }
+    
+    if (body.phone && body.phone.trim()) {
+      whereConditions.push({ phone: { equals: body.phone.trim() } });
+    }
+    
+    if (body.name && body.name.trim()) {
+      whereConditions.push({ 
+        name: { 
+          equals: body.name.trim(), 
+          mode: 'insensitive' 
+        } 
+      });
+    }
+
+    if (whereConditions.length > 0) {
+      const duplicate = await prisma.contact.findFirst({
+        where: {
+          orgId: orgId,
+          OR: whereConditions
+        },
+        select: { id: true }
+      });
+
+      if (duplicate) {
+        return NextResponse.json(
+          { 
+            conflict: true, 
+            matchId: duplicate.id,
+            error: "Duplicate contact found" 
+          },
+          { status: 409 }
+        );
+      }
+    }
+
     console.log('Creating contact with orgId:', orgId);
     const contact = await prisma.contact.create({
       data: {
@@ -131,6 +172,7 @@ export async function POST(request: NextRequest) {
         phone: body.phone?.trim() || null,
         tags: body.tags || [],
         notes: body.notes?.trim() || null,
+        source: body.source || null,
       },
     })
     

@@ -41,6 +41,7 @@ export type Contact = {
   email?: string | null;
   tags: string[];
   notes?: string | null;
+  source?: string | null;
   createdAt: string;
   updatedAt: string;
 };

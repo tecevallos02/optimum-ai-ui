@@ -10,6 +10,7 @@ interface CalendarGridProps {
   onAppointmentUpdate: (appointment: Appointment) => void;
   onAppointmentDelete: (id: string) => void;
   onSelectSlot?: (start: Date, end: Date) => void;
+  onAddContact?: (appointment: Appointment) => void;
 }
 
 type ViewType = 'month' | 'week' | 'day';
@@ -18,7 +19,8 @@ export default function CalendarGrid({
   appointments, 
   onAppointmentUpdate, 
   onAppointmentDelete,
-  onSelectSlot 
+  onSelectSlot,
+  onAddContact
 }: CalendarGridProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<ViewType>('month');
@@ -357,6 +359,7 @@ export default function CalendarGrid({
           onClose={() => setSelectedAppointment(null)}
           onUpdate={onAppointmentUpdate}
           onDelete={onAppointmentDelete}
+          onAddContact={onAddContact}
         />
       )}
     </>
