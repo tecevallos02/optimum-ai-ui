@@ -83,7 +83,7 @@ export default function DashboardClient() {
       {/* KPI Cards - Moved Below Charts */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <KpiCard label="Calls Handled" value={kpis.callsHandled} />
-        <KpiCard label="Bookings" value={kpis.bookings} />
+        <KpiCard label="Appointments" value={kpis.bookings} />
         <KpiCard label="Avg Handle Time (s)" value={kpis.avgHandleTime} />
         <KpiCard label="Conversion Rate" value={`${kpis.conversionRate}%`} />
         <KpiCard label="Complaints" value={kpis.complaints} />

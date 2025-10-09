@@ -41,15 +41,25 @@ export async function GET() {
     });
     console.log('KPI API: Complaints count:', complaintsCount);
     
+    // Fetch real appointments count (excluding canceled ones)
+    const appointmentsCount = await prisma.appointment.count({
+      where: { 
+        orgId: orgId,
+        status: {
+          not: 'CANCELED'
+        }
+      }
+    });
+    console.log('KPI API: Appointments count:', appointmentsCount);
+    
     // For now, keep other KPIs as 0 until real data is implemented
     // In a real implementation, these would be calculated from actual data
     const callsHandled = 0;
-    const bookings = 0;
     const conversionRate = 0;
     
     const data = {
       callsHandled,
-      bookings,
+      bookings: appointmentsCount, // Use real appointments count (excluding canceled)
       avgHandleTime: 0,
       conversionRate: 0,
       complaints: complaintsCount, // Use real complaints count
@@ -63,12 +73,11 @@ export async function GET() {
     
     // Fallback to 0 if there's an error
     const callsHandled = 0;
-    const bookings = 0;
     const conversionRate = 0;
     
     const data = {
       callsHandled,
-      bookings,
+      bookings: 0, // Fallback to 0 if error
       avgHandleTime: 0,
       conversionRate: 0,
       complaints: 0, // Fallback to 0 if error
