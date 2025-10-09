@@ -40,17 +40,44 @@ export default function DashboardClient() {
     fetchKpis();
   }, []);
 
-  // Build series data (safe if mockDb.savings is missing)
-  const savingsData = mockDb.savings || [];
-  const callsHandledSeries = savingsData.map((d) => ({
-    name: `M${d.month}`,
-    calls: d.timeSaved,
-  }));
+  // Generate realistic call data for the last 7 days
+  const generateCallsData = () => {
+    const days = [];
+    const today = new Date();
+    
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      
+      // Generate realistic call patterns (more calls on weekdays)
+      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+      const baseCalls = isWeekend ? 15 : 35;
+      const variation = Math.random() * 20 - 10;
+      const totalCalls = Math.max(5, Math.round(baseCalls + variation));
+      
+      const escalatedCalls = Math.round(totalCalls * (0.1 + Math.random() * 0.1)); // 10-20% escalation rate
+      const bookedCalls = Math.round(totalCalls * (0.15 + Math.random() * 0.15)); // 15-30% booking rate
+      const completedCalls = Math.round(totalCalls * (0.6 + Math.random() * 0.2)); // 60-80% completion rate
+      
+      days.push({
+        name: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        totalCalls,
+        escalatedCalls,
+        bookedCalls,
+        completedCalls,
+      });
+    }
+    return days;
+  };
+
+  const callsHandledSeries = generateCallsData();
 
   const intentsSeries = [
-    { name: "book", count: 120 },
-    { name: "info", count: 80 },
-    { name: "cancel", count: 15 },
+    { name: "Booking", count: 120, percentage: 0, color: "" },
+    { name: "Information", count: 85, percentage: 0, color: "" },
+    { name: "Cancellation", count: 25, percentage: 0, color: "" },
+    { name: "Escalation", count: 18, percentage: 0, color: "" },
+    { name: "Complaint", count: 8, percentage: 0, color: "" },
   ];
 
   if (loading) {
