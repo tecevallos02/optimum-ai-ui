@@ -53,16 +53,18 @@ export default function CallsOverTime({
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:stroke-gray-700" />
           <XAxis 
             dataKey="name" 
             stroke="#6b7280"
+            className="dark:stroke-gray-400"
             fontSize={12}
             tickLine={false}
             axisLine={false}
           />
           <YAxis 
             stroke="#6b7280"
+            className="dark:stroke-gray-400"
             fontSize={12}
             tickLine={false}
             axisLine={false}

@@ -1,6 +1,7 @@
 import '@/app/globals.css';
 import type { ReactNode } from 'react';
 import { SessionProvider } from './SessionProvider';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -17,9 +18,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="scroll-smooth">
       <body className="bg-bg text-text font-sans antialiased">
-        <SessionProvider>
-          {children}
-        </SessionProvider>
+        <ThemeProvider>
+          <SessionProvider>
+            {children}
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
