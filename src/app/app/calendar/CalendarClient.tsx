@@ -72,16 +72,16 @@ export default function CalendarClient({
     <div>
       {/* Calendar Status Banner */}
       {calendarStatus?.connected ? (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-2xl">
-          <p className="text-green-800">
+        <div className="mb-6 p-4 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-2xl">
+          <p className="text-green-800 dark:text-green-200">
             ✅ Calendar connected ({calendarStatus.provider}) • 
             {calendarStatus.eventsCount} events synced
             {calendarStatus.lastSync && ` • Last sync: ${new Date(calendarStatus.lastSync).toLocaleString()}`}
           </p>
         </div>
       ) : (
-        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-2xl">
-          <p className="text-yellow-800">
+        <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-2xl">
+          <p className="text-yellow-800 dark:text-yellow-200">
             📅 Connect your calendar to view and manage appointments
           </p>
         </div>
