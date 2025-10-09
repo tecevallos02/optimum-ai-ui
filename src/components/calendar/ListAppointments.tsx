@@ -98,7 +98,7 @@ export default function ListAppointments({
                   </div>
                 </div>
 
-                <div className="ml-4 flex-shrink-0">
+                <div className="ml-4 flex-shrink-0 flex items-center gap-1">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -112,6 +112,35 @@ export default function ListAppointments({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </button>
+                  
+                  {appointment.status === 'canceled' && (
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (confirm('Are you sure you want to permanently delete this canceled appointment?')) {
+                          try {
+                            const response = await fetch(`/api/appointments/${appointment.id}`, {
+                              method: 'DELETE',
+                            });
+                            if (response.ok) {
+                              onAppointmentDelete(appointment.id);
+                            } else {
+                              alert('Failed to delete appointment');
+                            }
+                          } catch (error) {
+                            console.error('Error deleting appointment:', error);
+                            alert('Failed to delete appointment');
+                          }
+                        }
+                      }}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                      title="Delete appointment"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

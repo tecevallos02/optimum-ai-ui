@@ -5,6 +5,7 @@ import type { Appointment } from '@/lib/types';
 import { getStatusColor, getSourceColor } from '@/lib/calendar/colors';
 import CancelAppointmentModal from './CancelAppointmentModal';
 import RequestRescheduleModal from './RequestRescheduleModal';
+import DeleteAppointmentModal from './DeleteAppointmentModal';
 
 interface AppointmentDetailsDrawerProps {
   appointment: Appointment;
@@ -21,6 +22,7 @@ export default function AppointmentDetailsDrawer({
 }: AppointmentDetailsDrawerProps) {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const statusColor = getStatusColor(appointment.status);
   const sourceColor = appointment.source ? getSourceColor(appointment.source) : null;
@@ -189,8 +191,16 @@ export default function AppointmentDetailsDrawer({
               )}
               
               {appointment.status === 'canceled' && (
-                <div className="text-center text-sm text-gray-500 py-2">
-                  This appointment has been canceled
+                <div className="space-y-3">
+                  <div className="text-center text-sm text-gray-500 py-2">
+                    This appointment has been canceled
+                  </div>
+                  <button
+                    onClick={() => setShowDeleteModal(true)}
+                    className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                  >
+                    Delete Appointment
+                  </button>
                 </div>
               )}
               
@@ -229,6 +239,18 @@ export default function AppointmentDetailsDrawer({
               notes: appointment.notes ? `${appointment.notes}\n\nReschedule requested.` : 'Reschedule requested.'
             });
             setShowRescheduleModal(false);
+            onClose();
+          }}
+        />
+      )}
+
+      {showDeleteModal && (
+        <DeleteAppointmentModal
+          appointment={appointment}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={() => {
+            onDelete(appointment.id);
+            setShowDeleteModal(false);
             onClose();
           }}
         />

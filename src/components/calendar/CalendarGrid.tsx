@@ -222,16 +222,51 @@ export default function CalendarGrid({
                         return (
                           <div
                             key={appointment.id}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedAppointment(appointment);
-                            }}
-                            className={`text-xs p-1 rounded cursor-pointer ${statusColor.bg} ${statusColor.text} hover:${statusColor.hover} transition-colors`}
+                            className={`text-xs p-1 rounded cursor-pointer ${statusColor.bg} ${statusColor.text} hover:${statusColor.hover} transition-colors group relative`}
                             title={`${appointment.title} - ${appointment.customerName}`}
                           >
-                            <div className="truncate font-medium">{appointment.title}</div>
-                            <div className="truncate text-xs opacity-75">
-                              {formatTime(appointment.startsAt)} • {appointment.customerName}
+                            <div 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedAppointment(appointment);
+                              }}
+                              className="flex items-center justify-between"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <div className="truncate font-medium">{appointment.title}</div>
+                                <div className="truncate text-xs opacity-75">
+                                  {formatTime(appointment.startsAt)} • {appointment.customerName}
+                                </div>
+                              </div>
+                              
+                              {appointment.status === 'canceled' && (
+                                <button
+                                  onClick={async (e) => {
+                                    e.stopPropagation();
+                                    if (confirm('Delete this canceled appointment?')) {
+                                      try {
+                                        const response = await fetch(`/api/appointments/${appointment.id}`, {
+                                          method: 'DELETE',
+                                        });
+                                        if (response.ok) {
+                                          onAppointmentDelete(appointment.id);
+                                        } else {
+                                          alert('Failed to delete appointment');
+                                        }
+                                      } catch (error) {
+                                        console.error('Error deleting appointment:', error);
+                                        alert('Failed to delete appointment');
+                                      }
+                                    }
+                                  }}
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity ml-1 p-0.5 hover:bg-red-200 rounded"
+                                  title="Delete appointment"
+                                >
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                </button>
+                              )}
                             </div>
                           </div>
                         );
