@@ -1,8 +1,24 @@
 "use client";
 
 import { useTheme } from '@/contexts/ThemeContext';
+import { useEffect, useState } from 'react';
 
 export default function ThemeToggle() {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return (
+      <div className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 w-9 h-9 flex items-center justify-center">
+        <div className="w-5 h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+      </div>
+    );
+  }
+
   const { theme, toggleTheme } = useTheme();
 
   return (
