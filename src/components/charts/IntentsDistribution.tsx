@@ -112,6 +112,8 @@ export default function IntentsDistribution({
             dataKey="count" 
             radius={[4, 4, 0, 0]}
             strokeWidth={2}
+            animationDuration={300}
+            animationEasing="ease-out"
             onMouseEnter={(data, index) => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
           >
@@ -122,9 +124,8 @@ export default function IntentsDistribution({
                 stroke={entry.color}
                 strokeWidth={hoveredIndex === index ? 3 : 2}
                 style={{
-                  transform: hoveredIndex === index ? 'scaleY(1.05)' : 'scaleY(1)',
-                  transformOrigin: 'bottom center',
-                  transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  filter: hoveredIndex === index ? `brightness(1.1) drop-shadow(0 4px 8px ${entry.color}40)` : 'none',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   cursor: 'pointer'
                 }}
               />
