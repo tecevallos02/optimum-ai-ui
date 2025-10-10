@@ -97,12 +97,12 @@ export default function DashboardClient() {
 
       {/* Charts Section */}
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-background dark:bg-gray-800 p-6 rounded-2xl shadow-card border border-border dark:border-gray-700 hover:border-accent/20 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-lg group">
-          <h2 className="text-center font-semibold mb-6 text-foreground">Calls over Time</h2>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-card border border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-lg group">
+          <h2 className="text-center font-semibold mb-6 text-gray-900 dark:text-gray-100">Calls over Time</h2>
           <CallsOverTime data={callsHandledSeries} />
         </div>
-        <div className="bg-background dark:bg-gray-800 p-6 rounded-2xl shadow-card border border-border dark:border-gray-700 hover:border-accent/20 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-lg group">
-          <h2 className="text-center font-semibold mb-6 text-foreground">Intents Distribution</h2>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-card border border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-lg group">
+          <h2 className="text-center font-semibold mb-6 text-gray-900 dark:text-gray-100">Intents Distribution</h2>
           <IntentsDistribution data={intentsSeries} />
         </div>
       </div>

@@ -35,6 +35,7 @@ interface SavingsData {
 export default function SavingsPage() {
   const [series, setSeries] = useState<SavingsSeries>([]);
   const [loading, setLoading] = useState(true);
+  const [hoveredBar, setHoveredBar] = useState<string | null>(null);
   
   useEffect(() => {
     fetcher<SavingsSeries>('/api/savings').then((data) => {
@@ -286,7 +287,13 @@ export default function SavingsPage() {
                 radius={[2, 2, 0, 0]}
                 stroke="#3b82f6"
                 strokeWidth={2}
-                className="hover:opacity-80 transition-all duration-200"
+                onMouseEnter={() => setHoveredBar('timeSaved')}
+                onMouseLeave={() => setHoveredBar(null)}
+                style={{
+                  transform: hoveredBar === 'timeSaved' ? 'scale(1.05)' : 'scale(1)',
+                  transformOrigin: 'bottom',
+                  transition: 'all 0.2s ease-in-out'
+                }}
               />
               <Bar 
                 dataKey="costSaved" 
@@ -294,7 +301,13 @@ export default function SavingsPage() {
                 radius={[2, 2, 0, 0]}
                 stroke="#10b981"
                 strokeWidth={2}
-                className="hover:opacity-80 transition-all duration-200"
+                onMouseEnter={() => setHoveredBar('costSaved')}
+                onMouseLeave={() => setHoveredBar(null)}
+                style={{
+                  transform: hoveredBar === 'costSaved' ? 'scale(1.05)' : 'scale(1)',
+                  transformOrigin: 'bottom',
+                  transition: 'all 0.2s ease-in-out'
+                }}
               />
             </BarChart>
           </ResponsiveContainer>

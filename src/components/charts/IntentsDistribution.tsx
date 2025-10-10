@@ -1,6 +1,7 @@
 // path: src/components/charts/IntentsDistribution.tsx  (Client Component)
 "use client";
 
+import { useState } from "react";
 import {
   BarChart,
   Bar,
@@ -24,6 +25,7 @@ export default function IntentsDistribution({
 }: {
   data: IntentData[];
 }) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -110,15 +112,20 @@ export default function IntentsDistribution({
             dataKey="count" 
             radius={[4, 4, 0, 0]}
             strokeWidth={2}
-            className="hover:opacity-80 transition-all duration-200"
+            onMouseEnter={(data, index) => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
           >
             {processedData.map((entry, index) => (
               <Cell 
                 key={`cell-${index}`} 
                 fill={entry.color}
                 stroke={entry.color}
-                strokeWidth={2}
-                className="hover:opacity-80 transition-all duration-200"
+                strokeWidth={hoveredIndex === index ? 3 : 2}
+                style={{
+                  transform: hoveredIndex === index ? 'scale(1.05)' : 'scale(1)',
+                  transformOrigin: 'bottom',
+                  transition: 'all 0.2s ease-in-out'
+                }}
               />
             ))}
           </Bar>
