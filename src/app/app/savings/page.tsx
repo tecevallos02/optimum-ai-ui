@@ -37,6 +37,15 @@ export default function SavingsPage() {
   const [loading, setLoading] = useState(true);
   const [hoveredMonth, setHoveredMonth] = useState<string | null>(null);
   
+  // Create modified data for hover effects
+  const getModifiedData = () => {
+    return processedData.map(entry => ({
+      ...entry,
+      timeSaved: hoveredMonth === entry.monthName ? entry.timeSaved * 1.05 : entry.timeSaved,
+      costSaved: hoveredMonth === entry.monthName ? entry.costSaved * 1.05 : entry.costSaved,
+    }));
+  };
+  
   useEffect(() => {
     fetcher<SavingsSeries>('/api/savings').then((data) => {
       if (data) setSeries(data);
@@ -258,7 +267,7 @@ export default function SavingsPage() {
           <h2 className="font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b border-gray-50 dark:border-gray-700 pb-2">Time vs Cost Efficiency</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart 
-              data={processedData}
+              data={getModifiedData()}
               margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:stroke-gray-700" />
@@ -289,23 +298,10 @@ export default function SavingsPage() {
                 strokeWidth={2}
                 animationDuration={300}
                 animationEasing="ease-out"
-              >
-                {processedData.map((entry, index) => (
-                  <Cell 
-                    key={`timeSaved-${index}`}
-                    fill="#3b82f6"
-                    stroke="#3b82f6"
-                    strokeWidth={hoveredMonth === entry.monthName ? 3 : 2}
-                    style={{
-                      filter: hoveredMonth === entry.monthName ? 'brightness(1.1) drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3))' : 'none',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      cursor: 'pointer'
-                    }}
-                    onMouseEnter={() => setHoveredMonth(entry.monthName)}
-                    onMouseLeave={() => setHoveredMonth(null)}
-                  />
-                ))}
-              </Bar>
+                onMouseEnter={(data) => setHoveredMonth(data.monthName)}
+                onMouseLeave={() => setHoveredMonth(null)}
+                style={{ cursor: 'pointer' }}
+              />
               <Bar 
                 dataKey="costSaved" 
                 fill="#10b981" 
@@ -314,23 +310,10 @@ export default function SavingsPage() {
                 strokeWidth={2}
                 animationDuration={300}
                 animationEasing="ease-out"
-              >
-                {processedData.map((entry, index) => (
-                  <Cell 
-                    key={`costSaved-${index}`}
-                    fill="#10b981"
-                    stroke="#10b981"
-                    strokeWidth={hoveredMonth === entry.monthName ? 3 : 2}
-                    style={{
-                      filter: hoveredMonth === entry.monthName ? 'brightness(1.1) drop-shadow(0 4px 8px rgba(16, 185, 129, 0.3))' : 'none',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      cursor: 'pointer'
-                    }}
-                    onMouseEnter={() => setHoveredMonth(entry.monthName)}
-                    onMouseLeave={() => setHoveredMonth(null)}
-                  />
-                ))}
-              </Bar>
+                onMouseEnter={(data) => setHoveredMonth(data.monthName)}
+                onMouseLeave={() => setHoveredMonth(null)}
+                style={{ cursor: 'pointer' }}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>

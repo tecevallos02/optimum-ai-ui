@@ -26,6 +26,14 @@ export default function IntentsDistribution({
   data: IntentData[];
 }) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  
+  // Create modified data for hover effects
+  const getModifiedData = () => {
+    return processedData.map((entry, index) => ({
+      ...entry,
+      count: hoveredIndex === index ? entry.count * 1.05 : entry.count,
+    }));
+  };
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -84,7 +92,7 @@ export default function IntentsDistribution({
     <div className="h-80">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart 
-          data={processedData}
+          data={getModifiedData()}
           margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:stroke-gray-700" />
@@ -116,6 +124,7 @@ export default function IntentsDistribution({
             animationEasing="ease-out"
             onMouseEnter={(data, index) => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
+            style={{ cursor: 'pointer' }}
           >
             {processedData.map((entry, index) => (
               <Cell 
@@ -123,11 +132,6 @@ export default function IntentsDistribution({
                 fill={entry.color}
                 stroke={entry.color}
                 strokeWidth={hoveredIndex === index ? 3 : 2}
-                style={{
-                  filter: hoveredIndex === index ? `brightness(1.1) drop-shadow(0 4px 8px ${entry.color}40)` : 'none',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  cursor: 'pointer'
-                }}
               />
             ))}
           </Bar>
