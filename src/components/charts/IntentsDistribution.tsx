@@ -26,14 +26,6 @@ export default function IntentsDistribution({
   data: IntentData[];
 }) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  
-  // Create modified data for hover effects
-  const getModifiedData = () => {
-    return processedData.map((entry, index) => ({
-      ...entry,
-      count: hoveredIndex === index ? entry.count * 1.05 : entry.count,
-    }));
-  };
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -92,7 +84,7 @@ export default function IntentsDistribution({
     <div className="h-80">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart 
-          data={getModifiedData()}
+          data={processedData}
           margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:stroke-gray-700" />
@@ -120,11 +112,8 @@ export default function IntentsDistribution({
             dataKey="count" 
             radius={[4, 4, 0, 0]}
             strokeWidth={2}
-            animationDuration={300}
-            animationEasing="ease-out"
             onMouseEnter={(data, index) => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
-            style={{ cursor: 'pointer' }}
           >
             {processedData.map((entry, index) => (
               <Cell 
@@ -132,6 +121,13 @@ export default function IntentsDistribution({
                 fill={entry.color}
                 stroke={entry.color}
                 strokeWidth={hoveredIndex === index ? 3 : 2}
+                style={{
+                  filter: hoveredIndex === index 
+                    ? `brightness(1.2) saturate(1.3) drop-shadow(0 6px 12px ${entry.color}40)` 
+                    : `brightness(1) saturate(1) drop-shadow(0 2px 4px ${entry.color}20)`,
+                  transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                  cursor: 'pointer'
+                }}
               />
             ))}
           </Bar>
