@@ -353,12 +353,12 @@ export default function CalendarGrid({
               <p className="text-muted-foreground mb-4">Click on any day to create your first appointment.</p>
               <button
                 onClick={() => onSelectSlot?.(new Date(), new Date(Date.now() + 60 * 60 * 1000))}
-                className="inline-flex items-center px-4 py-2 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors duration-200 font-medium"
+                className="inline-flex items-center px-6 py-3 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors duration-200 font-medium"
               >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                + New Appointment
+                New Appointment
               </button>
             </div>
           </div>
