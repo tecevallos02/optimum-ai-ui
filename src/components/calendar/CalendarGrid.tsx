@@ -100,24 +100,12 @@ export default function CalendarGrid({
     return date.getMonth() === currentDate.getMonth();
   };
 
-  if (appointments.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <div className="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
-          <svg className="w-12 h-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-        </div>
-        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No appointments scheduled</h3>
-        <p className="text-gray-500 dark:text-gray-400 mb-4">Get started by creating your first appointment.</p>
-      </div>
-    );
-  }
+  // Always render the calendar grid, even with no appointments
 
   return (
     <>
       {/* Calendar Header */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 mb-6">
+      <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -351,6 +339,30 @@ export default function CalendarGrid({
             </div>
           )}
         </div>
+        
+        {/* Empty State Overlay */}
+        {appointments.length === 0 && (
+          <div className="absolute inset-0 flex items-center justify-center bg-background/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl">
+            <div className="text-center p-6">
+              <div className="mx-auto w-16 h-16 bg-muted dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-foreground mb-2">No appointments in this view</h3>
+              <p className="text-muted-foreground mb-4">Click on any day to create your first appointment.</p>
+              <button
+                onClick={() => onSelectSlot?.(new Date(), new Date(Date.now() + 60 * 60 * 1000))}
+                className="inline-flex items-center px-4 py-2 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors duration-200 font-medium"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                + New Appointment
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {selectedAppointment && (

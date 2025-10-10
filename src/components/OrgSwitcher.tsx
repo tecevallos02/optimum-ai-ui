@@ -91,74 +91,72 @@ export default function OrgSwitcher({
   return (
     <div className="relative" ref={dropdownRef}>
       <div 
-        className={`relative cursor-pointer transition-all duration-200 hover:scale-105 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`relative cursor-pointer transition-all duration-300 hover:scale-105 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         onClick={() => !disabled && setIsOpen(!isOpen)}
       >
-        {/* Premium Organization Card */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 min-w-[200px]">
-            <div className="flex items-center space-x-3">
-              {/* Organization Logo/Icon */}
-              <div className="w-10 h-10 rounded-full shadow-md overflow-hidden flex items-center justify-center">
-                {currentOrg.logo ? (
-                  <img 
-                    src={currentOrg.logo} 
-                    alt={`${currentOrg.name} logo`}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      // Fallback to role icon if logo fails to load
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      const parent = target.parentElement;
-                      if (parent) {
-                        parent.className = `w-10 h-10 rounded-full ${getRoleColor(currentOrg.role)} flex items-center justify-center text-white shadow-md`;
-                        parent.innerHTML = getRoleIcon(currentOrg.role)?.props.children || '';
-                      }
-                    }}
-                  />
-                ) : (
-                  <div className={`w-full h-full ${getRoleColor(currentOrg.role)} flex items-center justify-center text-white`}>
-                    {getRoleIcon(currentOrg.role)}
-                  </div>
-                )}
+        {/* Modern Organization Card */}
+        <div className="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-accent/10 transition-all duration-300 group min-w-[200px]">
+          {/* Organization Logo/Icon */}
+          <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-300">
+            {currentOrg.logo ? (
+              <img 
+                src={currentOrg.logo} 
+                alt={`${currentOrg.name} logo`}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback to role icon if logo fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent) {
+                    parent.className = `w-8 h-8 rounded-lg ${getRoleColor(currentOrg.role)} flex items-center justify-center text-white shadow-sm group-hover:shadow-md transition-all duration-300`;
+                    parent.innerHTML = getRoleIcon(currentOrg.role)?.props.children || '';
+                  }
+                }}
+              />
+            ) : (
+              <div className={`w-full h-full ${getRoleColor(currentOrg.role)} flex items-center justify-center text-white`}>
+                {getRoleIcon(currentOrg.role)}
               </div>
-              
-              {/* Organization Info */}
-              <div className="flex-1 min-w-0">
-                <div className="text-lg font-bold text-gray-900 truncate">
-                  {currentOrg.name}
-                </div>
-                {currentOrg.role && (
-                  <div className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-                    {currentOrg.role}
-                  </div>
-                )}
-              </div>
-              
-              {/* Dropdown Arrow */}
-              <div className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
+            )}
+          </div>
+          
+          {/* Organization Info */}
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-semibold text-foreground truncate group-hover:text-accent transition-colors duration-300">
+              {currentOrg.name}
             </div>
+            {currentOrg.role && (
+              <div className="text-xs text-muted-foreground uppercase tracking-wide">
+                {currentOrg.role}
+              </div>
+            )}
+          </div>
+          
+          {/* Dropdown Arrow */}
+          <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+            <svg className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
           </div>
         </div>
+      </div>
 
       {/* Dropdown Menu */}
       {isOpen && (
         <div className="absolute top-full left-0 mt-2 w-full z-50">
-          <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
+          <div className="bg-background dark:bg-gray-800 rounded-xl shadow-2xl border border-border dark:border-gray-700 overflow-hidden backdrop-blur-sm">
             <div className="p-2">
               {orgs.map((org) => (
                 <div
                   key={org.id}
-                  className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-50 ${
-                    org.id === currentOrgId ? 'bg-blue-50 border border-blue-200' : ''
+                  className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all duration-300 hover:bg-accent/10 ${
+                    org.id === currentOrgId ? 'bg-accent/20 border-l-2 border-accent' : ''
                   }`}
                   onClick={() => handleOrgSelect(org.id)}
                 >
                   {/* Organization Logo/Icon */}
-                  <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shadow-sm">
                     {org.logo ? (
                       <img 
                         src={org.logo} 
@@ -170,7 +168,7 @@ export default function OrgSwitcher({
                           target.style.display = 'none';
                           const parent = target.parentElement;
                           if (parent) {
-                            parent.className = `w-8 h-8 rounded-full ${getRoleColor(org.role)} flex items-center justify-center text-white text-sm`;
+                            parent.className = `w-8 h-8 rounded-lg ${getRoleColor(org.role)} flex items-center justify-center text-white text-sm shadow-sm`;
                             parent.innerHTML = getRoleIcon(org.role)?.props.children || '';
                           }
                         }}
@@ -184,11 +182,11 @@ export default function OrgSwitcher({
                   
                   {/* Organization Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-gray-900 truncate">
+                    <div className="font-semibold text-foreground truncate">
                       {org.name}
                     </div>
                     {org.role && (
-                      <div className="text-xs text-gray-500 uppercase tracking-wide">
+                      <div className="text-xs text-muted-foreground uppercase tracking-wide">
                         {org.role}
                       </div>
                     )}
@@ -196,7 +194,7 @@ export default function OrgSwitcher({
                   
                   {/* Selection Indicator */}
                   {org.id === currentOrgId && (
-                    <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                    <div className="w-5 h-5 bg-accent rounded-full flex items-center justify-center">
                       <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>

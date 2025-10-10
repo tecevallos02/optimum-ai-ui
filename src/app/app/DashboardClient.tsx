@@ -82,17 +82,19 @@ export default function DashboardClient() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
-        <div className="text-sm text-muted">Loading...</div>
+      <div className="space-y-8">
+        <div className="text-center py-6">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
       </div>
     );
   }
   return (
-    <div className="space-y-6">
-      <div className="border-b border-gray-100 dark:border-gray-700 pb-4">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Dashboard</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Welcome back! Here's what's happening today.</p>
+    <div className="space-y-8">
+      <div className="text-center py-6">
+        <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
+        <p className="text-muted-foreground">Welcome back! Here's what's happening today.</p>
       </div>
 
       {/* Upcoming Appointments - Main Feature */}
@@ -100,12 +102,12 @@ export default function DashboardClient() {
 
       {/* Charts Section */}
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-lg group">
-          <h2 className="font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b border-gray-50 dark:border-gray-700 pb-2 group-hover:border-gray-100 dark:group-hover:border-gray-600 transition-colors duration-200">Calls over Time</h2>
+        <div className="bg-background dark:bg-gray-800 p-6 rounded-2xl shadow-card border border-border dark:border-gray-700 hover:border-accent/20 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-lg group">
+          <h2 className="text-center font-semibold mb-6 text-foreground">Calls over Time</h2>
           <CallsOverTime data={callsHandledSeries} />
         </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-lg group">
-          <h2 className="font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b border-gray-50 dark:border-gray-700 pb-2 group-hover:border-gray-100 dark:group-hover:border-gray-600 transition-colors duration-200">Intents Distribution</h2>
+        <div className="bg-background dark:bg-gray-800 p-6 rounded-2xl shadow-card border border-border dark:border-gray-700 hover:border-accent/20 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-lg group">
+          <h2 className="text-center font-semibold mb-6 text-foreground">Intents Distribution</h2>
           <IntentsDistribution data={intentsSeries} />
         </div>
       </div>
