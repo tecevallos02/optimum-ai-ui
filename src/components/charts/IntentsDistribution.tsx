@@ -28,20 +28,20 @@ export default function IntentsDistribution({
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
-          <p className="font-semibold text-gray-900 mb-2 capitalize">{label}</p>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+          <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2 capitalize">{label}</p>
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <div 
                 className="w-3 h-3 rounded-full" 
                 style={{ backgroundColor: data.color }}
               />
-              <span className="text-sm text-gray-600">Count:</span>
-              <span className="text-sm font-medium text-gray-900">{data.count}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">Count:</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{data.count}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Percentage:</span>
-              <span className="text-sm font-medium text-gray-900">{data.percentage}%</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">Percentage:</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{data.percentage}%</span>
             </div>
           </div>
         </div>

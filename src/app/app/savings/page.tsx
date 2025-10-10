@@ -306,12 +306,7 @@ export default function SavingsPage() {
               </Pie>
               <Tooltip 
                 formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
-                contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                }}
+                content={<CustomTooltip />}
               />
               <Legend />
             </PieChart>
