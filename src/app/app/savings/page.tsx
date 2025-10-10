@@ -256,7 +256,10 @@ export default function SavingsPage() {
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
           <h2 className="font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b border-gray-50 dark:border-gray-700 pb-2">Time vs Cost Efficiency</h2>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={processedData}>
+            <BarChart 
+              data={processedData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:stroke-gray-700" />
               <XAxis 
                 dataKey="monthName" 
@@ -273,18 +276,25 @@ export default function SavingsPage() {
                 tickLine={false}
                 axisLine={false}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip 
+                content={<CustomTooltip />}
+                cursor={false}
+              />
               <Bar 
                 dataKey="timeSaved" 
                 fill="#3b82f6" 
                 radius={[2, 2, 0, 0]}
-                className="hover:opacity-80 transition-opacity duration-200"
+                stroke="#3b82f6"
+                strokeWidth={2}
+                className="hover:opacity-80 transition-all duration-200"
               />
               <Bar 
                 dataKey="costSaved" 
                 fill="#10b981" 
                 radius={[2, 2, 0, 0]}
-                className="hover:opacity-80 transition-opacity duration-200"
+                stroke="#10b981"
+                strokeWidth={2}
+                className="hover:opacity-80 transition-all duration-200"
               />
             </BarChart>
           </ResponsiveContainer>
