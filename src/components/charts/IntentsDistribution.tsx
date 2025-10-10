@@ -122,9 +122,9 @@ export default function IntentsDistribution({
                 stroke={entry.color}
                 strokeWidth={hoveredIndex === index ? 3 : 2}
                 style={{
-                  transform: hoveredIndex === index ? 'scale(1.05)' : 'scale(1)',
-                  transformOrigin: 'bottom',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transform: hoveredIndex === index ? 'scaleY(1.05)' : 'scaleY(1)',
+                  transformOrigin: 'bottom center',
+                  transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   cursor: 'pointer'
                 }}
               />

@@ -295,9 +295,9 @@ export default function SavingsPage() {
                     stroke="#3b82f6"
                     strokeWidth={hoveredMonth === entry.monthName ? 3 : 2}
                     style={{
-                      transform: hoveredMonth === entry.monthName ? 'scale(1.05)' : 'scale(1)',
-                      transformOrigin: 'bottom',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      transform: hoveredMonth === entry.monthName ? 'scaleY(1.05)' : 'scaleY(1)',
+                      transformOrigin: 'bottom center',
+                      transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       cursor: 'pointer'
                     }}
                     onMouseEnter={() => setHoveredMonth(entry.monthName)}
@@ -319,9 +319,9 @@ export default function SavingsPage() {
                     stroke="#10b981"
                     strokeWidth={hoveredMonth === entry.monthName ? 3 : 2}
                     style={{
-                      transform: hoveredMonth === entry.monthName ? 'scale(1.05)' : 'scale(1)',
-                      transformOrigin: 'bottom',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      transform: hoveredMonth === entry.monthName ? 'scaleY(1.05)' : 'scaleY(1)',
+                      transformOrigin: 'bottom center',
+                      transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       cursor: 'pointer'
                     }}
                     onMouseEnter={() => setHoveredMonth(entry.monthName)}
