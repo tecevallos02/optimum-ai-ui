@@ -124,7 +124,8 @@ export default function IntentsDistribution({
                 style={{
                   transform: hoveredIndex === index ? 'scale(1.05)' : 'scale(1)',
                   transformOrigin: 'bottom',
-                  transition: 'all 0.2s ease-in-out'
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  cursor: 'pointer'
                 }}
               />
             ))}

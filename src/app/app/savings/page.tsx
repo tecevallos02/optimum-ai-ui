@@ -35,7 +35,7 @@ interface SavingsData {
 export default function SavingsPage() {
   const [series, setSeries] = useState<SavingsSeries>([]);
   const [loading, setLoading] = useState(true);
-  const [hoveredBar, setHoveredBar] = useState<string | null>(null);
+  const [hoveredMonth, setHoveredMonth] = useState<string | null>(null);
   
   useEffect(() => {
     fetcher<SavingsSeries>('/api/savings').then((data) => {
@@ -287,28 +287,48 @@ export default function SavingsPage() {
                 radius={[2, 2, 0, 0]}
                 stroke="#3b82f6"
                 strokeWidth={2}
-                onMouseEnter={() => setHoveredBar('timeSaved')}
-                onMouseLeave={() => setHoveredBar(null)}
-                style={{
-                  transform: hoveredBar === 'timeSaved' ? 'scale(1.05)' : 'scale(1)',
-                  transformOrigin: 'bottom',
-                  transition: 'all 0.2s ease-in-out'
-                }}
-              />
+              >
+                {processedData.map((entry, index) => (
+                  <Cell 
+                    key={`timeSaved-${index}`}
+                    fill="#3b82f6"
+                    stroke="#3b82f6"
+                    strokeWidth={hoveredMonth === entry.monthName ? 3 : 2}
+                    style={{
+                      transform: hoveredMonth === entry.monthName ? 'scale(1.05)' : 'scale(1)',
+                      transformOrigin: 'bottom',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={() => setHoveredMonth(entry.monthName)}
+                    onMouseLeave={() => setHoveredMonth(null)}
+                  />
+                ))}
+              </Bar>
               <Bar 
                 dataKey="costSaved" 
                 fill="#10b981" 
                 radius={[2, 2, 0, 0]}
                 stroke="#10b981"
                 strokeWidth={2}
-                onMouseEnter={() => setHoveredBar('costSaved')}
-                onMouseLeave={() => setHoveredBar(null)}
-                style={{
-                  transform: hoveredBar === 'costSaved' ? 'scale(1.05)' : 'scale(1)',
-                  transformOrigin: 'bottom',
-                  transition: 'all 0.2s ease-in-out'
-                }}
-              />
+              >
+                {processedData.map((entry, index) => (
+                  <Cell 
+                    key={`costSaved-${index}`}
+                    fill="#10b981"
+                    stroke="#10b981"
+                    strokeWidth={hoveredMonth === entry.monthName ? 3 : 2}
+                    style={{
+                      transform: hoveredMonth === entry.monthName ? 'scale(1.05)' : 'scale(1)',
+                      transformOrigin: 'bottom',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={() => setHoveredMonth(entry.monthName)}
+                    onMouseLeave={() => setHoveredMonth(null)}
+                  />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
