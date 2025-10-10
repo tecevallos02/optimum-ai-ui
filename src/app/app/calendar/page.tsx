@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import CalendarClient from '@/app/app/calendar/CalendarClient';
+import PageTitle from '@/components/PageTitle';
 import { fetcher } from '@/lib/fetcher';
 import type { Appointment } from '@/lib/types';
 
@@ -19,12 +20,9 @@ export default async function CalendarPage() {
 
   return (
     <Suspense fallback={
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Calendar</h1>
-          <div className="h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
-        </div>
-        <div className="h-96 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
+      <div className="space-y-8">
+        <PageTitle title="Calendar" subtitle="Loading..." />
+        <div className="h-96 bg-muted dark:bg-gray-700 rounded-2xl animate-pulse" />
       </div>
     }>
       <CalendarClient 

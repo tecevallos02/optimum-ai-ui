@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { SavingsSeries } from '@/lib/types';
 import { fetcher } from '@/lib/fetcher';
 import { generateSavingsPdf } from '@/lib/utils/pdf';
+import PageTitle from '@/components/PageTitle';
 import { 
   LineChart, 
   Line, 
@@ -107,11 +108,8 @@ export default function SavingsPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="border-b border-gray-100 dark:border-gray-700 pb-4">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Savings & ROI</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Analyzing your cost savings and return on investment</p>
-        </div>
+      <div className="space-y-8">
+        <PageTitle title="Savings & ROI" subtitle="Loading..." />
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
@@ -120,12 +118,8 @@ export default function SavingsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="border-b border-gray-100 dark:border-gray-700 pb-4">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Savings & ROI</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Analyzing your cost savings and return on investment</p>
-      </div>
+    <div className="space-y-8">
+      <PageTitle title="Savings & ROI" subtitle="Analyzing your cost savings and return on investment" />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -280,8 +274,18 @@ export default function SavingsPage() {
                 axisLine={false}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="timeSaved" fill="#3b82f6" radius={[2, 2, 0, 0]} />
-              <Bar dataKey="costSaved" fill="#10b981" radius={[2, 2, 0, 0]} />
+              <Bar 
+                dataKey="timeSaved" 
+                fill="#3b82f6" 
+                radius={[2, 2, 0, 0]}
+                className="hover:opacity-80 transition-opacity duration-200"
+              />
+              <Bar 
+                dataKey="costSaved" 
+                fill="#10b981" 
+                radius={[2, 2, 0, 0]}
+                className="hover:opacity-80 transition-opacity duration-200"
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>

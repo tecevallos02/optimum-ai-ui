@@ -6,6 +6,7 @@ import KpiCard from "@/components/KpiCard";
 import CallsOverTime from "@/components/charts/CallsOverTime";
 import IntentsDistribution from "@/components/charts/IntentsDistribution";
 import UpcomingAppointments from "@/components/UpcomingAppointments";
+import PageTitle from "@/components/PageTitle";
 import type { KPI } from "@/lib/types";
 import { mockDb } from "@/lib/mockDb";
 
@@ -83,19 +84,13 @@ export default function DashboardClient() {
   if (loading) {
     return (
       <div className="space-y-8">
-        <div className="text-center py-6">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
+        <PageTitle title="Dashboard" subtitle="Loading..." />
       </div>
     );
   }
   return (
     <div className="space-y-8">
-      <div className="text-center py-6">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back! Here's what's happening today.</p>
-      </div>
+      <PageTitle title="Dashboard" subtitle="Welcome back! Here's what's happening today." />
 
       {/* Upcoming Appointments - Main Feature */}
       <UpcomingAppointments />

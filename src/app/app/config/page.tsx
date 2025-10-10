@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import LogoUpload from "@/components/LogoUpload";
+import PageTitle from "@/components/PageTitle";
 
 export default function ConfigPage() {
   const { data: session } = useSession();
@@ -68,7 +69,7 @@ export default function ConfigPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Configuration</h1>
+      <PageTitle title="Configuration" />
       
       {/* Organization Settings */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">

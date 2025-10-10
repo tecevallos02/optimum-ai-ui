@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Appointment } from '@/lib/types'
 import EditableEmailDialog from '@/components/email/EditableEmailDialog'
+import PageTitle from '@/components/PageTitle'
 
 interface EmailTemplate {
   id: string
@@ -127,13 +128,11 @@ export default function EmailPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">AI Email Generator</h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Generate personalized appointment confirmation emails using AI
-        </p>
-      </div>
+    <div className="space-y-8">
+      <PageTitle 
+        title="AI Email Generator" 
+        subtitle="Generate personalized appointment confirmation emails using AI" 
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Appointments List */}

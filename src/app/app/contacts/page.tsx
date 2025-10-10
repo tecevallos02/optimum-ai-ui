@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Contact } from "@/lib/types";
 import { fetcher } from "@/lib/fetcher";
 import DataTable, { type Column } from "@/components/DataTable";
+import PageTitle from "@/components/PageTitle";
 
 interface ContactsResponse {
   contacts: Contact[];
@@ -129,9 +130,10 @@ export default function ContactsPage() {
   ];
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Contacts</h1>
+    <div className="space-y-8">
+      <PageTitle title="Contacts" />
+      
+      <div className="flex justify-end items-center">
         <button
           onClick={() => {
             console.log('Opening add contact modal');

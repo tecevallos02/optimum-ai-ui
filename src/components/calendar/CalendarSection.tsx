@@ -6,6 +6,7 @@ import type { Appointment } from '@/lib/types';
 import CalendarGrid from './CalendarGrid';
 import ListAppointments from './ListAppointments';
 import NewAppointmentModal from './NewAppointmentModal';
+import PageTitle from '@/components/PageTitle';
 import Legend from '@/components/ui/Legend';
 import DuplicateContactModal from '@/components/contacts/DuplicateContactModal';
 import { useContacts } from '@/hooks/useContacts';
@@ -147,12 +148,12 @@ export default function CalendarSection({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      <PageTitle title="Calendar" />
+      
       {/* Header with View Toggle and Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Calendar</h1>
-          
           {/* View Toggle */}
           <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
             <button

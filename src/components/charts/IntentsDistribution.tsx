@@ -107,9 +107,14 @@ export default function IntentsDistribution({
             dataKey="count" 
             radius={[4, 4, 0, 0]}
             strokeWidth={0}
+            className="hover:opacity-80 transition-opacity duration-200"
           >
             {processedData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
+              <Cell 
+                key={`cell-${index}`} 
+                fill={entry.color}
+                className="hover:opacity-80 transition-opacity duration-200"
+              />
             ))}
           </Bar>
         </BarChart>

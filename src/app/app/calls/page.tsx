@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { Call } from "@/lib/types";
 import { fetcher } from "@/lib/fetcher";
 import DataTable, { Column } from "@/components/DataTable";
+import PageTitle from "@/components/PageTitle";
 
 export default function CallsPage() {
   const [calls, setCalls] = useState<Call[]>([]);
@@ -70,9 +71,10 @@ export default function CallsPage() {
   ];
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Calls</h1>
+    <div className="space-y-8">
+      <PageTitle title="Calls" />
+      
+      <div className="flex items-center justify-end">
         <div className="flex items-center gap-4">
           <label htmlFor="filter" className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Filter by:
