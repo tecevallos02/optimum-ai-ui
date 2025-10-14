@@ -77,6 +77,19 @@ export async function GET() {
       }))
       .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
 
+    // Add debugging info
+    const debugInfo = {
+      userId: user.id,
+      companyId: user.companyId,
+      companyName: company.name,
+      rawCallsCount: calls.length,
+      appointmentsCount: appointments.length,
+      firstAppointmentId: appointments[0]?.id || 'none',
+      firstCallId: calls[0]?.appointment_id || 'none'
+    };
+
+    console.log('🔍 Appointments API Debug:', debugInfo);
+
     return NextResponse.json(appointments, { status: 200 });
   } catch (error) {
     console.error('Error fetching appointments:', error);

@@ -36,6 +36,13 @@ export async function GET(request: NextRequest) {
       conversionRate: combinedData.kpis.conversionRate,
       callsEscalated: combinedData.kpis.callsEscalated,
       estimatedSavings: combinedData.kpis.estimatedSavings,
+      // Add debugging info
+      _debug: {
+        userId: user.id,
+        companyId: user.companyId,
+        appointmentsCount: combinedData.appointments.length,
+        firstAppointmentId: combinedData.appointments[0]?.appointment_id || 'none'
+      }
     };
 
     return NextResponse.json(mainKpis);
