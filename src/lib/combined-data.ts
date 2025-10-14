@@ -128,7 +128,7 @@ function calculateCombinedKPIs(appointments: CallRow[], retellAnalytics: RetellA
     app.status.toLowerCase() === 'scheduled' ||
     app.status.toLowerCase() === 'confirmed'
   ).length;
-  const conversionRate = callsHandled > 0 ? (bookings / callsHandled) * 100 : 0;
+  const conversionRate = callsHandled > 0 ? Math.round((bookings / callsHandled) * 10000) / 100 : 0;
   const callsEscalated = retellAnalytics.callsByStatus.failed; // Use failed calls as escalated
   
   // Use Retell data for handle time and savings
