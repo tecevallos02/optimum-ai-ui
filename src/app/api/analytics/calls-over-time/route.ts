@@ -1,90 +1,98 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireUser } from '@/lib/auth';
+import { readSheetData } from '@/lib/google-sheets';
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await requireUser();
-    
-    // Get user's current organization
-    const membership = await prisma.membership.findFirst({
-      where: { userId: user.id },
-      include: { org: true }
+    const { searchParams } = new URL(request.url);
+    const companyId = searchParams.get('companyId');
+    const phone = searchParams.get('phone');
+    const days = parseInt(searchParams.get('days') || '30');
+
+    if (!companyId) {
+      return NextResponse.json(
+        { error: 'companyId is required' },
+        { status: 400 }
+      );
+    }
+
+    // Get company configuration
+    const company = await prisma.company.findUnique({
+      where: { id: companyId },
+      include: {
+        sheets: true,
+        phones: true
+      }
     });
 
-    if (!membership) {
+    if (!company) {
       return NextResponse.json(
-        { error: "User not associated with any organization" },
+        { error: 'Company not found' },
         { status: 404 }
       );
     }
 
-    // Get query parameters
-    const { searchParams } = new URL(request.url);
-    const days = parseInt(searchParams.get('days') || '7');
-    const endDate = new Date();
-    const startDate = new Date(endDate.getTime() - (days * 24 * 60 * 60 * 1000));
+    // Validate phone belongs to company if provided
+    if (phone) {
+      const phoneExists = company.phones.some((p: any) => p.e164 === phone);
+      if (!phoneExists) {
+        return NextResponse.json(
+          { error: 'Phone number does not belong to this company' },
+          { status: 400 }
+        );
+      }
+    }
 
-    // Fetch calls data for the specified period
-    const calls = await prisma.call.findMany({
-      where: {
-        orgId: membership.orgId,
-        startedAt: {
-          gte: startDate,
-          lte: endDate
-        }
-      },
-      orderBy: { startedAt: 'asc' }
+    if (!company.sheets.length) {
+      return NextResponse.json(
+        { error: 'No Google Sheet configured for this company' },
+        { status: 404 }
+      );
+    }
+
+    // Read call data from Google Sheets
+    const sheet = company.sheets[0];
+    const callRows = await readSheetData(
+      sheet.spreadsheetId,
+      sheet.dataRange,
+      phone || undefined
+    );
+
+    // Filter by date range
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+    
+    const filteredCalls = callRows.filter(row => {
+      const rowDate = new Date(row.datetime_iso);
+      return rowDate >= cutoffDate;
     });
 
-    // Group calls by day
-    const callsByDay = new Map();
+    // Group by date
+    const callsByDate = new Map<string, number>();
     
-    // Initialize all days with zero values
-    for (let i = 0; i < days; i++) {
-      const date = new Date(startDate);
-      date.setDate(date.getDate() + i);
-      const dayKey = date.toISOString().split('T')[0];
-      callsByDay.set(dayKey, {
-        name: date.toLocaleDateString('en-US', { weekday: 'short' }),
-        totalCalls: 0,
-        escalatedCalls: 0,
-        bookedCalls: 0,
-        completedCalls: 0,
-        date: dayKey
+    filteredCalls.forEach(call => {
+      const date = new Date(call.datetime_iso).toISOString().split('T')[0];
+      callsByDate.set(date, (callsByDate.get(date) || 0) + 1);
+    });
+
+    // Generate data points for the chart
+    const data = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      
+      data.push({
+        date: dateStr,
+        calls: callsByDate.get(dateStr) || 0
       });
     }
 
-    // Process actual call data
-    calls.forEach(call => {
-      const callDate = call.startedAt.toISOString().split('T')[0];
-      const dayData = callsByDay.get(callDate);
-      
-      if (dayData) {
-        dayData.totalCalls++;
-        
-        if (call.escalated) {
-          dayData.escalatedCalls++;
-        }
-        
-        if (call.disposition === 'booked' || call.intent.includes('book')) {
-          dayData.bookedCalls++;
-        }
-        
-        if (call.status === 'COMPLETED') {
-          dayData.completedCalls++;
-        }
-      }
-    });
-
-    // Convert to array and return
-    const result = Array.from(callsByDay.values());
-    
-    return NextResponse.json({ data: result });
+    return NextResponse.json({ data });
   } catch (error) {
-    console.error('Error fetching calls over time data:', error);
+    console.error('Error fetching calls over time:', error);
     return NextResponse.json(
-      { error: "Failed to fetch calls over time data" },
+      { error: 'Failed to fetch calls over time data' },
       { status: 500 }
     );
   }

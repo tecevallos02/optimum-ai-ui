@@ -2,30 +2,16 @@
 import { Decimal } from '@prisma/client/runtime/library';
 import { JsonValue } from '@prisma/client/runtime/library';
 
-export type Call = {
-  id: string;
-  orgId: string;
-  phoneNumberId?: string | null;
-  externalId?: string | null;
-  fromNumber: string;
-  toNumber: string;
-  direction: 'INBOUND' | 'OUTBOUND';
-  status: 'RINGING' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'BUSY' | 'NO_ANSWER' | 'CANCELLED';
-  duration: number;
-  recordingUrl?: string | null;
-  transcript?: string | null;
-  transcriptUrl?: string | null;
-  intent: string[];
-  disposition?: string | null;
-  escalated: boolean;
-  escalatedTo?: string | null;
-  cost?: Decimal | null;
-  tags: string[];
-  metadata?: JsonValue;
-  startedAt: string;
-  endedAt?: string | null;
-  createdAt: string;
-  updatedAt: string;
+export type CallRow = {
+  appointment_id: string;
+  name: string;
+  phone: string;        // E.164
+  datetime_iso: string; // ISO 8601
+  window: string;
+  status: string;
+  address: string;
+  notes: string;
+  intent?: string;      // derive if missing
 };
 
 export type Appointment = {
@@ -46,54 +32,27 @@ export type Appointment = {
   updatedAt: string;
 };
 
-export type PhoneNumber = {
+export type Company = {
   id: string;
-  orgId: string;
-  phoneNumber: string;
-  friendlyName?: string;
-  provider: string;
-  providerId?: string;
-  isActive: boolean;
-  isPrimary: boolean;
-  capabilities: string[];
-  webhookUrl?: string;
-  retellAgentId?: string;
-  retellApiKey?: string;
-  n8nWorkflowId?: string;
-  n8nWebhookSecret?: string;
+  name: string;
   createdAt: string;
   updatedAt: string;
 };
 
-export type AiReceptionistConfig = {
+export type CompanySheet = {
   id: string;
-  orgId: string;
-  name: string;
-  isActive: boolean;
-  retellAgentId?: string;
-  retellApiKey?: string;
-  voiceSettings?: {
-    voice_id: string;
-    speed: number;
-    temperature: number;
-  };
-  greetingMessage?: string;
-  businessHoursMessage?: string;
-  escalationRules?: {
-    keywords: string[];
-    maxAttempts: number;
-    escalationMessage: string;
-  };
-  appointmentSettings?: {
-    enabled: boolean;
-    bookingWindow: number;
-    bufferTime: number;
-    confirmationMessage: string;
-  };
-  n8nWorkflowId?: string;
-  n8nWebhookUrl?: string;
+  companyId: string;
+  spreadsheetId: string;
+  dataRange: string;
   createdAt: string;
   updatedAt: string;
+};
+
+export type CompanyPhone = {
+  id: string;
+  companyId: string;
+  e164: string;
+  createdAt: string;
 };
 
 export type Contact = {

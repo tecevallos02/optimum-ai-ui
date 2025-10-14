@@ -2,15 +2,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import KpiCard from "@/components/KpiCard";
 import CallsOverTime from "@/components/charts/CallsOverTime";
 import IntentsDistribution from "@/components/charts/IntentsDistribution";
 import UpcomingAppointments from "@/components/UpcomingAppointments";
 import PageTitle from "@/components/PageTitle";
 import type { KPI } from "@/lib/types";
-import { mockDb } from "@/lib/mockDb";
+import { fetcher } from "@/lib/fetcher";
 
 export default function DashboardClient() {
+  const searchParams = useSearchParams();
+  const companyId = searchParams.get('companyId');
+  const phone = searchParams.get('phone');
+  
   const [kpis, setKpis] = useState<KPI>({
     callsHandled: 0,
     bookings: 0,
@@ -24,29 +29,34 @@ export default function DashboardClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!companyId) {
+      setLoading(false);
+      return;
+    }
+
     const fetchDashboardData = async () => {
       try {
+        // Build query parameters
+        const params = new URLSearchParams({ companyId });
+        if (phone) params.set('phone', phone);
+
         // Fetch all dashboard data in parallel
-        const [kpisResponse, callsOverTimeResponse, intentsResponse] = await Promise.all([
-          fetch("/api/kpis"),
-          fetch("/api/analytics/calls-over-time?days=7"),
-          fetch("/api/analytics/intents-distribution?days=30")
+        const [kpisData, callsOverTimeData, intentsData] = await Promise.all([
+          fetcher(`/api/kpis?${params.toString()}`),
+          fetcher(`/api/analytics/calls-over-time?${params.toString()}&days=7`),
+          fetcher(`/api/analytics/intents-distribution?${params.toString()}&days=30`)
         ]);
 
-        if (kpisResponse.ok) {
-          const kpisData = await kpisResponse.json();
-          setKpis(kpisData);
-        }
-
-        if (callsOverTimeResponse.ok) {
-          const callsData = await callsOverTimeResponse.json();
-          setCallsOverTimeData(callsData.data || []);
-        }
-
-        if (intentsResponse.ok) {
-          const intentsData = await intentsResponse.json();
-          setIntentsData(intentsData.data || []);
-        }
+        setKpis(kpisData as KPI || {
+          callsHandled: 0,
+          bookings: 0,
+          avgHandleTime: 0,
+          conversionRate: 0,
+          callsEscalated: 0,
+          estimatedSavings: 0,
+        });
+        setCallsOverTimeData((callsOverTimeData as any)?.data || []);
+        setIntentsData((intentsData as any)?.data || []);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -55,7 +65,7 @@ export default function DashboardClient() {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [companyId, phone]);
 
   // Use real data or fallback to empty arrays
   const callsHandledSeries = callsOverTimeData.length > 0 ? callsOverTimeData : [];
@@ -65,6 +75,19 @@ export default function DashboardClient() {
     return (
       <div className="space-y-8">
         <PageTitle title="Dashboard" subtitle="Loading..." />
+      </div>
+    );
+  }
+
+  if (!companyId) {
+    return (
+      <div className="space-y-8">
+        <PageTitle title="Dashboard" subtitle="Select a company to view data" />
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+          <p className="text-yellow-800 dark:text-yellow-200">
+            Please select a company from the dropdown above to view dashboard data.
+          </p>
+        </div>
       </div>
     );
   }

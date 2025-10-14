@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { readSheetData } from '@/lib/google-sheets';
+import { readSheetData, getSheetMetadata } from '@/lib/google-sheets';
+import { CallRow } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,9 +11,9 @@ export async function GET(request: NextRequest) {
     const from = searchParams.get('from');
     const to = searchParams.get('to');
     const status = searchParams.get('status');
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const fresh = searchParams.get('fresh') === '1';
 
+    // Validate required companyId
     if (!companyId) {
       return NextResponse.json(
         { error: 'companyId is required' },
@@ -25,7 +26,8 @@ export async function GET(request: NextRequest) {
       where: { id: companyId },
       include: {
         sheets: true,
-        phones: true
+        phones: true,
+        cache: true
       }
     });
 
@@ -38,7 +40,7 @@ export async function GET(request: NextRequest) {
 
     // Validate phone belongs to company if provided
     if (phone) {
-      const phoneExists = company.phones.some((p: any) => p.e164 === phone);
+      const phoneExists = company.phones.some(p => p.e164 === phone);
       if (!phoneExists) {
         return NextResponse.json(
           { error: 'Phone number does not belong to this company' },
@@ -54,9 +56,23 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Read call data from Google Sheets
     const sheet = company.sheets[0];
-    let callRows = await readSheetData(
+    let callRows: CallRow[] = [];
+
+    // Check cache first (unless fresh=1)
+    if (!fresh && company.cache.length > 0) {
+      const cache = company.cache[0];
+      const cacheAge = Date.now() - cache.lastSynced.getTime();
+      const maxStaleness = 60 * 1000; // 60 seconds
+
+      if (cacheAge < maxStaleness) {
+        // Use cached data - in a real implementation, you'd store the actual data
+        // For now, we'll always read from sheets but this is where you'd return cached data
+      }
+    }
+
+    // Read from Google Sheets
+    callRows = await readSheetData(
       sheet.spreadsheetId,
       sheet.dataRange,
       phone || undefined
@@ -81,25 +97,32 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Apply pagination
-    const totalCount = callRows.length;
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedCalls = callRows.slice(startIndex, endIndex);
+    // Update cache opportunistically
+    try {
+      const metadata = await getSheetMetadata(sheet.spreadsheetId, sheet.dataRange);
+      
+      await prisma.sheetCache.upsert({
+        where: { companyId },
+        update: {
+          lastSynced: new Date(),
+          rowCount: metadata.rowCount
+        },
+        create: {
+          companyId,
+          lastSynced: new Date(),
+          rowCount: metadata.rowCount
+        }
+      });
+    } catch (error) {
+      console.warn('Failed to update cache:', error);
+      // Don't fail the request if cache update fails
+    }
 
-    return NextResponse.json({
-      calls: paginatedCalls,
-      pagination: {
-        page,
-        limit,
-        total: totalCount,
-        pages: Math.ceil(totalCount / limit)
-      }
-    });
+    return NextResponse.json({ calls: callRows });
   } catch (error) {
-    console.error('Error fetching calls:', error);
+    console.error('Error fetching calls from sheets:', error);
     return NextResponse.json(
-      { error: "Failed to fetch calls" },
+      { error: 'Failed to fetch calls' },
       { status: 500 }
     );
   }

@@ -1,34 +1,23 @@
 import { subMinutes, subDays, formatISO } from 'date-fns';
-import { Call, Appointment, Contact, KPI, SavingsSeries, AuditLog } from './types';
+import { CallRow, Appointment, Contact, KPI, SavingsSeries, AuditLog } from './types';
 
-export function seedCalls(): Call[] {
+export function seedCalls(): CallRow[] {
   return Array.from({ length: 25 }).map((_, i) => {
     const start = subDays(new Date(), Math.floor(i / 3));
     const callId = `call_${i + 1}`;
+    const statuses = ['booked', 'scheduled', 'confirmed', 'canceled', 'escalated'];
+    const intents = ['booking', 'cancellation', 'reschedule', 'quote', 'other'];
+    
     return {
-      id: callId,
-      orgId: 'org_1',
-      phoneNumberId: null,
-      externalId: `ext_${callId}`,
-      fromNumber: `+1555${String(i).padStart(7, '0')}`,
-      toNumber: '+15551234567',
-      direction: i % 2 === 0 ? 'INBOUND' : 'OUTBOUND',
-      status: i % 5 === 0 ? 'NO_ANSWER' : 'COMPLETED',
-      duration: 240 + i * 10,
-      recordingUrl: `/recordings/${callId}.mp3`,
-      transcript: `Call transcript for ${callId}`,
-      transcriptUrl: `/transcripts/${callId}.txt`,
-      intent: i % 4 === 0 ? ['book'] : ['info'],
-      disposition: i % 3 === 0 ? 'follow-up' : 'resolved',
-      escalated: i % 7 === 0,
-      escalatedTo: i % 7 === 0 ? 'user_1' : null,
-      cost: null,
-      tags: i % 2 ? ['support'] : ['lead'],
-      metadata: { createdByAgent: false, costSeconds: 240 + i * 10 },
-      startedAt: formatISO(subMinutes(start, 30)),
-      endedAt: formatISO(subMinutes(start, 30 + (240 + i * 10) / 60)),
-      createdAt: formatISO(subMinutes(start, 30)),
-      updatedAt: formatISO(subMinutes(start, 30))
+      appointment_id: callId,
+      name: `Customer ${i + 1}`,
+      phone: `+1555${String(i).padStart(7, '0')}`,
+      datetime_iso: formatISO(subMinutes(start, 30)),
+      window: '30 minutes',
+      status: statuses[i % statuses.length],
+      address: `123 Main St, City ${i + 1}`,
+      notes: `Call notes for ${callId}`,
+      intent: intents[i % intents.length]
     };
   });
 }

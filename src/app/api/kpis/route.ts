@@ -1,107 +1,108 @@
-// path: src/app/api/kpis/route.ts
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { requireUser } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from '@/lib/prisma';
+import { readSheetData } from '@/lib/google-sheets';
 
-const prisma = new PrismaClient();
-
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const user = await requireUser();
-    console.log('KPI API: User authenticated:', user.email);
-    
-    // Get user's organization and ensure it exists in the database
-    const userData = await prisma.user.findFirst({
-      where: { id: user.id }
-    }) as any; // Type assertion for organization field
-    
-    const orgName = userData?.organization || 'Default Organization'
-    console.log('KPI API: User organization:', orgName);
-    
-    // Ensure organization exists in the database
-    let org = await prisma.organization.findFirst({
-      where: { name: orgName }
-    })
-    
-    if (!org) {
-      console.log('Creating organization for KPIs:', orgName);
-      org = await prisma.organization.create({
-        data: {
-          name: orgName,
-        }
-      })
+    const { searchParams } = new URL(request.url);
+    const companyId = searchParams.get('companyId');
+    const phone = searchParams.get('phone');
+    const from = searchParams.get('from');
+    const to = searchParams.get('to');
+
+    if (!companyId) {
+      return NextResponse.json(
+        { error: 'companyId is required' },
+        { status: 400 }
+      );
     }
-    
-    const orgId = org.id
-    console.log('KPI API: Using orgId:', orgId);
-    
-    // Fetch real call data from the new Call model
-    const callsData = await prisma.call.findMany({
-      where: { 
-        orgId: orgId,
-        startedAt: {
-          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
-        }
+
+    // Get company configuration
+    const company = await prisma.company.findUnique({
+      where: { id: companyId },
+      include: {
+        sheets: true,
+        phones: true
       }
     });
-    
-    const callsEscalatedCount = callsData.filter((call: any) => call.escalated).length;
-    const callsHandled = callsData.filter((call: any) => call.status === 'COMPLETED').length;
-    const totalDuration = callsData.reduce((sum: number, call: any) => sum + call.duration, 0);
-    const avgHandleTime = callsHandled > 0 ? Math.round(totalDuration / callsHandled) : 0;
-    
-    // Calculate conversion rate (calls that resulted in appointments)
-    const callsWithAppointments = callsData.filter((call: any) => 
-      call.disposition === 'booked' || call.intent.includes('book')
+
+    if (!company) {
+      return NextResponse.json(
+        { error: 'Company not found' },
+        { status: 404 }
+      );
+    }
+
+    // Validate phone belongs to company if provided
+    if (phone) {
+      const phoneExists = company.phones.some((p: any) => p.e164 === phone);
+      if (!phoneExists) {
+        return NextResponse.json(
+          { error: 'Phone number does not belong to this company' },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (!company.sheets.length) {
+      return NextResponse.json(
+        { error: 'No Google Sheet configured for this company' },
+        { status: 404 }
+      );
+    }
+
+    // Read call data from Google Sheets
+    const sheet = company.sheets[0];
+    const callRows = await readSheetData(
+      sheet.spreadsheetId,
+      sheet.dataRange,
+      phone || undefined
+    );
+
+    // Apply date filters
+    let filteredCalls = callRows;
+    if (from || to) {
+      const fromDate = from ? new Date(from) : null;
+      const toDate = to ? new Date(to) : null;
+
+      filteredCalls = callRows.filter(row => {
+        const rowDate = new Date(row.datetime_iso);
+        if (fromDate && rowDate < fromDate) return false;
+        if (toDate && rowDate > toDate) return false;
+        return true;
+      });
+    }
+
+    // Calculate KPIs
+    const totalCalls = filteredCalls.length;
+    const bookedCalls = filteredCalls.filter(call => 
+      call.status.toLowerCase().includes('booked') || 
+      call.status.toLowerCase().includes('scheduled') ||
+      call.status.toLowerCase().includes('confirmed')
     ).length;
-    const conversionRate = callsHandled > 0 ? Math.round((callsWithAppointments / callsHandled) * 100) : 0;
-    
-    console.log('KPI API: Calls escalated count:', callsEscalatedCount);
-    console.log('KPI API: Calls handled:', callsHandled);
-    console.log('KPI API: Conversion rate:', conversionRate);
-    
-    // Fetch real appointments count (excluding canceled ones)
-    const appointmentsCount = await prisma.appointment.count({
-      where: { 
-        orgId: orgId,
-        status: {
-          not: 'CANCELED'
-        }
-      }
-    });
-    console.log('KPI API: Appointments count:', appointmentsCount);
-    
-    // Calculate estimated savings based on call volume and average handle time
-    const estimatedSavings = Math.round(callsHandled * avgHandleTime * 0.05); // $0.05 per second saved
-    
-    const data = {
-      callsHandled,
-      bookings: appointmentsCount, // Use real appointments count (excluding canceled)
-      avgHandleTime,
-      conversionRate,
-      callsEscalated: callsEscalatedCount, // Use real calls escalated count
-      estimatedSavings,
+    const escalatedCalls = filteredCalls.filter(call => 
+      call.status.toLowerCase().includes('escalated') ||
+      call.notes.toLowerCase().includes('escalated')
+    ).length;
+
+    const conversionRate = totalCalls > 0 ? (bookedCalls / totalCalls) * 100 : 0;
+    const estimatedSavings = bookedCalls * 15; // $15 per automated booking
+
+    const kpis = {
+      callsHandled: totalCalls,
+      bookings: bookedCalls,
+      avgHandleTime: 0, // Not available from sheet data
+      conversionRate: Math.round(conversionRate * 100) / 100,
+      callsEscalated: escalatedCalls,
+      estimatedSavings
     };
-    
-    console.log('KPI API: Returning data:', data);
-    return NextResponse.json(data, { status: 200 });
+
+    return NextResponse.json(kpis);
   } catch (error) {
     console.error('Error fetching KPIs:', error);
-    
-    // Fallback to 0 if there's an error
-    const callsHandled = 0;
-    const conversionRate = 0;
-    
-    const data = {
-      callsHandled,
-      bookings: 0, // Fallback to 0 if error
-      avgHandleTime: 0,
-      conversionRate: 0,
-      callsEscalated: 0, // Fallback to 0 if error
-      estimatedSavings: 0,
-    };
-    
-    console.log('KPI API: Returning fallback data:', data);
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json(
+      { error: "Failed to fetch KPIs" },
+      { status: 500 }
+    );
   }
 }

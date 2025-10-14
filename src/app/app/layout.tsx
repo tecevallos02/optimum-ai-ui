@@ -7,6 +7,7 @@ import RoleGuard from "@/components/RoleGuard";
 import OrgSwitcherClient from "@/components/OrgSwitcherClient"; // <- client wrapper
 import LogoutButton from "../../components/LogoutButton";
 import ClientOnlyThemeToggle from "@/components/ClientOnlyThemeToggle";
+import CompanyPhoneSelector from "@/components/CompanyPhoneSelector";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
@@ -87,8 +88,13 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       {/* Main content */}
       <main className="flex-1">
         <header className="flex items-center justify-between p-4 border-b border-border dark:border-gray-700 bg-background dark:bg-gray-900 sticky top-0 z-10 shadow-sm">
-          {/* Organization Switcher */}
-          <OrgSwitcherClient />
+          <div className="flex items-center space-x-6">
+            {/* Organization Switcher */}
+            <OrgSwitcherClient />
+            
+            {/* Company/Phone Selector */}
+            <CompanyPhoneSelector />
+          </div>
 
           <div className="flex items-center space-x-4">
             {/* User Profile */}

@@ -77,9 +77,6 @@ model Organization {
   contacts              Contact[]
   invitations           Invitation[]
   memberships           Membership[]
-  phoneNumbers          PhoneNumber[]
-  aiReceptionistConfigs AiReceptionistConfig[]
-  calls                 Call[]
 }
 
 model Membership {
@@ -190,96 +187,53 @@ enum AppointmentSource {
   PHONE
   AGENT
   IMPORTED
-  AI_RECEPTIONIST
 }
 
-model PhoneNumber {
-  id                String       @id @default(cuid())
-  orgId             String
-  phoneNumber       String       @unique
-  friendlyName      String?      // Display name for the number
-  provider          String       // "retell", "twilio", "vonage", etc.
-  providerId        String?      // Provider-specific ID
-  isActive          Boolean      @default(true)
-  isPrimary         Boolean      @default(false)
-  capabilities      String[]     @default([]) // ["voice", "sms", "fax"]
-  webhookUrl        String?      // N8N webhook URL for this number
-  retellAgentId     String?      // Retell AI agent ID
-  retellApiKey      String?      // Encrypted Retell API key
-  n8nWorkflowId     String?      // N8N workflow ID
-  n8nWebhookSecret  String?      // Webhook secret for security
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  calls             Call[]
+// Tenant configuration for Google Sheets integration
+model Company {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   
-  @@unique([orgId, phoneNumber])
+  sheets    CompanySheet[]
+  phones    CompanyPhone[]
+  cache     SheetCache[]
 }
 
-model AiReceptionistConfig {
-  id                    String       @id @default(cuid())
-  orgId                 String
-  name                  String       // Configuration name
-  isActive              Boolean      @default(true)
-  retellAgentId         String?      // Retell AI agent ID
-  retellApiKey          String?      // Encrypted Retell API key
-  voiceSettings         Json?        // Voice configuration (speed, pitch, etc.)
-  greetingMessage       String?      // Custom greeting message
-  businessHoursMessage  String?      // Message for outside business hours
-  escalationRules       Json?        // Rules for when to escalate to human
-  appointmentSettings   Json?        // Settings for appointment booking
-  n8nWorkflowId         String?      // N8N workflow for post-call actions
-  n8nWebhookUrl         String?      // N8N webhook URL
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
-  org                   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+model CompanySheet {
+  id            String   @id @default(cuid())
+  companyId     String
+  spreadsheetId String
+  dataRange     String   @default("Calls!A:H")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   
-  @@unique([orgId, name])
-}
-
-model Call {
-  id                String       @id @default(cuid())
-  orgId             String
-  phoneNumberId     String?      // Associated phone number
-  externalId        String?      // Provider's call ID
-  fromNumber        String
-  toNumber          String
-  direction         CallDirection
-  status            CallStatus
-  duration          Int          @default(0) // Duration in seconds
-  recordingUrl      String?
-  transcript        String?
-  transcriptUrl     String?
-  intent            String[]     @default([])
-  disposition       String?      // "booked", "info", "escalated", etc.
-  escalated         Boolean      @default(false)
-  escalatedTo       String?      // User ID if escalated
-  cost              Decimal?     @db.Decimal(10, 4)
-  tags              String[]     @default([])
-  metadata          Json?        // Additional call metadata
-  startedAt         DateTime
-  endedAt           DateTime?
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  phoneNumber       PhoneNumber? @relation(fields: [phoneNumberId], references: [id])
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   
-  @@index([orgId, startedAt])
-  @@index([fromNumber])
-  @@index([toNumber])
+  @@unique([companyId])
 }
 
-enum CallDirection {
-  INBOUND
-  OUTBOUND
+model CompanyPhone {
+  id        String   @id @default(cuid())
+  companyId String
+  e164      String   // E.164 format phone number
+  createdAt DateTime @default(now())
+  
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  @@unique([companyId, e164])
 }
 
-enum CallStatus {
-  RINGING
-  IN_PROGRESS
-  COMPLETED
-  FAILED
-  BUSY
-  NO_ANSWER
-  CANCELLED
+// Optional cache for analytics performance
+model SheetCache {
+  id          String    @id @default(cuid())
+  companyId   String
+  lastSynced  DateTime
+  rowCount    Int
+  createdAt   DateTime  @default(now())
+  
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  @@unique([companyId])
 }
