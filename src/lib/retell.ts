@@ -101,9 +101,11 @@ export function calculateRetellAnalytics(calls: RetellCallData[]): RetellAnalyti
   const averageTimeSaved = totalCalls > 0 ? totalTimeSaved / totalCalls : 0;
 
   const callsByStatus = calls.reduce((acc, call) => {
-    acc[call.status] = (acc[call.status] || 0) + 1;
+    if (call.status === 'completed') acc.completed += 1;
+    else if (call.status === 'failed') acc.failed += 1;
+    else if (call.status === 'cancelled') acc.cancelled += 1;
     return acc;
-  }, { completed: 0, failed: 0, cancelled: 0 } as Record<string, number>);
+  }, { completed: 0, failed: 0, cancelled: 0 });
 
   // Group calls by date for time series
   const callsByDate = calls.reduce((acc, call) => {

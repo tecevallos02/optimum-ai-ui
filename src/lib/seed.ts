@@ -66,7 +66,13 @@ export function seedKpis(): KPI {
     avgHandleTime: 220,
     conversionRate: Math.round(conversionRate * 10) / 10, // Round to 1 decimal place
     callsEscalated: 8,
-    estimatedSavings: 920
+    estimatedSavings: 920,
+    // Retell data
+    totalCalls: 120,
+    totalTimeSaved: 3600, // 1 hour in seconds
+    totalCost: 15.50,
+    averageCallDuration: 180, // 3 minutes
+    averageTimeSaved: 30, // 30 seconds per call
   };
 }
 
