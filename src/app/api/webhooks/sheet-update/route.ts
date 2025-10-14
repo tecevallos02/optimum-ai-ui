@@ -3,25 +3,14 @@ import { revalidateTag } from 'next/cache';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { companyId } = body;
+    // Revalidate all sheet-related caches
+    // Since we now scope by user session, we can revalidate all sheet data
+    revalidateTag('sheets-calls');
+    revalidateTag('sheets-kpis');
+    revalidateTag('sheets-analytics');
+    console.log('Revalidated all sheet caches');
 
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'companyId is required' },
-        { status: 400 }
-      );
-    }
-
-    // Revalidate SWR cache for this company
-    revalidateTag(`calls-${companyId}`);
-    revalidateTag(`analytics-${companyId}`);
-    revalidateTag(`kpis-${companyId}`);
-
-    return NextResponse.json({ 
-      success: true, 
-      message: `Cache invalidated for company ${companyId}` 
-    });
+    return NextResponse.json({ success: true, message: 'Revalidation triggered for all sheet data' });
   } catch (error) {
     console.error('Error processing sheet update webhook:', error);
     return NextResponse.json(

@@ -1,38 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireUser } from '@/lib/auth';
 import { readSheetData } from '@/lib/google-sheets';
+import { CallRow } from '@/lib/types';
+import { format, subDays } from 'date-fns';
 
 export async function GET(request: NextRequest) {
   try {
+    const user = await requireUser();
+
     const { searchParams } = new URL(request.url);
-    const companyId = searchParams.get('companyId');
     const phone = searchParams.get('phone');
     const days = parseInt(searchParams.get('days') || '30');
 
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'companyId is required' },
-        { status: 400 }
-      );
-    }
-
-    // Get company configuration
-    const company = await prisma.company.findUnique({
-      where: { id: companyId },
+    // For now, get the first company (in a real app, you'd link users to companies)
+    const company = await prisma.company.findFirst({
       include: {
         sheets: true,
-        phones: true
+        phones: true,
       }
     });
 
     if (!company) {
       return NextResponse.json(
-        { error: 'Company not found' },
+        { error: 'No company found' },
         { status: 404 }
       );
     }
 
-    // Validate phone belongs to company if provided
     if (phone) {
       const phoneExists = company.phones.some((p: any) => p.e164 === phone);
       if (!phoneExists) {
@@ -43,56 +38,48 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (!company.sheets.length) {
+    const companySheet = company.sheets[0];
+    if (!companySheet) {
       return NextResponse.json(
-        { error: 'No Google Sheet configured for this company' },
+        { error: 'Google Sheet configuration not found for this company' },
         { status: 404 }
       );
     }
 
-    // Read call data from Google Sheets
-    const sheet = company.sheets[0];
-    const callRows = await readSheetData(
-      sheet.spreadsheetId,
-      sheet.dataRange,
-      phone || undefined
-    );
+    const endDate = new Date();
+    const startDate = subDays(endDate, days);
 
-    // Filter by date range
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - days);
-    
-    const filteredCalls = callRows.filter(row => {
-      const rowDate = new Date(row.datetime_iso);
-      return rowDate >= cutoffDate;
+    const calls: CallRow[] = await readSheetData({
+      spreadsheetId: companySheet.spreadsheetId,
+      range: companySheet.dataRange,
+      phoneFilter: phone || undefined,
+      from: startDate.toISOString(),
+      to: endDate.toISOString(),
     });
 
-    // Group by date
-    const callsByDate = new Map<string, number>();
-    
-    filteredCalls.forEach(call => {
-      const date = new Date(call.datetime_iso).toISOString().split('T')[0];
-      callsByDate.set(date, (callsByDate.get(date) || 0) + 1);
-    });
-
-    // Generate data points for the chart
-    const data = [];
-    for (let i = days - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      
-      data.push({
-        date: dateStr,
-        calls: callsByDate.get(dateStr) || 0
-      });
+    const dailyCalls: { [key: string]: number } = {};
+    for (let i = 0; i <= days; i++) {
+      const date = format(subDays(endDate, i), 'yyyy-MM-dd');
+      dailyCalls[date] = 0;
     }
+
+    calls.forEach(call => {
+      const callDate = format(new Date(call.datetime_iso), 'yyyy-MM-dd');
+      if (dailyCalls[callDate] !== undefined) {
+        dailyCalls[callDate]++;
+      }
+    });
+
+    const data = Object.keys(dailyCalls).sort().map(date => ({
+      date,
+      calls: dailyCalls[date],
+    }));
 
     return NextResponse.json({ data });
   } catch (error) {
     console.error('Error fetching calls over time:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch calls over time data' },
+      { error: 'Failed to fetch calls over time' },
       { status: 500 }
     );
   }

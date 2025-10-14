@@ -1,42 +1,34 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireUser } from '@/lib/auth';
 import { readSheetData } from '@/lib/google-sheets';
+import { CallRow } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
   try {
+    const user = await requireUser();
+
     const { searchParams } = new URL(request.url);
-    const companyId = searchParams.get('companyId');
     const phone = searchParams.get('phone');
     const from = searchParams.get('from');
     const to = searchParams.get('to');
     const status = searchParams.get('status');
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '50');
 
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'companyId is required' },
-        { status: 400 }
-      );
-    }
-
-    // Get company configuration
-    const company = await prisma.company.findUnique({
-      where: { id: companyId },
+    // For now, get the first company (in a real app, you'd link users to companies)
+    const company = await prisma.company.findFirst({
       include: {
         sheets: true,
-        phones: true
+        phones: true,
       }
     });
 
     if (!company) {
       return NextResponse.json(
-        { error: 'Company not found' },
+        { error: 'No company found' },
         { status: 404 }
       );
     }
 
-    // Validate phone belongs to company if provided
     if (phone) {
       const phoneExists = company.phones.some((p: any) => p.e164 === phone);
       if (!phoneExists) {
@@ -47,59 +39,28 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (!company.sheets.length) {
+    const companySheet = company.sheets[0];
+    if (!companySheet) {
       return NextResponse.json(
-        { error: 'No Google Sheet configured for this company' },
+        { error: 'Google Sheet configuration not found for this company' },
         { status: 404 }
       );
     }
 
-    // Read call data from Google Sheets
-    const sheet = company.sheets[0];
-    let callRows = await readSheetData(
-      sheet.spreadsheetId,
-      sheet.dataRange,
-      phone || undefined
-    );
-
-    // Apply filters
-    if (from || to) {
-      const fromDate = from ? new Date(from) : null;
-      const toDate = to ? new Date(to) : null;
-
-      callRows = callRows.filter(row => {
-        const rowDate = new Date(row.datetime_iso);
-        if (fromDate && rowDate < fromDate) return false;
-        if (toDate && rowDate > toDate) return false;
-        return true;
-      });
-    }
-
-    if (status) {
-      callRows = callRows.filter(row => 
-        row.status.toLowerCase().includes(status.toLowerCase())
-      );
-    }
-
-    // Apply pagination
-    const totalCount = callRows.length;
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedCalls = callRows.slice(startIndex, endIndex);
-
-    return NextResponse.json({
-      calls: paginatedCalls,
-      pagination: {
-        page,
-        limit,
-        total: totalCount,
-        pages: Math.ceil(totalCount / limit)
-      }
+    const calls: CallRow[] = await readSheetData({
+      spreadsheetId: companySheet.spreadsheetId,
+      range: companySheet.dataRange,
+      phoneFilter: phone || undefined,
+      from: from || undefined,
+      to: to || undefined,
+      statusFilter: status || undefined,
     });
+
+    return NextResponse.json({ calls });
   } catch (error) {
-    console.error('Error fetching calls:', error);
+    console.error('Error fetching calls from Google Sheet:', error);
     return NextResponse.json(
-      { error: "Failed to fetch calls" },
+      { error: 'Failed to fetch calls from sheet' },
       { status: 500 }
     );
   }

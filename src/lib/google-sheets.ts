@@ -59,17 +59,27 @@ export function normalizePhone(phone: string): string {
 }
 
 // Read and normalize data from Google Sheets
-export async function readSheetData(
-  spreadsheetId: string,
-  dataRange: string,
-  phoneFilter?: string
-): Promise<CallRow[]> {
+export async function readSheetData({
+  spreadsheetId,
+  range,
+  phoneFilter,
+  from,
+  to,
+  statusFilter,
+}: {
+  spreadsheetId: string;
+  range: string;
+  phoneFilter?: string;
+  from?: string;
+  to?: string;
+  statusFilter?: string;
+}): Promise<CallRow[]> {
   try {
     const sheets = getSheetsClient();
     
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: dataRange,
+      range,
     });
 
     const rows = response.data.values || [];
@@ -126,7 +136,26 @@ export async function readSheetData(
       })
       .filter((row) => row !== null) as CallRow[];
 
-    return callRows;
+    // Apply date and status filters
+    let filteredCallRows = callRows;
+
+    if (from || to) {
+      filteredCallRows = filteredCallRows.filter(row => {
+        const callDate = new Date(row.datetime_iso);
+        const fromDate = from ? new Date(from) : null;
+        const toDate = to ? new Date(to) : null;
+
+        return (!fromDate || callDate >= fromDate) && (!toDate || callDate <= toDate);
+      });
+    }
+
+    if (statusFilter) {
+      filteredCallRows = filteredCallRows.filter(row => 
+        row.status.toLowerCase().includes(statusFilter.toLowerCase())
+      );
+    }
+
+    return filteredCallRows;
   } catch (error) {
     console.error('Error reading Google Sheets data:', error);
     throw new Error('Failed to read sheet data');
@@ -140,7 +169,7 @@ export async function getSheetMetadata(spreadsheetId: string, dataRange: string)
     
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: dataRange,
+      range,
     });
 
     const rows = response.data.values || [];

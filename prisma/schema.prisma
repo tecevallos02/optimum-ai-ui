@@ -48,11 +48,13 @@ model User {
   activationExpires  DateTime?
   resetToken         String?      @unique
   resetExpires       DateTime?
+  companyId          String?      // FK to Company
   accounts           Account[]
   auditLogs          AuditLog[]
   createdInvitations Invitation[] @relation("InvitationCreator")
   memberships        Membership[]
   sessions           Session[]
+  company            Company?     @relation(fields: [companyId], references: [id])
 }
 
 model VerificationToken {
@@ -196,6 +198,7 @@ model Company {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
+  users     User[]
   sheets    CompanySheet[]
   phones    CompanyPhone[]
   cache     SheetCache[]

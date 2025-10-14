@@ -1,38 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireUser } from '@/lib/auth';
 import { readSheetData } from '@/lib/google-sheets';
+import { CallRow } from '@/lib/types';
+import { subDays } from 'date-fns';
 
 export async function GET(request: NextRequest) {
   try {
+    const user = await requireUser();
+
     const { searchParams } = new URL(request.url);
-    const companyId = searchParams.get('companyId');
     const phone = searchParams.get('phone');
     const days = parseInt(searchParams.get('days') || '30');
 
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'companyId is required' },
-        { status: 400 }
-      );
-    }
-
-    // Get company configuration
-    const company = await prisma.company.findUnique({
-      where: { id: companyId },
+    // For now, get the first company (in a real app, you'd link users to companies)
+    const company = await prisma.company.findFirst({
       include: {
         sheets: true,
-        phones: true
+        phones: true,
       }
     });
 
     if (!company) {
       return NextResponse.json(
-        { error: 'Company not found' },
+        { error: 'No company found' },
         { status: 404 }
       );
     }
 
-    // Validate phone belongs to company if provided
     if (phone) {
       const phoneExists = company.phones.some((p: any) => p.e164 === phone);
       if (!phoneExists) {
@@ -43,49 +38,41 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (!company.sheets.length) {
+    const companySheet = company.sheets[0];
+    if (!companySheet) {
       return NextResponse.json(
-        { error: 'No Google Sheet configured for this company' },
+        { error: 'Google Sheet configuration not found for this company' },
         { status: 404 }
       );
     }
 
-    // Read call data from Google Sheets
-    const sheet = company.sheets[0];
-    const callRows = await readSheetData(
-      sheet.spreadsheetId,
-      sheet.dataRange,
-      phone || undefined
-    );
+    const endDate = new Date();
+    const startDate = subDays(endDate, days);
 
-    // Filter by date range
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - days);
-    
-    const filteredCalls = callRows.filter(row => {
-      const rowDate = new Date(row.datetime_iso);
-      return rowDate >= cutoffDate;
+    const calls: CallRow[] = await readSheetData({
+      spreadsheetId: companySheet.spreadsheetId,
+      range: companySheet.dataRange,
+      phoneFilter: phone || undefined,
+      from: startDate.toISOString(),
+      to: endDate.toISOString(),
     });
 
-    // Count intents
-    const intentCounts = new Map<string, number>();
-    
-    filteredCalls.forEach(call => {
+    const intentCounts: { [key: string]: number } = {};
+    calls.forEach(call => {
       const intent = call.intent || 'other';
-      intentCounts.set(intent, (intentCounts.get(intent) || 0) + 1);
+      intentCounts[intent] = (intentCounts[intent] || 0) + 1;
     });
 
-    // Convert to array format
-    const data = Array.from(intentCounts.entries()).map(([intent, count]) => ({
-      intent,
-      count
+    const data = Object.keys(intentCounts).map(intent => ({
+      name: intent,
+      value: intentCounts[intent],
     }));
 
     return NextResponse.json({ data });
   } catch (error) {
     console.error('Error fetching intents distribution:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch intents distribution data' },
+      { error: 'Failed to fetch intents distribution' },
       { status: 500 }
     );
   }

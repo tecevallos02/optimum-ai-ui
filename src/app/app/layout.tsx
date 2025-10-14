@@ -7,7 +7,7 @@ import RoleGuard from "@/components/RoleGuard";
 import OrgSwitcherClient from "@/components/OrgSwitcherClient"; // <- client wrapper
 import LogoutButton from "../../components/LogoutButton";
 import ClientOnlyThemeToggle from "@/components/ClientOnlyThemeToggle";
-import CompanyPhoneSelector from "@/components/CompanyPhoneSelector";
+import PhoneSelector from "@/components/PhoneSelector";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
@@ -92,8 +92,8 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             {/* Organization Switcher */}
             <OrgSwitcherClient />
             
-            {/* Company/Phone Selector */}
-            <CompanyPhoneSelector />
+            {/* Phone Selector - only shows if multiple phones */}
+            <PhoneSelector onPhoneChange={() => {}} />
           </div>
 
           <div className="flex items-center space-x-4">

@@ -1,54 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireUser } from '@/lib/auth';
 import { readSheetData } from '@/lib/google-sheets';
+import { CallRow } from '@/lib/types';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
+    const user = await requireUser();
+    const { id } = await params; // This 'id' is the appointment_id from CallRow
+
     const { searchParams } = new URL(request.url);
-    const companyId = searchParams.get('companyId');
+    const phone = searchParams.get('phone');
 
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'companyId is required' },
-        { status: 400 }
-      );
-    }
-
-    // Get company configuration
-    const company = await prisma.company.findUnique({
-      where: { id: companyId },
+    // For now, get the first company (in a real app, you'd link users to companies)
+    const company = await prisma.company.findFirst({
       include: {
-        sheets: true
+        sheets: true,
+        phones: true,
       }
     });
 
     if (!company) {
       return NextResponse.json(
-        { error: 'Company not found' },
+        { error: 'No company found' },
         { status: 404 }
       );
     }
 
-    if (!company.sheets.length) {
+    if (phone) {
+      const phoneExists = company.phones.some((p: any) => p.e164 === phone);
+      if (!phoneExists) {
+        return NextResponse.json(
+          { error: 'Phone number does not belong to this company' },
+          { status: 400 }
+        );
+      }
+    }
+
+    const companySheet = company.sheets[0];
+    if (!companySheet) {
       return NextResponse.json(
-        { error: 'No Google Sheet configured for this company' },
+        { error: 'Google Sheet configuration not found for this company' },
         { status: 404 }
       );
     }
 
-    // Read call data from Google Sheets
-    const sheet = company.sheets[0];
-    const callRows = await readSheetData(
-      sheet.spreadsheetId,
-      sheet.dataRange
-    );
+    const calls: CallRow[] = await readSheetData({
+      spreadsheetId: companySheet.spreadsheetId,
+      range: companySheet.dataRange,
+      phoneFilter: phone || undefined,
+      from: undefined,
+      to: undefined,
+      statusFilter: undefined,
+    });
 
-    // Find the specific call by appointment_id
-    const call = callRows.find(c => c.appointment_id === id);
+    const call = calls.find(c => c.appointment_id === id);
 
     if (!call) {
       return NextResponse.json(
@@ -59,9 +68,9 @@ export async function GET(
 
     return NextResponse.json(call);
   } catch (error) {
-    console.error('Error fetching call:', error);
+    console.error('Error fetching call details from Google Sheet:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch call' },
+      { error: 'Failed to fetch call details' },
       { status: 500 }
     );
   }

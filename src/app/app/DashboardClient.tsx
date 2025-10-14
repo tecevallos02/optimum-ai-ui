@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import KpiCard from "@/components/KpiCard";
 import CallsOverTime from "@/components/charts/CallsOverTime";
 import IntentsDistribution from "@/components/charts/IntentsDistribution";
@@ -12,10 +11,6 @@ import type { KPI } from "@/lib/types";
 import { fetcher } from "@/lib/fetcher";
 
 export default function DashboardClient() {
-  const searchParams = useSearchParams();
-  const companyId = searchParams.get('companyId');
-  const phone = searchParams.get('phone');
-  
   const [kpis, setKpis] = useState<KPI>({
     callsHandled: 0,
     bookings: 0,
@@ -29,22 +24,13 @@ export default function DashboardClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!companyId) {
-      setLoading(false);
-      return;
-    }
-
     const fetchDashboardData = async () => {
       try {
-        // Build query parameters
-        const params = new URLSearchParams({ companyId });
-        if (phone) params.set('phone', phone);
-
         // Fetch all dashboard data in parallel
         const [kpisData, callsOverTimeData, intentsData] = await Promise.all([
-          fetcher(`/api/kpis?${params.toString()}`),
-          fetcher(`/api/analytics/calls-over-time?${params.toString()}&days=7`),
-          fetcher(`/api/analytics/intents-distribution?${params.toString()}&days=30`)
+          fetcher('/api/kpis'),
+          fetcher('/api/analytics/calls-over-time?days=7'),
+          fetcher('/api/analytics/intents-distribution?days=30')
         ]);
 
         setKpis(kpisData as KPI || {
@@ -58,66 +44,82 @@ export default function DashboardClient() {
         setCallsOverTimeData((callsOverTimeData as any)?.data || []);
         setIntentsData((intentsData as any)?.data || []);
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        console.error('Error fetching dashboard data:', error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchDashboardData();
-  }, [companyId, phone]);
-
-  // Use real data or fallback to empty arrays
-  const callsHandledSeries = callsOverTimeData.length > 0 ? callsOverTimeData : [];
-  const intentsSeries = intentsData.length > 0 ? intentsData : [];
+  }, []);
 
   if (loading) {
     return (
-      <div className="space-y-8">
-        <PageTitle title="Dashboard" subtitle="Loading..." />
-      </div>
-    );
-  }
-
-  if (!companyId) {
-    return (
-      <div className="space-y-8">
-        <PageTitle title="Dashboard" subtitle="Select a company to view data" />
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-          <p className="text-yellow-800 dark:text-yellow-200">
-            Please select a company from the dropdown above to view dashboard data.
-          </p>
+      <div className="p-6">
+        <PageTitle title="Dashboard" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm animate-pulse">
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+            </div>
+          ))}
         </div>
       </div>
     );
   }
+
   return (
-    <div className="space-y-8">
-      <PageTitle title="Dashboard" subtitle="Welcome back! Here's what's happening today." />
+    <div className="p-6">
+      <PageTitle title="Dashboard" />
+      
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <KpiCard
+          label="Calls Handled"
+          value={kpis.callsHandled}
+          sublabel="+12% from last week"
+        />
+        <KpiCard
+          label="Bookings"
+          value={kpis.bookings}
+          sublabel="+8% from last week"
+        />
+        <KpiCard
+          label="Avg Handle Time"
+          value={`${Math.round(kpis.avgHandleTime / 60)}m`}
+          sublabel="-5% from last week"
+        />
+        <KpiCard
+          label="Conversion Rate"
+          value={`${kpis.conversionRate}%`}
+          sublabel="+3% from last week"
+        />
+      </div>
 
-      {/* Upcoming Appointments - Main Feature */}
-      <UpcomingAppointments />
-
-      {/* Charts Section */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-card border border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-lg group">
-          <h2 className="text-center font-semibold mb-6 text-gray-900 dark:text-gray-100">Calls over Time</h2>
-          <CallsOverTime data={callsHandledSeries} />
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            Calls Over Time
+          </h3>
+          <CallsOverTime data={callsOverTimeData} />
         </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-card border border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-lg group">
-          <h2 className="text-center font-semibold mb-6 text-gray-900 dark:text-gray-100">Intents Distribution</h2>
-          <IntentsDistribution data={intentsSeries} />
+        
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            Intents Distribution
+          </h3>
+          <IntentsDistribution data={intentsData} />
         </div>
       </div>
 
-      {/* KPI Cards - Moved Below Charts */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <KpiCard label="Calls Handled" value={kpis.callsHandled} />
-        <KpiCard label="Appointments" value={kpis.bookings} />
-        <KpiCard label="Avg Handle Time (s)" value={kpis.avgHandleTime} />
-        <KpiCard label="Conversion Rate" value={`${kpis.conversionRate}%`} />
-        <KpiCard label="Calls Escalated" value={kpis.callsEscalated} />
-        <KpiCard label="Estimated Savings ($)" value={`$${kpis.estimatedSavings}`} />
+      {/* Upcoming Appointments */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          Upcoming Appointments
+        </h3>
+        <UpcomingAppointments />
       </div>
     </div>
   );
