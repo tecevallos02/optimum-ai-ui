@@ -8,7 +8,11 @@ export async function GET() {
     const user = await requireUser();
     
     // Get the user's specific company
+    console.log(`🔍 Appointments API - User ID: ${user.id}`);
+    console.log(`🔍 Appointments API - User companyId: ${user.companyId}`);
+    
     if (!user.companyId) {
+      console.log('❌ User not linked to any company');
       return NextResponse.json(
         { error: 'User not linked to any company' },
         { status: 404 }

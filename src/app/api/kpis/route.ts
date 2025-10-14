@@ -10,7 +10,11 @@ export async function GET(request: NextRequest) {
     const phone = searchParams.get('phone');
 
     // Get the user's specific company
+    console.log(`🔍 KPIs API - User ID: ${user.id}`);
+    console.log(`🔍 KPIs API - User companyId: ${user.companyId}`);
+    
     if (!user.companyId) {
+      console.log('❌ User not linked to any company');
       return NextResponse.json(
         { error: 'User not linked to any company' },
         { status: 404 }
@@ -18,6 +22,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get combined data (Google Sheets + Retell)
+    console.log(`🔍 KPIs API - Calling getCombinedData with companyId: ${user.companyId}`);
     const combinedData = await getCombinedData(user.companyId, {
       phone: phone || undefined,
       useMockRetell: false, // Use real data from database
