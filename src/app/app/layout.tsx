@@ -93,7 +93,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             <OrgSwitcherClient />
             
             {/* Phone Selector - only shows if multiple phones */}
-            <PhoneSelector onPhoneChange={() => {}} />
+            <PhoneSelector />
           </div>
 
           <div className="flex items-center space-x-4">

@@ -3,11 +3,7 @@
 import { useState, useEffect } from 'react';
 import { fetcher } from '@/lib/fetcher';
 
-interface PhoneSelectorProps {
-  onPhoneChange: (phone: string | null) => void;
-}
-
-export default function PhoneSelector({ onPhoneChange }: PhoneSelectorProps) {
+export default function PhoneSelector() {
   const [phones, setPhones] = useState<string[]>([]);
   const [selectedPhone, setSelectedPhone] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,7 +17,6 @@ export default function PhoneSelector({ onPhoneChange }: PhoneSelectorProps) {
         // Auto-select if only one phone
         if (data?.phones && data.phones.length === 1) {
           setSelectedPhone(data.phones[0]);
-          onPhoneChange(data.phones[0]);
         }
       } catch (error) {
         console.error('Error fetching phones:', error);
@@ -30,12 +25,12 @@ export default function PhoneSelector({ onPhoneChange }: PhoneSelectorProps) {
       }
     };
     fetchPhones();
-  }, [onPhoneChange]);
+  }, []);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const phone = e.target.value === 'all' ? null : e.target.value;
     setSelectedPhone(phone);
-    onPhoneChange(phone);
+    // TODO: Implement phone filtering logic here if needed
   };
 
   if (isLoading) {
