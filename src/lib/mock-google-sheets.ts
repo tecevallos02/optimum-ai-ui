@@ -159,7 +159,7 @@ export async function mockReadSheetData({
 export async function mockGetSheetMetadata(spreadsheetId: string, dataRange: string) {
   console.log('📊 Using mock sheet metadata');
   return {
-    rowCount: mockCallData.length,
+    rowCount: baseMockData.length,
     lastModified: new Date().toISOString()
   };
 }
