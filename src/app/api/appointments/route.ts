@@ -48,6 +48,7 @@ export async function GET() {
     const calls = await readSheetData({
       spreadsheetId: companySheet.spreadsheetId,
       range: companySheet.dataRange,
+      companyId: company.id, // Pass companyId for mock data generation
     });
 
     // Convert CallRow data to Appointment format for upcoming appointments

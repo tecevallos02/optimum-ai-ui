@@ -65,6 +65,7 @@ export async function GET(request: NextRequest) {
       phoneFilter: phone || undefined,
       from: startDate.toISOString(),
       to: endDate.toISOString(),
+      companyId: company.id, // Pass companyId for mock data generation
     });
 
     const dailyCalls: { [key: string]: number } = {};

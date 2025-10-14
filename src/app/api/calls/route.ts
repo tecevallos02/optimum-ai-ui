@@ -54,6 +54,7 @@ export async function GET(request: NextRequest) {
       from: from || undefined,
       to: to || undefined,
       statusFilter: status || undefined,
+      companyId: company.id, // Pass companyId for mock data generation
     });
 
     return NextResponse.json({ calls });
