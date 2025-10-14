@@ -128,6 +128,12 @@ export async function mockReadSheetData({
   
   // Get company-specific mock data
   const companyData = companyId ? getCompanyMockData(companyId) : baseMockData;
+  console.log(`📊 Generated ${companyData.length} appointments for company ${companyId}`);
+  if (companyData.length > 0) {
+    console.log(`   👤 First customer: ${companyData[0].name}`);
+    console.log(`   📞 First phone: ${companyData[0].phone}`);
+    console.log(`   🆔 First appointment ID: ${companyData[0].appointment_id}`);
+  }
   let filteredData = [...companyData];
 
   // Apply phone filter

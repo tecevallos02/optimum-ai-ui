@@ -88,6 +88,8 @@ export async function readSheetData({
   
   if (!hasValidCredentials || isMockSpreadsheet) {
     console.log('🔧 Using mock data - Google Sheets credentials not configured or mock spreadsheet ID');
+    console.log(`🏢 Company ID being passed to mock data: ${companyId}`);
+    console.log(`📊 Spreadsheet ID: ${spreadsheetId}`);
     return mockReadSheetData({ spreadsheetId, range, phoneFilter, from, to, statusFilter, companyId });
   }
 
