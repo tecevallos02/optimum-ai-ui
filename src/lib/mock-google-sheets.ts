@@ -72,6 +72,8 @@ const baseMockData: CallRow[] = [
 
 // Generate company-specific mock data
 function getCompanyMockData(companyId: string): CallRow[] {
+  console.log(`🔧 getCompanyMockData called with companyId: ${companyId}`);
+  
   const companyData = {
     'acme-corp': {
       prefix: 'ACME',
@@ -91,6 +93,7 @@ function getCompanyMockData(companyId: string): CallRow[] {
   };
 
   const company = companyData[companyId as keyof typeof companyData] || companyData['acme-corp'];
+  console.log(`🔧 Selected company data:`, company);
   
   return baseMockData.map((call, index) => ({
     ...call,
@@ -127,6 +130,7 @@ export async function mockReadSheetData({
   console.log(`🏢 Company ID: ${companyId || 'unknown'}`);
   
   // Get company-specific mock data
+  console.log(`🔧 About to call getCompanyMockData with companyId: ${companyId}`);
   const companyData = companyId ? getCompanyMockData(companyId) : baseMockData;
   console.log(`📊 Generated ${companyData.length} appointments for company ${companyId}`);
   if (companyData.length > 0) {
