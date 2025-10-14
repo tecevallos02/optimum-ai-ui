@@ -1,5 +1,6 @@
 import { google } from 'googleapis';
 import { CallRow } from './types';
+import { mockReadSheetData, mockGetSheetMetadata } from './mock-google-sheets';
 
 // Initialize Google Sheets API
 function getSheetsClient() {
@@ -74,6 +75,17 @@ export async function readSheetData({
   to?: string;
   statusFilter?: string;
 }): Promise<CallRow[]> {
+  // Check if we have valid credentials
+  const hasValidCredentials = process.env.GOOGLE_SHEETS_CLIENT_EMAIL && 
+    process.env.GOOGLE_SHEETS_CLIENT_EMAIL !== 'your-service-account-email@project-id.iam.gserviceaccount.com' &&
+    process.env.GOOGLE_SHEETS_PRIVATE_KEY &&
+    process.env.GOOGLE_SHEETS_PRIVATE_KEY !== '-----BEGIN PRIVATE KEY-----\nYour-Private-Key-Here\n-----END PRIVATE KEY-----';
+
+  if (!hasValidCredentials) {
+    console.log('🔧 Using mock data - Google Sheets credentials not configured');
+    return mockReadSheetData({ spreadsheetId, range, phoneFilter, from, to, statusFilter });
+  }
+
   try {
     const sheets = getSheetsClient();
     
@@ -164,6 +176,17 @@ export async function readSheetData({
 
 // Get sheet metadata for caching
 export async function getSheetMetadata(spreadsheetId: string, dataRange: string) {
+  // Check if we have valid credentials
+  const hasValidCredentials = process.env.GOOGLE_SHEETS_CLIENT_EMAIL && 
+    process.env.GOOGLE_SHEETS_CLIENT_EMAIL !== 'your-service-account-email@project-id.iam.gserviceaccount.com' &&
+    process.env.GOOGLE_SHEETS_PRIVATE_KEY &&
+    process.env.GOOGLE_SHEETS_PRIVATE_KEY !== '-----BEGIN PRIVATE KEY-----\nYour-Private-Key-Here\n-----END PRIVATE KEY-----';
+
+  if (!hasValidCredentials) {
+    console.log('🔧 Using mock metadata - Google Sheets credentials not configured');
+    return mockGetSheetMetadata(spreadsheetId, dataRange);
+  }
+
   try {
     const sheets = getSheetsClient();
     

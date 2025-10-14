@@ -1,5 +1,5 @@
 const { google } = require('googleapis');
-require('dotenv').config();
+require('dotenv').config({ path: '.env.local' });
 
 async function testGoogleSheets() {
   try {
