@@ -97,8 +97,16 @@ export default function DashboardClient() {
         />
       </div>
 
+      {/* Upcoming Appointments */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm mb-8">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          Upcoming Appointments
+        </h3>
+        <UpcomingAppointments />
+      </div>
+
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             Calls Over Time
@@ -112,14 +120,6 @@ export default function DashboardClient() {
           </h3>
           <IntentsDistribution data={intentsData} />
         </div>
-      </div>
-
-      {/* Upcoming Appointments */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-          Upcoming Appointments
-        </h3>
-        <UpcomingAppointments />
       </div>
     </div>
   );
