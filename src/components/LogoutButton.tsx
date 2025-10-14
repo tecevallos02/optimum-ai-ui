@@ -13,10 +13,10 @@ export default function LogoutButton() {
     try {
       await signOut({ 
         redirect: false,
-        callbackUrl: '/signin'
+        callbackUrl: '/login'
       })
-      // Redirect to sign-in page after successful logout
-      router.push('/signin')
+      // Redirect to login page after successful logout
+      router.push('/login')
     } catch (error) {
       console.error('Logout error:', error)
     } finally {
@@ -28,7 +28,7 @@ export default function LogoutButton() {
     <button
       onClick={handleLogout}
       disabled={isLoading}
-      className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+      className="px-3 py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       title="Sign out"
     >
       {isLoading ? (
