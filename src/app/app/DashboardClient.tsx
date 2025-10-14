@@ -26,11 +26,15 @@ export default function DashboardClient() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        // Build query parameters for phone
+        const params = new URLSearchParams();
+        if (phone) params.set('phone', phone);
+
         // Fetch all dashboard data in parallel
         const [kpisData, callsOverTimeData, intentsData] = await Promise.all([
-          fetcher('/api/kpis'),
-          fetcher('/api/analytics/calls-over-time?days=7'),
-          fetcher('/api/analytics/intents-distribution?days=30')
+          fetcher(`/api/kpis?${params.toString()}`),
+          fetcher(`/api/analytics/calls-over-time?${params.toString()}&days=7`),
+          fetcher(`/api/analytics/intents-distribution?${params.toString()}&days=30`)
         ]);
 
         setKpis(kpisData as KPI || {
@@ -51,7 +55,7 @@ export default function DashboardClient() {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [phone]); // Re-fetch when phone changes
 
   if (loading) {
     return (

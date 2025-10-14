@@ -1,62 +1,79 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
+import { readSheetData } from "@/lib/google-sheets";
 
 export async function GET() {
   try {
     const user = await requireUser();
     
-    // Get user's organization and ensure it exists in the database
-    const userData = await prisma.user.findFirst({
-      where: { id: user.id }
-    }) as any;
-    
-    const orgName = userData?.organization || 'Default Organization'
-    
-    // Ensure organization exists in the database
-    let org = await prisma.organization.findFirst({
-      where: { name: orgName }
-    })
-    
-    if (!org) {
-      console.log('Creating organization for appointments GET:', orgName);
-      org = await prisma.organization.create({
-        data: {
-          name: orgName,
-        }
-      })
+    // Get the user's specific company
+    if (!user.companyId) {
+      return NextResponse.json(
+        { error: 'User not linked to any company' },
+        { status: 404 }
+      );
     }
-    
-    const currentOrgId = org.id
 
-    // Fetch appointments from database
-    const appointments = await prisma.appointment.findMany({
-      where: { orgId: currentOrgId },
-      orderBy: { startsAt: 'asc' }
+    const company = await prisma.company.findUnique({
+      where: {
+        id: user.companyId
+      },
+      include: {
+        sheets: true,
+        phones: true,
+      }
     });
 
-    // Convert database format to API format
-    const data = appointments.map(appointment => ({
-      id: appointment.id,
-      orgId: appointment.orgId,
-      googleEventId: appointment.googleEventId,
-      title: appointment.title,
-      customerName: appointment.customerName,
-      customerPhone: appointment.customerPhone,
-      customerEmail: appointment.customerEmail,
-      startsAt: appointment.startsAt.toISOString(),
-      endsAt: appointment.endsAt.toISOString(),
-      status: appointment.status.toLowerCase(),
-      source: appointment.source.toLowerCase(),
-      description: appointment.description,
-      notes: appointment.notes,
-      createdAt: appointment.createdAt.toISOString(),
-      updatedAt: appointment.updatedAt.toISOString(),
-    }));
+    if (!company) {
+      return NextResponse.json(
+        { error: 'No company found for this user' },
+        { status: 404 }
+      );
+    }
 
-    return NextResponse.json(data, { status: 200 });
+    const companySheet = company.sheets[0];
+    if (!companySheet) {
+      return NextResponse.json(
+        { error: 'Google Sheet configuration not found for this company' },
+        { status: 404 }
+      );
+    }
+
+    // Read data from Google Sheets
+    const calls = await readSheetData({
+      spreadsheetId: companySheet.spreadsheetId,
+      range: companySheet.dataRange,
+    });
+
+    // Convert CallRow data to Appointment format for upcoming appointments
+    // Only include calls that are booked/scheduled/confirmed
+    const appointments = calls
+      .filter(call => 
+        call.status.toLowerCase() === 'booked' || 
+        call.status.toLowerCase() === 'scheduled' || 
+        call.status.toLowerCase() === 'confirmed'
+      )
+      .map(call => ({
+        id: call.appointment_id,
+        orgId: company.id,
+        googleEventId: null,
+        title: `Appointment with ${call.name}`,
+        customerName: call.name,
+        customerPhone: call.phone,
+        customerEmail: null,
+        startsAt: call.datetime_iso,
+        endsAt: new Date(new Date(call.datetime_iso).getTime() + 60 * 60 * 1000).toISOString(), // 1 hour duration
+        status: call.status.toLowerCase(),
+        source: 'phone',
+        description: call.notes,
+        notes: call.notes,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }))
+      .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
+
+    return NextResponse.json(appointments, { status: 200 });
   } catch (error) {
     console.error('Error fetching appointments:', error);
     return NextResponse.json(
