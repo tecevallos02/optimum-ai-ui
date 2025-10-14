@@ -22,12 +22,6 @@ export default function DashboardClient() {
     conversionRate: 0,
     callsEscalated: 0,
     estimatedSavings: 0,
-    // Retell data
-    totalCalls: 0,
-    totalTimeSaved: 0,
-    totalCost: 0,
-    averageCallDuration: 0,
-    averageTimeSaved: 0,
   });
   const [callsOverTimeData, setCallsOverTimeData] = useState<any[]>([]);
   const [intentsData, setIntentsData] = useState<any[]>([]);
@@ -54,12 +48,6 @@ export default function DashboardClient() {
           conversionRate: 0,
           callsEscalated: 0,
           estimatedSavings: 0,
-          // Retell data
-          totalCalls: 0,
-          totalTimeSaved: 0,
-          totalCost: 0,
-          averageCallDuration: 0,
-          averageTimeSaved: 0,
         });
         setCallsOverTimeData((callsOverTimeData as any)?.data || []);
         setIntentsData((intentsData as any)?.data || []);
@@ -117,34 +105,6 @@ export default function DashboardClient() {
         />
       </div>
 
-      {/* Retell Analytics KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        <KpiCard
-          label="Total Calls"
-          value={kpis.totalCalls}
-          sublabel="From Retell"
-        />
-        <KpiCard
-          label="Time Saved"
-          value={`${Math.round(kpis.totalTimeSaved / 60)}m`}
-          sublabel="Total minutes saved"
-        />
-        <KpiCard
-          label="Total Cost"
-          value={`$${kpis.totalCost.toFixed(2)}`}
-          sublabel="Call costs"
-        />
-        <KpiCard
-          label="Avg Call Duration"
-          value={`${Math.round(kpis.averageCallDuration / 60)}m`}
-          sublabel="Per call"
-        />
-        <KpiCard
-          label="Avg Time Saved"
-          value={`${Math.round(kpis.averageTimeSaved / 60)}m`}
-          sublabel="Per call"
-        />
-      </div>
 
       {/* Upcoming Appointments */}
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm mb-8">

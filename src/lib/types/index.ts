@@ -86,12 +86,6 @@ export type KPI = {
   conversionRate: number; // % of calls that resulted in bookings
   callsEscalated: number; // number of calls escalated to human
   estimatedSavings: number;
-  // Retell data
-  totalCalls: number;
-  totalTimeSaved: number; // in seconds
-  totalCost: number; // in dollars
-  averageCallDuration: number; // in seconds
-  averageTimeSaved: number; // in seconds
 };
 
 export type SavingsEntry = {

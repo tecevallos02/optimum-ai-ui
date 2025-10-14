@@ -23,7 +23,17 @@ export async function GET(request: NextRequest) {
       useMockRetell: true, // Use mock data for now
     });
 
-    return NextResponse.json(combinedData.kpis);
+    // Return only the main 4 KPIs (Retell data will be used for these)
+    const mainKpis = {
+      callsHandled: combinedData.kpis.callsHandled,
+      bookings: combinedData.kpis.bookings,
+      avgHandleTime: combinedData.kpis.avgHandleTime,
+      conversionRate: combinedData.kpis.conversionRate,
+      callsEscalated: combinedData.kpis.callsEscalated,
+      estimatedSavings: combinedData.kpis.estimatedSavings,
+    };
+
+    return NextResponse.json(mainKpis);
   } catch (error) {
     console.error('Error fetching KPIs:', error);
     return NextResponse.json(
@@ -34,11 +44,6 @@ export async function GET(request: NextRequest) {
         conversionRate: 0,
         callsEscalated: 0,
         estimatedSavings: 0,
-        totalCalls: 0,
-        totalTimeSaved: 0,
-        totalCost: 0,
-        averageCallDuration: 0,
-        averageTimeSaved: 0,
       },
       { status: 500 }
     );

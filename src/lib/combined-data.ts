@@ -121,26 +121,22 @@ export async function getCombinedData(
 }
 
 function calculateCombinedKPIs(appointments: CallRow[], retellAnalytics: RetellAnalytics): CombinedKPIs {
-  // Calculate Google Sheets KPIs
-  const callsHandled = appointments.length;
+  // Use Retell data for the main KPIs
+  const callsHandled = retellAnalytics.totalCalls;
   const bookings = appointments.filter(app => 
     app.status.toLowerCase() === 'booked' || 
     app.status.toLowerCase() === 'scheduled' ||
     app.status.toLowerCase() === 'confirmed'
   ).length;
   const conversionRate = callsHandled > 0 ? (bookings / callsHandled) * 100 : 0;
-  const callsEscalated = appointments.filter(app => 
-    app.status.toLowerCase() === 'escalated'
-  ).length;
+  const callsEscalated = retellAnalytics.callsByStatus.failed; // Use failed calls as escalated
   
-  // Calculate average handle time (mock calculation)
-  const avgHandleTime = callsHandled > 0 ? (callsHandled * 180) : 0; // 3 minutes average
-  
-  // Calculate estimated savings (mock calculation)
-  const estimatedSavings = callsHandled * 25; // $25 per call saved
+  // Use Retell data for handle time and savings
+  const avgHandleTime = retellAnalytics.averageCallDuration;
+  const estimatedSavings = retellAnalytics.totalTimeSaved * 0.05; // $0.05 per second saved
 
   return {
-    // Google Sheets data
+    // Main KPIs from Retell data
     callsHandled,
     bookings,
     avgHandleTime,
@@ -148,7 +144,7 @@ function calculateCombinedKPIs(appointments: CallRow[], retellAnalytics: RetellA
     callsEscalated,
     estimatedSavings,
     
-    // Retell data
+    // Retell data (for reference, but not displayed)
     totalCalls: retellAnalytics.totalCalls,
     totalTimeSaved: retellAnalytics.totalTimeSaved,
     totalCost: retellAnalytics.totalCost,
