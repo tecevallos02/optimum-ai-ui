@@ -185,13 +185,24 @@ export const authOptions: AuthOptions = {
         }
         
         try {
-          // Get user data with organization name
+          // Get user data with organization name and company
           const userData = await prisma.user.findUnique({
             where: { id: user.id },
             select: {
               organization: true,
             }
           })
+          
+          // Get company ID separately to avoid Prisma client issues
+          const userWithCompany = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: {
+              companyId: true,
+            }
+          })
+          
+          // Set company ID
+          token.companyId = userWithCompany?.companyId || null
           
           if (userData?.organization) {
             // User has organization name, create org object
@@ -228,6 +239,17 @@ export const authOptions: AuthOptions = {
             }
           })
           
+          // Get company ID separately
+          const userWithCompany = await prisma.user.findUnique({
+            where: { id: token.userId },
+            select: {
+              companyId: true,
+            }
+          })
+          
+          // Update company ID
+          token.companyId = userWithCompany?.companyId || null
+          
           if (userData?.organization) {
             token.orgs = [{
               id: 'user-org',
@@ -255,6 +277,7 @@ export const authOptions: AuthOptions = {
         session.user.image = token.image as string
         session.user.orgs = token.orgs || []
         session.user.currentOrgId = token.currentOrgId || null
+        session.user.companyId = token.companyId || null
         
         // Set role based on current org
         if (token.currentOrgId && token.orgs) {

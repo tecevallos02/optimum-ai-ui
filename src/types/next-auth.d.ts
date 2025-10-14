@@ -11,6 +11,7 @@ declare module "next-auth" {
       orgs?: Array<{ id: string; name: string; role: Role }>
       currentOrgId?: string | null
       role?: Role | null
+      companyId?: string | null
     }
   }
 
@@ -27,6 +28,7 @@ declare module "next-auth/jwt" {
     userId?: string
     orgs?: Array<{ id: string; name: string; role: Role }>
     currentOrgId?: string | null
+    companyId?: string | null
   }
 }
 

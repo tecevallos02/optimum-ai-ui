@@ -13,8 +13,18 @@ export async function GET(request: NextRequest) {
     const phone = searchParams.get('phone');
     const days = parseInt(searchParams.get('days') || '30');
 
-    // For now, get the first company (in a real app, you'd link users to companies)
-    const company = await prisma.company.findFirst({
+    // Get the user's specific company
+    if (!user.companyId) {
+      return NextResponse.json(
+        { error: 'User not linked to any company' },
+        { status: 404 }
+      );
+    }
+
+    const company = await prisma.company.findUnique({
+      where: {
+        id: user.companyId
+      },
       include: {
         sheets: true,
         phones: true,

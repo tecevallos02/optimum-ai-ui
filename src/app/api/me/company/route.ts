@@ -6,8 +6,18 @@ export async function GET() {
   try {
     const user = await requireUser();
     
-    // For now, get the first company (in a real app, you'd link users to companies)
-    const company = await prisma.company.findFirst({
+    // Get the user's specific company
+    if (!user.companyId) {
+      return NextResponse.json(
+        { error: 'User not linked to any company' },
+        { status: 404 }
+      );
+    }
+
+    const company = await prisma.company.findUnique({
+      where: {
+        id: user.companyId
+      },
       include: {
         phones: true
       }
@@ -15,7 +25,7 @@ export async function GET() {
 
     if (!company) {
       return NextResponse.json(
-        { error: 'No company found' },
+        { error: 'No company found for this user' },
         { status: 404 }
       );
     }

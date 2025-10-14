@@ -13,6 +13,7 @@ export type SessionUser = {
   orgId: string | null;
   role: Role | null;
   orgs: Array<{ id: string; name: string; role: Role }>;
+  companyId: string | null;
 }
 
 export async function getServerSession() {
@@ -30,6 +31,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     orgId: session.user.currentOrgId || null,
     role: session.user.role || null,
     orgs: session.user.orgs || [],
+    companyId: session.user.companyId || null,
   }
 }
 
