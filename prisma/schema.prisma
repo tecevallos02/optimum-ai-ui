@@ -202,6 +202,7 @@ model Company {
   sheets    CompanySheet[]
   phones    CompanyPhone[]
   cache     SheetCache[]
+  retell    CompanyRetell[]
 }
 
 model CompanySheet {
@@ -235,6 +236,21 @@ model SheetCache {
   lastSynced  DateTime
   rowCount    Int
   createdAt   DateTime  @default(now())
+  
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  @@unique([companyId])
+}
+
+// Retell workflow configuration for each company
+model CompanyRetell {
+  id            String   @id @default(cuid())
+  companyId     String
+  workflowId    String   // Retell workflow ID
+  apiKey        String   // Retell API key for this company
+  webhookUrl    String?  // Optional webhook URL for real-time updates
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   
