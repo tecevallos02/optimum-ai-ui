@@ -1,7 +1,7 @@
 import { CallRow } from './types';
 
 // Mock data for testing the UI without real Google Sheets
-export const mockCallData: CallRow[] = [
+const baseMockData: CallRow[] = [
   {
     appointment_id: 'APPT-001',
     name: 'John Smith',
@@ -70,6 +70,39 @@ export const mockCallData: CallRow[] = [
   }
 ];
 
+// Generate company-specific mock data
+function getCompanyMockData(companyId: string): CallRow[] {
+  const companyData = {
+    'acme-corp': {
+      prefix: 'ACME',
+      phone: '+15551112222',
+      customers: ['John Smith', 'Jane Doe', 'Mike Johnson', 'Sarah Wilson', 'David Brown']
+    },
+    'tech-solutions': {
+      prefix: 'TECH',
+      phone: '+15553334444', 
+      customers: ['Alice Johnson', 'Bob Wilson', 'Carol Davis', 'David Miller', 'Eva Garcia']
+    },
+    'global-services': {
+      prefix: 'GLOBAL',
+      phone: '+15555556666',
+      customers: ['Frank Smith', 'Grace Lee', 'Henry Chen', 'Ivy Rodriguez', 'Jack Taylor']
+    }
+  };
+
+  const company = companyData[companyId as keyof typeof companyData] || companyData['acme-corp'];
+  
+  return baseMockData.map((call, index) => ({
+    ...call,
+    appointment_id: `${company.prefix}-${String(index + 1).padStart(3, '0')}`,
+    phone: company.phone,
+    name: company.customers[index % company.customers.length] || `Customer ${index + 1}`,
+    address: call.address.replace('New York, NY', companyId === 'acme-corp' ? 'New York, NY' : 
+                                 companyId === 'tech-solutions' ? 'San Francisco, CA' : 'London, UK'),
+    notes: `${call.notes} (${company.prefix} customer)`
+  }));
+}
+
 // Mock function to simulate Google Sheets API
 export async function mockReadSheetData({
   spreadsheetId,
@@ -78,6 +111,7 @@ export async function mockReadSheetData({
   from,
   to,
   statusFilter,
+  companyId,
 }: {
   spreadsheetId: string;
   range: string;
@@ -85,12 +119,16 @@ export async function mockReadSheetData({
   from?: string;
   to?: string;
   statusFilter?: string;
+  companyId?: string;
 }): Promise<CallRow[]> {
   console.log('📊 Using mock Google Sheets data for testing');
   console.log(`📋 Spreadsheet ID: ${spreadsheetId}`);
   console.log(`📊 Range: ${range}`);
+  console.log(`🏢 Company ID: ${companyId || 'unknown'}`);
   
-  let filteredData = [...mockCallData];
+  // Get company-specific mock data
+  const companyData = companyId ? getCompanyMockData(companyId) : baseMockData;
+  let filteredData = [...companyData];
 
   // Apply phone filter
   if (phoneFilter) {

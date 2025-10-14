@@ -69,6 +69,7 @@ export async function getCombinedData(
         phoneFilter: options.phone,
         from: options.startDate,
         to: options.endDate,
+        companyId: companyId,
       });
     }
 
@@ -81,7 +82,7 @@ export async function getCombinedData(
       
       if (options.useMockRetell) {
         // Use mock data for development
-        callLogs = getMockRetellData();
+        callLogs = getMockRetellData(companyId);
       } else {
         // Fetch real data from Retell API
         callLogs = await fetchRetellCalls(companyRetell, {

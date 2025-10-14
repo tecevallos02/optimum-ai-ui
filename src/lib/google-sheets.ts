@@ -67,6 +67,7 @@ export async function readSheetData({
   from,
   to,
   statusFilter,
+  companyId,
 }: {
   spreadsheetId: string;
   range: string;
@@ -74,6 +75,7 @@ export async function readSheetData({
   from?: string;
   to?: string;
   statusFilter?: string;
+  companyId?: string;
 }): Promise<CallRow[]> {
   // Check if we have valid credentials
   const hasValidCredentials = process.env.GOOGLE_SHEETS_CLIENT_EMAIL &&
@@ -86,7 +88,7 @@ export async function readSheetData({
   
   if (!hasValidCredentials || isMockSpreadsheet) {
     console.log('🔧 Using mock data - Google Sheets credentials not configured or mock spreadsheet ID');
-    return mockReadSheetData({ spreadsheetId, range, phoneFilter, from, to, statusFilter });
+    return mockReadSheetData({ spreadsheetId, range, phoneFilter, from, to, statusFilter, companyId });
   }
 
   try {

@@ -138,9 +138,18 @@ export function calculateRetellAnalytics(calls: RetellCallData[]): RetellAnalyti
 }
 
 // Mock data for development/testing
-export function getMockRetellData(): RetellCallData[] {
+export function getMockRetellData(companyId?: string): RetellCallData[] {
   const now = new Date();
   const mockCalls: RetellCallData[] = [];
+  
+  // Company-specific phone numbers
+  const companyPhones = {
+    'acme-corp': '+15551112222',
+    'tech-solutions': '+15553334444',
+    'global-services': '+15555556666'
+  };
+  
+  const companyPhone = companyPhones[companyId as keyof typeof companyPhones] || '+15551112222';
   
   // Generate mock data for the last 30 days
   for (let i = 0; i < 30; i++) {
@@ -155,17 +164,17 @@ export function getMockRetellData(): RetellCallData[] {
       const cost = duration * 0.02; // $0.02 per second
       
       mockCalls.push({
-        callId: `mock-call-${i}-${j}`,
-        workflowId: 'mock-workflow',
-        customerPhone: `+1555${Math.floor(Math.random() * 10000000).toString().padStart(7, '0')}`,
+        callId: `mock-call-${companyId || 'default'}-${i}-${j}`,
+        workflowId: `mock-workflow-${companyId || 'default'}`,
+        customerPhone: companyPhone,
         startTime: startTime.toISOString(),
         endTime: endTime.toISOString(),
         duration,
         status: Math.random() > 0.1 ? 'completed' : 'failed',
         timeSaved,
         cost,
-        transcript: `Mock transcript for call ${i}-${j}`,
-        summary: `Mock summary for call ${i}-${j}`,
+        transcript: `Mock transcript for ${companyId || 'default'} call ${i}-${j}`,
+        summary: `Mock summary for ${companyId || 'default'} call ${i}-${j}`,
       });
     }
   }

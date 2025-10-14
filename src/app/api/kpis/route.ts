@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     // Get combined data (Google Sheets + Retell)
     const combinedData = await getCombinedData(user.companyId, {
       phone: phone || undefined,
-      useMockRetell: true, // Use mock data for now
+      useMockRetell: false, // Use real data from database
     });
 
     // Return only the main 4 KPIs (Retell data will be used for these)
