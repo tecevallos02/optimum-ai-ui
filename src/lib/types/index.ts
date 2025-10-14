@@ -1,19 +1,31 @@
 // path: src/lib/types/index.ts
+import { Decimal } from '@prisma/client/runtime/library';
+import { JsonValue } from '@prisma/client/runtime/library';
+
 export type Call = {
   id: string;
   orgId: string;
-  startedAt: string;
-  durationSec: number;
-  status: "completed" | "missed" | "cancelled";
+  phoneNumberId?: string | null;
+  externalId?: string | null;
+  fromNumber: string;
+  toNumber: string;
+  direction: 'INBOUND' | 'OUTBOUND';
+  status: 'RINGING' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'BUSY' | 'NO_ANSWER' | 'CANCELLED';
+  duration: number;
+  recordingUrl?: string | null;
+  transcript?: string | null;
+  transcriptUrl?: string | null;
   intent: string[];
-  transcriptUrl: string;
-  recordingUrl: string;
-  createdByAgent: boolean;
-  disposition: string;
-  contactId: string;
-  costSeconds: number;
+  disposition?: string | null;
+  escalated: boolean;
+  escalatedTo?: string | null;
+  cost?: Decimal | null;
   tags: string[];
-  escalated?: boolean;
+  metadata?: JsonValue;
+  startedAt: string;
+  endedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Appointment = {
@@ -27,9 +39,59 @@ export type Appointment = {
   startsAt: string;
   endsAt: string;
   status: 'scheduled' | 'confirmed' | 'completed' | 'canceled' | 'no_show';
-  source?: 'web' | 'phone' | 'agent' | 'imported';
+  source?: 'web' | 'phone' | 'agent' | 'imported' | 'AI_RECEPTIONIST';
   description?: string;
   notes?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type PhoneNumber = {
+  id: string;
+  orgId: string;
+  phoneNumber: string;
+  friendlyName?: string;
+  provider: string;
+  providerId?: string;
+  isActive: boolean;
+  isPrimary: boolean;
+  capabilities: string[];
+  webhookUrl?: string;
+  retellAgentId?: string;
+  retellApiKey?: string;
+  n8nWorkflowId?: string;
+  n8nWebhookSecret?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AiReceptionistConfig = {
+  id: string;
+  orgId: string;
+  name: string;
+  isActive: boolean;
+  retellAgentId?: string;
+  retellApiKey?: string;
+  voiceSettings?: {
+    voice_id: string;
+    speed: number;
+    temperature: number;
+  };
+  greetingMessage?: string;
+  businessHoursMessage?: string;
+  escalationRules?: {
+    keywords: string[];
+    maxAttempts: number;
+    escalationMessage: string;
+  };
+  appointmentSettings?: {
+    enabled: boolean;
+    bookingWindow: number;
+    bufferTime: number;
+    confirmationMessage: string;
+  };
+  n8nWorkflowId?: string;
+  n8nWebhookUrl?: string;
   createdAt: string;
   updatedAt: string;
 };

@@ -15,10 +15,10 @@ export default function CallsPage() {
 
   useEffect(() => {
     let mounted = true;
-    fetcher<Call[]>("/api/calls")
+    fetcher<{ calls: Call[] }>("/api/calls")
       .then((res) => {
         if (!mounted) return;
-        setCalls(res ?? []);
+        setCalls(res?.calls ?? []);
       })
       .finally(() => mounted && setLoading(false));
     return () => {
@@ -52,21 +52,64 @@ export default function CallsPage() {
   const columns: Column<Call>[] = [
     {
       key: "startedAt",
-      header: "Start",
+      header: "Start Time",
       render: (r) => new Date(r.startedAt).toLocaleString(),
     },
-    { key: "durationSec", header: "Duration (s)" },
-    { key: "status", header: "Status" },
-    { key: "disposition", header: "Disposition" },
+    {
+      key: "fromNumber",
+      header: "From",
+      render: (r) => r.fromNumber,
+    },
+    {
+      key: "toNumber", 
+      header: "To",
+      render: (r) => r.toNumber,
+    },
+    {
+      key: "duration",
+      header: "Duration",
+      render: (r) => {
+        const minutes = Math.floor(r.duration / 60);
+        const seconds = r.duration % 60;
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      },
+    },
+    { 
+      key: "status", 
+      header: "Status",
+      render: (r) => (
+        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+          r.status === 'COMPLETED' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+          r.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+          r.status === 'FAILED' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
+          'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+        }`}>
+          {r.status.replace('_', ' ')}
+        </span>
+      ),
+    },
+    { 
+      key: "disposition", 
+      header: "Disposition",
+      render: (r) => r.disposition || 'N/A',
+    },
     {
       key: "escalated",
       header: "Escalated",
-      render: (r) => r.escalated ? "Yes" : "No",
+      render: (r) => (
+        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+          r.escalated 
+            ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' 
+            : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+        }`}>
+          {r.escalated ? "Yes" : "No"}
+        </span>
+      ),
     },
     {
-      key: "tags",
-      header: "Tags",
-      render: (r) => (r.tags ?? []).join(", "),
+      key: "intent",
+      header: "Intent",
+      render: (r) => (r.intent ?? []).join(", ") || 'N/A',
     },
   ];
 

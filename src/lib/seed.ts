@@ -8,17 +8,27 @@ export function seedCalls(): Call[] {
     return {
       id: callId,
       orgId: 'org_1',
-      startedAt: formatISO(subMinutes(start, 30)),
-      durationSec: 240 + i * 10,
-      status: i % 5 === 0 ? 'missed' : 'completed',
-      intent: i % 4 === 0 ? ['book'] : ['info'],
-      transcriptUrl: `/transcripts/${callId}.txt`,
+      phoneNumberId: null,
+      externalId: `ext_${callId}`,
+      fromNumber: `+1555${String(i).padStart(7, '0')}`,
+      toNumber: '+15551234567',
+      direction: i % 2 === 0 ? 'INBOUND' : 'OUTBOUND',
+      status: i % 5 === 0 ? 'NO_ANSWER' : 'COMPLETED',
+      duration: 240 + i * 10,
       recordingUrl: `/recordings/${callId}.mp3`,
-      createdByAgent: false,
+      transcript: `Call transcript for ${callId}`,
+      transcriptUrl: `/transcripts/${callId}.txt`,
+      intent: i % 4 === 0 ? ['book'] : ['info'],
       disposition: i % 3 === 0 ? 'follow-up' : 'resolved',
-      contactId: `contact_${(i % 5) + 1}`,
-      costSeconds: 240 + i * 10,
-      tags: i % 2 ? ['support'] : ['lead']
+      escalated: i % 7 === 0,
+      escalatedTo: i % 7 === 0 ? 'user_1' : null,
+      cost: null,
+      tags: i % 2 ? ['support'] : ['lead'],
+      metadata: { createdByAgent: false, costSeconds: 240 + i * 10 },
+      startedAt: formatISO(subMinutes(start, 30)),
+      endedAt: formatISO(subMinutes(start, 30 + (240 + i * 10) / 60)),
+      createdAt: formatISO(subMinutes(start, 30)),
+      updatedAt: formatISO(subMinutes(start, 30))
     };
   });
 }

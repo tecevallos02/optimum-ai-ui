@@ -57,6 +57,11 @@ export const SOURCE_COLORS = {
     bg: 'bg-slate-100',
     text: 'text-slate-800',
     icon: '📥'
+  },
+  AI_RECEPTIONIST: {
+    bg: 'bg-emerald-100',
+    text: 'text-emerald-800',
+    icon: '🤖'
   }
 } as const;
 
@@ -77,5 +82,6 @@ export const LEGEND_ITEMS = [
   { type: 'source', key: 'web', label: 'Web', color: SOURCE_COLORS.web },
   { type: 'source', key: 'phone', label: 'Phone', color: SOURCE_COLORS.phone },
   { type: 'source', key: 'agent', label: 'Agent', color: SOURCE_COLORS.agent },
-  { type: 'source', key: 'imported', label: 'Imported', color: SOURCE_COLORS.imported }
+  { type: 'source', key: 'imported', label: 'Imported', color: SOURCE_COLORS.imported },
+  { type: 'source', key: 'AI_RECEPTIONIST', label: 'AI Receptionist', color: SOURCE_COLORS.AI_RECEPTIONIST }
 ] as const;

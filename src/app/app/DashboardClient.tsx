@@ -19,67 +19,47 @@ export default function DashboardClient() {
     callsEscalated: 0,
     estimatedSavings: 0,
   });
+  const [callsOverTimeData, setCallsOverTimeData] = useState<any[]>([]);
+  const [intentsData, setIntentsData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchKpis = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const response = await fetch("/api/kpis");
-        if (response.ok) {
-          const data = await response.json();
-          setKpis(data);
-        } else {
-          console.error("Failed to fetch KPIs:", response.status);
+        // Fetch all dashboard data in parallel
+        const [kpisResponse, callsOverTimeResponse, intentsResponse] = await Promise.all([
+          fetch("/api/kpis"),
+          fetch("/api/analytics/calls-over-time?days=7"),
+          fetch("/api/analytics/intents-distribution?days=30")
+        ]);
+
+        if (kpisResponse.ok) {
+          const kpisData = await kpisResponse.json();
+          setKpis(kpisData);
+        }
+
+        if (callsOverTimeResponse.ok) {
+          const callsData = await callsOverTimeResponse.json();
+          setCallsOverTimeData(callsData.data || []);
+        }
+
+        if (intentsResponse.ok) {
+          const intentsData = await intentsResponse.json();
+          setIntentsData(intentsData.data || []);
         }
       } catch (error) {
-        console.error("Error fetching KPIs:", error);
+        console.error("Error fetching dashboard data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchKpis();
+    fetchDashboardData();
   }, []);
 
-  // Generate realistic call data for the last 7 days
-  const generateCallsData = () => {
-    const days = [];
-    const today = new Date();
-    
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      
-      // Generate realistic call patterns (more calls on weekdays)
-      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-      const baseCalls = isWeekend ? 15 : 35;
-      const variation = Math.random() * 20 - 10;
-      const totalCalls = Math.max(5, Math.round(baseCalls + variation));
-      
-      const escalatedCalls = Math.round(totalCalls * (0.1 + Math.random() * 0.1)); // 10-20% escalation rate
-      const bookedCalls = Math.round(totalCalls * (0.15 + Math.random() * 0.15)); // 15-30% booking rate
-      const completedCalls = Math.round(totalCalls * (0.6 + Math.random() * 0.2)); // 60-80% completion rate
-      
-      days.push({
-        name: date.toLocaleDateString('en-US', { weekday: 'short' }),
-        totalCalls,
-        escalatedCalls,
-        bookedCalls,
-        completedCalls,
-      });
-    }
-    return days;
-  };
-
-  const callsHandledSeries = generateCallsData();
-
-  const intentsSeries = [
-    { name: "Booking", count: 120, percentage: 0, color: "" },
-    { name: "Information", count: 85, percentage: 0, color: "" },
-    { name: "Cancellation", count: 25, percentage: 0, color: "" },
-    { name: "Escalation", count: 18, percentage: 0, color: "" },
-    { name: "Complaint", count: 8, percentage: 0, color: "" },
-  ];
+  // Use real data or fallback to empty arrays
+  const callsHandledSeries = callsOverTimeData.length > 0 ? callsOverTimeData : [];
+  const intentsSeries = intentsData.length > 0 ? intentsData : [];
 
   if (loading) {
     return (

@@ -1,40 +1,76 @@
 // path: src/app/api/calls/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from '@/lib/prisma';
+import { requireUser } from '@/lib/auth';
 
-export async function GET() {
-  // Mock calls — adjust to your schema as needed
-  const data = [
-    {
-      id: "call_1",
-      orgId: "org_1",
-      startedAt: new Date().toISOString(),
-      durationSec: 185,
-      status: "completed",
-      intent: ["book"],
-      transcriptUrl: "/transcripts/call_1.txt",
-      recordingUrl: "/recordings/call_1.mp3",
-      createdByAgent: false,
-      disposition: "booked",
-      contactId: "ct_1",
-      costSeconds: 185,
-      tags: ["inbound", "priority"],
-    },
-    {
-      id: "call_2",
-      orgId: "org_1",
-      startedAt: new Date(Date.now() - 3600_000).toISOString(),
-      durationSec: 0,
-      status: "missed",
-      intent: [],
-      transcriptUrl: "",
-      recordingUrl: "",
-      createdByAgent: false,
-      disposition: "voicemail",
-      contactId: "ct_2",
-      costSeconds: 0,
-      tags: ["inbound"],
-    },
-  ] as const;
+export async function GET(request: NextRequest) {
+  try {
+    const user = await requireUser();
+    
+    // Get user's current organization
+    const membership = await prisma.membership.findFirst({
+      where: { userId: user.id },
+      include: { org: true }
+    });
 
-  return NextResponse.json(data, { status: 200 });
+    if (!membership) {
+      return NextResponse.json(
+        { error: "User not associated with any organization" },
+        { status: 404 }
+      );
+    }
+
+    // Get query parameters
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const status = searchParams.get('status');
+    const escalated = searchParams.get('escalated');
+
+    // Build where clause
+    const where: any = { orgId: membership.orgId };
+    
+    if (status) {
+      where.status = status;
+    }
+    
+    if (escalated !== null) {
+      where.escalated = escalated === 'true';
+    }
+
+    // Fetch calls with pagination
+    const calls = await prisma.call.findMany({
+      where,
+      include: {
+        phoneNumber: {
+          select: {
+            friendlyName: true,
+            phoneNumber: true
+          }
+        }
+      },
+      orderBy: { startedAt: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit
+    });
+
+    // Get total count for pagination
+    const totalCount = await prisma.call.count({ where });
+
+    return NextResponse.json({
+      calls,
+      pagination: {
+        page,
+        limit,
+        total: totalCount,
+        pages: Math.ceil(totalCount / limit)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching calls:', error);
+    return NextResponse.json(
+      { error: "Failed to fetch calls" },
+      { status: 500 }
+    );
+  }
 }

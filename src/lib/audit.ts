@@ -19,6 +19,17 @@ export type AuditAction =
   | 'complaint:created'
   | 'complaint:updated'
   | 'complaint:deleted'
+  | 'phone_number:created'
+  | 'phone_number:updated'
+  | 'phone_number:deleted'
+  | 'ai_receptionist:created'
+  | 'ai_receptionist:updated'
+  | 'ai_receptionist:deleted'
+  | 'call:created'
+  | 'call:updated'
+  | 'appointment:created'
+  | 'appointment:updated'
+  | 'appointment:deleted'
 
 export interface AuditMeta {
   [key: string]: unknown
