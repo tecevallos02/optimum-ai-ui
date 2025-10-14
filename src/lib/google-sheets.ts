@@ -169,7 +169,7 @@ export async function getSheetMetadata(spreadsheetId: string, dataRange: string)
     
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range,
+      range: dataRange,
     });
 
     const rows = response.data.values || [];

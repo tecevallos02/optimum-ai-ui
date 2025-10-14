@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
 
     // Get sheet metadata for pagination info
     const metadata = await getSheetMetadata(companySheet.spreadsheetId, companySheet.dataRange);
-    const totalRows = metadata?.totalRows || calls.length;
+    const totalRows = metadata?.rowCount || calls.length;
 
     return NextResponse.json({
       calls,
