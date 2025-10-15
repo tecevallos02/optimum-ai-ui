@@ -3,14 +3,16 @@ import { NextRequest, NextResponse } from "next/server"
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
-  // Allow public routes
+  // Allow public routes and admin routes
   if (
     pathname === '/' ||
     pathname === '/signin' ||
     pathname === '/login' ||
     pathname === '/auth' ||
     pathname === '/verify' ||
+    pathname.startsWith('/admin') ||
     pathname.startsWith('/api/auth/') ||
+    pathname.startsWith('/api/admin/') ||
     pathname.startsWith('/api/test-db') ||
     pathname.startsWith('/invite/') ||
     pathname.startsWith('/_next/') ||

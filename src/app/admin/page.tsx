@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 interface AdminStats {
@@ -17,6 +19,8 @@ interface AdminStats {
 }
 
 export default function AdminDashboard() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [stats, setStats] = useState<AdminStats>({
     totalClients: 0,
     activeClients: 0,
@@ -25,6 +29,16 @@ export default function AdminDashboard() {
     recentActivity: []
   });
   const [loading, setLoading] = useState(true);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === 'loading') return; // Still loading
+    
+    if (!session || !(session.user as any)?.isAdmin) {
+      router.push('/admin/login');
+      return;
+    }
+  }, [session, status, router]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -44,7 +58,8 @@ export default function AdminDashboard() {
     fetchStats();
   }, []);
 
-  if (loading) {
+  // Show loading while checking authentication
+  if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -53,6 +68,11 @@ export default function AdminDashboard() {
         </div>
       </div>
     );
+  }
+
+  // Don't render anything if not authenticated (will redirect)
+  if (!session || !(session.user as any)?.isAdmin) {
+    return null;
   }
 
   return (
