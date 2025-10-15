@@ -1,4 +1,4 @@
-import NextAuth from "next-auth"
+import NextAuth from "next-auth/next"
 import { authOptions } from "@/lib/auth.config"
 
 // Force Node.js runtime for Prisma compatibility
