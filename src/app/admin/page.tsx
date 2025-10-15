@@ -32,34 +32,64 @@ export default function AdminDashboard() {
 
   // Check admin access
   useEffect(() => {
+    console.log('🔍 Admin page auth check:', { status, session: !!session, email: session?.user?.email });
+    
     if (status === 'loading') return;
     
     if (status === 'unauthenticated') {
+      console.log('❌ Not authenticated, redirecting to login');
       router.push('/login?next=/admin');
       return;
     }
     
     if (session?.user?.email) {
       const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',').map(email => email.trim()) || ['goshawkai1@gmail.com'];
+      console.log('🔍 Admin emails:', adminEmails);
+      console.log('🔍 User email:', session.user.email);
+      console.log('🔍 Is admin:', adminEmails.includes(session.user.email));
+      
       if (!adminEmails.includes(session.user.email)) {
+        console.log('❌ Not admin, redirecting to home');
         router.push('/');
         return;
       }
     }
     
+    console.log('✅ Admin access granted, loading stats');
     // Load stats if admin
     loadStats();
-  }, [session, status, router]);
+    
+    // Add timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      if (loading) {
+        console.log('⏰ Loading timeout, setting loading to false');
+        setLoading(false);
+      }
+    }, 10000); // 10 second timeout
+    
+    return () => clearTimeout(timeout);
+  }, [session, status, router, loading]);
 
   const loadStats = async () => {
     try {
+      console.log('🔍 Fetching admin stats...');
       const response = await fetch('/api/admin/stats');
+      console.log('📊 Stats response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('📊 Stats data received:', data);
         setStats(data);
+        setLoading(false);
+      } else {
+        console.error('❌ Stats API error:', response.status, response.statusText);
+        const errorData = await response.text();
+        console.error('❌ Error details:', errorData);
+        setLoading(false);
       }
     } catch (error) {
-      console.error('Error fetching admin stats:', error);
+      console.error('❌ Error fetching admin stats:', error);
+      setLoading(false);
     }
   };
 
