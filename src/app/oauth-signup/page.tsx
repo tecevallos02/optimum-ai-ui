@@ -26,7 +26,7 @@ function OAuthSignupContent() {
         setLastName(session.user.name?.split(' ').slice(1).join(' ') || '')
         
         // Check if user already has an organization
-        if (session.user.orgs && session.user.orgs.length > 0) {
+        if ((session.user as any).orgs && (session.user as any).orgs.length > 0) {
           // User already has organization, redirect to app
           router.replace(callbackUrl)
         }

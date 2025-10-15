@@ -68,7 +68,7 @@ export const adminAuthOptions: any = {
     signIn: "/admin/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       // Initial sign in
       if (user) {
         token.userId = user.id
@@ -79,7 +79,7 @@ export const adminAuthOptions: any = {
       
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (token.userId) {
         session.user.id = token.userId as string
         session.user.email = token.email as string

@@ -11,7 +11,7 @@ export default function ConfigPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (session?.user?.id) {
+    if ((session?.user as any)?.id) {
       fetchCurrentOrg();
     }
   }, [session]);
