@@ -269,13 +269,10 @@ function LoginContent() {
           </div>
         </div>
 
-        {/* Sign up link */}
+        {/* Admin notice */}
         <div className="text-center">
           <p className="text-sm text-gray-600">
-            Don't have an account?{' '}
-            <Link href="/signin" className="font-medium text-blue-600 hover:text-blue-500">
-              Create one here
-            </Link>
+            Need an account? Contact your administrator to create one for you.
           </p>
         </div>
 
