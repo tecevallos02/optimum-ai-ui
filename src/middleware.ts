@@ -35,24 +35,18 @@ export async function middleware(request: NextRequest) {
       // Not authenticated, redirect to login
       const loginUrl = new URL('/login', request.url)
       loginUrl.searchParams.set('next', pathname)
-      const response = NextResponse.redirect(loginUrl)
-      response.headers.set('X-Guard', 'admin-no-auth')
-      return response
+      return NextResponse.redirect(loginUrl)
     }
     
     // Check if user is admin
     const userEmail = token.email
     if (!userEmail || !adminEmails.includes(userEmail)) {
       // Not admin, redirect to home
-      const response = NextResponse.redirect(new URL('/', request.url))
-      response.headers.set('X-Guard', 'admin-not-admin')
-      return response
+      return NextResponse.redirect(new URL('/', request.url))
     }
     
     // Admin user, allow access
-    const response = NextResponse.next()
-    response.headers.set('X-Guard', 'admin-allowed')
-    return response
+    return NextResponse.next()
   }
 
   // Handle protected routes (app routes)
