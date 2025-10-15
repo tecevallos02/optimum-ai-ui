@@ -80,8 +80,11 @@ export const adminAuthOptions: any = {
   ],
   callbacks: {
     async jwt({ token, user }: any) {
+      console.log('🔐 Admin JWT callback:', { user: !!user, tokenKeys: Object.keys(token) });
+      
       // Initial sign in
       if (user) {
+        console.log('🔐 Setting admin JWT token:', { id: user.id, email: user.email, isAdmin: true });
         token.userId = user.id
         token.email = user.email
         token.name = user.name
@@ -91,13 +94,25 @@ export const adminAuthOptions: any = {
       return token
     },
     async session({ session, token }: any) {
+      console.log('🔐 Admin session callback:', { 
+        hasToken: !!token, 
+        tokenKeys: token ? Object.keys(token) : [],
+        sessionUser: session?.user 
+      });
+      
       if (token.userId) {
+        console.log('🔐 Setting admin session:', { 
+          id: token.userId, 
+          email: token.email, 
+          isAdmin: token.isAdmin 
+        });
         session.user.id = token.userId as string
         session.user.email = token.email as string
         session.user.name = token.name as string
         session.user.isAdmin = token.isAdmin as boolean
       }
       
+      console.log('🔐 Final admin session:', session);
       return session
     },
   },

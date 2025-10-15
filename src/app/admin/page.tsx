@@ -35,7 +35,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (redirecting) return; // Already redirecting
     
-    console.log('Admin auth check:', { status, session: !!session, user: session?.user });
+    console.log('Admin auth check:', { 
+      status, 
+      session: !!session, 
+      user: session?.user,
+      userKeys: session?.user ? Object.keys(session.user) : []
+    });
     
     // Add a timeout to prevent infinite loading
     const timeout = setTimeout(() => {
@@ -46,7 +51,12 @@ export default function AdminDashboard() {
       }
     }, 5000); // 5 second timeout
     
-    if (status === 'unauthenticated' || !session) {
+    if (status === 'loading') {
+      console.log('Session still loading...');
+      return;
+    }
+    
+    if (status === 'unauthenticated') {
       console.log('No session, redirecting to login');
       clearTimeout(timeout);
       setRedirecting(true);
@@ -55,10 +65,15 @@ export default function AdminDashboard() {
     }
     
     // Check if user has admin privileges
-    const user = session.user as any;
-    console.log('User admin check:', { isAdmin: user?.isAdmin, user });
+    const user = session?.user as any;
+    console.log('User admin check:', { 
+      isAdmin: user?.isAdmin, 
+      user,
+      hasIsAdmin: 'isAdmin' in (user || {}),
+      userType: typeof user
+    });
     
-    if (!user?.isAdmin) {
+    if (!user || !('isAdmin' in user) || !user.isAdmin) {
       console.log('Not admin, redirecting to login');
       clearTimeout(timeout);
       setRedirecting(true);
