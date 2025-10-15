@@ -21,10 +21,10 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   if (!session?.user) return null
 
   return {
-    id: session.user.id,
-    email: session.user.email!,
-    name: session.user.name || undefined,
-    companyId: session.user.companyId || null,
+    id: (session.user as any).id,
+    email: (session.user as any).email!,
+    name: (session.user as any).name || undefined,
+    companyId: (session.user as any).companyId || null,
   }
 }
 
