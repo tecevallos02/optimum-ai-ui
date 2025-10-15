@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getToken } from "next-auth/jwt"
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -26,32 +25,26 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Get session token
-  const token = await getToken({ req: request })
+  // Get session from cookies (Edge Runtime compatible)
+  const sessionToken = request.cookies.get('next-auth.session-token')?.value
   
   // Handle admin routes
   if (pathname.startsWith('/admin')) {
-    if (!token) {
+    if (!sessionToken) {
       // Not authenticated, redirect to login
       const loginUrl = new URL('/login', request.url)
       loginUrl.searchParams.set('next', pathname)
       return NextResponse.redirect(loginUrl)
     }
     
-    // Check if user is admin
-    const userEmail = token.email
-    if (!userEmail || !adminEmails.includes(userEmail)) {
-      // Not admin, redirect to home
-      return NextResponse.redirect(new URL('/', request.url))
-    }
-    
-    // Admin user, allow access
+    // For admin routes, we'll let the page handle the admin check
+    // since we can't decode JWT in Edge Runtime
     return NextResponse.next()
   }
 
   // Handle protected routes (app routes)
   if (pathname.startsWith('/app')) {
-    if (!token) {
+    if (!sessionToken) {
       // Not authenticated, redirect to login
       const loginUrl = new URL('/login', request.url)
       loginUrl.searchParams.set('next', pathname)
@@ -65,7 +58,7 @@ export async function middleware(request: NextRequest) {
   // Handle other protected routes
   const protectedRoutes = ['/dashboard', '/contacts', '/billing', '/config', '/calls', '/calendar', '/savings', '/team', '/audit']
   if (protectedRoutes.some(route => pathname.startsWith(route))) {
-    if (!token) {
+    if (!sessionToken) {
       // Not authenticated, redirect to login
       const loginUrl = new URL('/login', request.url)
       loginUrl.searchParams.set('next', pathname)

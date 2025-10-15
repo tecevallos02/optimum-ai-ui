@@ -5,8 +5,9 @@
 Add these environment variables to your `.env.local` file:
 
 ```bash
-# Admin emails (comma-separated list)
+# Admin emails (comma-separated list) - both server and client side
 ADMIN_EMAILS="goshawkai1@gmail.com,partner@example.com"
+NEXT_PUBLIC_ADMIN_EMAILS="goshawkai1@gmail.com,partner@example.com"
 
 # NextAuth configuration
 NEXTAUTH_URL="https://ui.goshawkai.com"

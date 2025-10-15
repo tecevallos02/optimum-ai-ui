@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 interface AdminStats {
@@ -17,6 +19,8 @@ interface AdminStats {
 }
 
 export default function AdminDashboard() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [stats, setStats] = useState<AdminStats>({
     totalClients: 0,
     activeClients: 0,
@@ -26,10 +30,26 @@ export default function AdminDashboard() {
   });
   const [loading, setLoading] = useState(true);
 
-  // Load stats when component mounts
+  // Check admin access
   useEffect(() => {
+    if (status === 'loading') return;
+    
+    if (status === 'unauthenticated') {
+      router.push('/login?next=/admin');
+      return;
+    }
+    
+    if (session?.user?.email) {
+      const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',').map(email => email.trim()) || ['goshawkai1@gmail.com'];
+      if (!adminEmails.includes(session.user.email)) {
+        router.push('/');
+        return;
+      }
+    }
+    
+    // Load stats if admin
     loadStats();
-  }, []);
+  }, [session, status, router]);
 
   const loadStats = async () => {
     try {
@@ -43,8 +63,8 @@ export default function AdminDashboard() {
     }
   };
 
-  // Show loading while fetching data
-  if (loading) {
+  // Show loading while checking auth or fetching data
+  if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -55,7 +75,10 @@ export default function AdminDashboard() {
     );
   }
 
-  // Middleware handles authentication, so we can render the dashboard
+  // Don't render if not authenticated or not admin
+  if (status === 'unauthenticated' || !session?.user?.email) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
