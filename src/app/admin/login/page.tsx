@@ -31,7 +31,7 @@ export default function AdminLoginPage() {
       } else {
         // Check if we have a valid admin session
         const session = await getSession()
-        if (session?.user?.isAdmin) {
+        if (session?.user && 'isAdmin' in session.user && session.user.isAdmin) {
           router.push(redirectTo)
         } else {
           setError('Access denied. Admin privileges required.')

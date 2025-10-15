@@ -46,3 +46,39 @@ export async function requireUserWithCompany(): Promise<SessionUser> {
   
   return user
 }
+
+// Legacy exports for backward compatibility (will be removed in future)
+export async function getCurrentOrgId(): Promise<string | null> {
+  const cookieStore = await cookies()
+  const currentOrgCookie = cookieStore.get('currentOrgId')
+  return currentOrgCookie?.value || null
+}
+
+export async function requireRole(required: any): Promise<SessionUser> {
+  // Legacy function - just return user with company
+  return await requireUserWithCompany()
+}
+
+export async function hasRole(required: any): Promise<boolean> {
+  try {
+    await requireUserWithCompany()
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function getUserMembership(userId: string, orgId: string) {
+  return await prisma.membership.findUnique({
+    where: {
+      userId_orgId: {
+        userId,
+        orgId,
+      },
+    },
+    include: {
+      org: true,
+      user: true,
+    },
+  })
+}
