@@ -11,7 +11,6 @@ export async function GET() {
         firstName: true,
         lastName: true,
         emailVerified: true,
-        createdAt: true,
         company: {
           select: {
             id: true,
@@ -20,7 +19,7 @@ export async function GET() {
         }
       },
       orderBy: {
-        createdAt: 'desc'
+        email: 'asc'
       }
     });
 

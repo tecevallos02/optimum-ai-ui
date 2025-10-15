@@ -195,10 +195,12 @@ enum AppointmentSource {
 
 // Tenant configuration for Google Sheets integration
 model Company {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String   @id @default(cuid())
+  name              String   @unique
+  googleSheetId     String?  // Google Sheets ID for this company
+  retellWebhookUrl  String?  // Retell webhook URL for this company
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
   
   users     User[]
   sheets    CompanySheet[]

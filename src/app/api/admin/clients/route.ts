@@ -68,8 +68,6 @@ export async function POST(request: NextRequest) {
         name: contactName,
         firstName: contactName.split(' ')[0] || contactName,
         lastName: contactName.split(' ').slice(1).join(' ') || '',
-        phone: phone || null,
-        address: address || null,
         emailVerified: new Date(), // Mark as verified
         companyId: company.id,
       }
