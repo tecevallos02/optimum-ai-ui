@@ -1,6 +1,6 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
-import AdminSessionProvider from './AdminSessionProvider';
+import { SessionProvider } from '../SessionProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,11 +17,11 @@ export default function AdminLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AdminSessionProvider>
+        <SessionProvider>
           <div className="min-h-screen bg-gray-50">
             {children}
           </div>
-        </AdminSessionProvider>
+        </SessionProvider>
       </body>
     </html>
   );

@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 interface AdminStats {
@@ -19,8 +17,6 @@ interface AdminStats {
 }
 
 export default function AdminDashboard() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
   const [stats, setStats] = useState<AdminStats>({
     totalClients: 0,
     activeClients: 0,
@@ -29,53 +25,11 @@ export default function AdminDashboard() {
     recentActivity: []
   });
   const [loading, setLoading] = useState(true);
-  const [redirecting, setRedirecting] = useState(false);
 
-  // Redirect to login if not authenticated
+  // Load stats when component mounts
   useEffect(() => {
-    if (redirecting) return; // Already redirecting
-    
-    console.log('Admin auth check:', { 
-      status, 
-      session: !!session, 
-      user: session?.user,
-      userKeys: session?.user ? Object.keys(session.user) : []
-    });
-    
-    // Handle loading state
-    if (status === 'loading') {
-      console.log('Session still loading...');
-      return;
-    }
-    
-    // Handle unauthenticated state
-    if (status === 'unauthenticated') {
-      console.log('No session, redirecting to login');
-      setRedirecting(true);
-      router.push('/admin/login');
-      return;
-    }
-    
-    // Check if user has admin privileges
-    const user = session?.user as any;
-    console.log('User admin check:', { 
-      isAdmin: user?.isAdmin, 
-      user,
-      hasIsAdmin: 'isAdmin' in (user || {}),
-      userType: typeof user
-    });
-    
-    if (!user || !('isAdmin' in user) || !user.isAdmin) {
-      console.log('Not admin, redirecting to login');
-      setRedirecting(true);
-      router.push('/admin/login');
-      return;
-    }
-    
-    console.log('Admin authenticated successfully');
-    setLoading(false);
     loadStats();
-  }, [session, status, router, redirecting]);
+  }, []);
 
   const loadStats = async () => {
     try {
@@ -89,24 +43,19 @@ export default function AdminDashboard() {
     }
   };
 
-  // Show loading while checking authentication
-  if (loading || redirecting) {
+  // Show loading while fetching data
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">
-            {redirecting ? 'Redirecting to login...' : 'Loading admin dashboard...'}
-          </p>
+          <p className="mt-4 text-gray-600">Loading admin dashboard...</p>
         </div>
       </div>
     );
   }
 
-  // Don't render anything if not authenticated (will redirect)
-  if (!session || !(session.user as any)?.isAdmin) {
-    return null;
-  }
+  // Middleware handles authentication, so we can render the dashboard
 
   return (
     <div className="min-h-screen bg-gray-50">

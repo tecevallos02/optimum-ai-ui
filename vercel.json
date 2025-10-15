@@ -1,10 +1,4 @@
 {
-  "rewrites": [
-    {
-      "source": "/admin/(.*)",
-      "destination": "/admin/$1"
-    }
-  ],
   "headers": [
     {
       "source": "/admin/(.*)",
@@ -22,13 +16,6 @@
           "value": "strict-origin-when-cross-origin"
         }
       ]
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/admin",
-      "destination": "/admin/",
-      "permanent": false
     }
   ]
 }
