@@ -42,23 +42,15 @@ export default function AdminDashboard() {
       userKeys: session?.user ? Object.keys(session.user) : []
     });
     
-    // Add a timeout to prevent infinite loading
-    const timeout = setTimeout(() => {
-      if (status === 'unauthenticated') {
-        console.log('Session loading timeout, redirecting to login');
-        setRedirecting(true);
-        router.push('/admin/login');
-      }
-    }, 5000); // 5 second timeout
-    
+    // Handle loading state
     if (status === 'loading') {
       console.log('Session still loading...');
       return;
     }
     
+    // Handle unauthenticated state
     if (status === 'unauthenticated') {
       console.log('No session, redirecting to login');
-      clearTimeout(timeout);
       setRedirecting(true);
       router.push('/admin/login');
       return;
@@ -75,33 +67,27 @@ export default function AdminDashboard() {
     
     if (!user || !('isAdmin' in user) || !user.isAdmin) {
       console.log('Not admin, redirecting to login');
-      clearTimeout(timeout);
       setRedirecting(true);
       router.push('/admin/login');
       return;
     }
     
     console.log('Admin authenticated successfully');
-    clearTimeout(timeout);
+    setLoading(false);
+    loadStats();
   }, [session, status, router, redirecting]);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await fetch('/api/admin/stats');
-        if (response.ok) {
-          const data = await response.json();
-          setStats(data);
-        }
-      } catch (error) {
-        console.error('Error fetching admin stats:', error);
-      } finally {
-        setLoading(false);
+  const loadStats = async () => {
+    try {
+      const response = await fetch('/api/admin/stats');
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
       }
-    };
-
-    fetchStats();
-  }, []);
+    } catch (error) {
+      console.error('Error fetching admin stats:', error);
+    }
+  };
 
   // Show loading while checking authentication
   if (loading || redirecting) {
