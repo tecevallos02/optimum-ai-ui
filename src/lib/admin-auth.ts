@@ -20,17 +20,20 @@ export type AdminSessionUser = {
 }
 
 export async function getAdminServerSession() {
-  return await nextAuthGetServerSession(adminAuthOptions)
+  return await nextAuthGetServerSession(adminAuthOptions) as any
 }
 
 export async function getCurrentAdminUser(): Promise<AdminSessionUser | null> {
   const session = await getAdminServerSession()
   if (!session?.user) return null
 
+  // Type assertion to fix TypeScript session type issue
+  const typedSession = session as any
+
   return {
-    id: session.user.id,
-    email: session.user.email!,
-    name: session.user.name || undefined,
+    id: typedSession.user.id,
+    email: typedSession.user.email!,
+    name: typedSession.user.name || undefined,
     isAdmin: true,
   }
 }

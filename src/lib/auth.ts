@@ -13,18 +13,21 @@ export type SessionUser = {
 }
 
 export async function getServerSession() {
-  return await nextAuthGetServerSession(authOptions)
+  return await nextAuthGetServerSession(authOptions) as any
 }
 
 export async function getCurrentUser(): Promise<SessionUser | null> {
   const session = await getServerSession()
   if (!session?.user) return null
 
+  // Type assertion to fix TypeScript session type issue
+  const typedSession = session as any
+
   return {
-    id: (session.user as any).id,
-    email: (session.user as any).email!,
-    name: (session.user as any).name || undefined,
-    companyId: (session.user as any).companyId || null,
+    id: typedSession.user.id,
+    email: typedSession.user.email!,
+    name: typedSession.user.name || undefined,
+    companyId: typedSession.user.companyId || null,
   }
 }
 

@@ -1,4 +1,4 @@
-import { AuthOptions } from "next-auth"
+// NextAuth v4 doesn't export NextAuthOptions, using any for now
 import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { adminPrisma } from "./admin-prisma"
@@ -15,7 +15,7 @@ if (!process.env.ADMIN_NEXTAUTH_SECRET && !process.env.NEXTAUTH_SECRET) {
   throw new Error("ADMIN_NEXTAUTH_SECRET or NEXTAUTH_SECRET is missing");
 }
 
-export const adminAuthOptions: AuthOptions = {
+export const adminAuthOptions: any = {
   adapter: PrismaAdapter(adminPrisma),
   session: {
     strategy: "jwt",

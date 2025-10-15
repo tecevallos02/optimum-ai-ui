@@ -1,4 +1,4 @@
-import { AuthOptions } from "next-auth"
+// NextAuth v4 doesn't export NextAuthOptions, using any for now
 import GoogleProvider from "next-auth/providers/google"
 import AzureADProvider from "next-auth/providers/azure-ad"
 import EmailProvider from "next-auth/providers/email"
@@ -18,7 +18,7 @@ if (!process.env.NEXTAUTH_SECRET) {
   throw new Error("NEXTAUTH_SECRET is missing");
 }
 
-export const authOptions: AuthOptions = {
+export const authOptions: any = {
   adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
@@ -186,7 +186,7 @@ export const authOptions: AuthOptions = {
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account }: any) {
       // Initial sign in
       if (account && user) {
         token.userId = user.id
@@ -243,7 +243,7 @@ export const authOptions: AuthOptions = {
       
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (token.userId) {
         session.user.id = token.userId as string
         session.user.email = token.email as string
