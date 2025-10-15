@@ -67,7 +67,6 @@ export async function POST(request: NextRequest) {
         lastName: true,
         name: true,
         companyId: true,
-        createdAt: true,
       }
     });
 
@@ -92,14 +91,13 @@ export async function GET() {
         lastName: true,
         name: true,
         companyId: true,
-        createdAt: true,
         company: {
           select: {
             name: true
           }
         }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { email: 'asc' }
     });
 
     return NextResponse.json(users);
