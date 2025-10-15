@@ -14,7 +14,7 @@ interface NewClient {
   retellWebhookUrl: string;
 }
 
-export default function ClientsPage() {
+export default function AddClientPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -76,36 +76,55 @@ export default function ClientsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Add New Client</h1>
-              <p className="mt-1 text-sm text-gray-500">Create a new client account and company</p>
+      <header className="bg-white shadow-xl border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <div className="flex items-center space-x-4">
+              {/* Goshawk AI Logo */}
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Goshawk AI
+                  </h1>
+                  <p className="text-sm text-gray-500 font-medium">Add New Client</p>
+                </div>
+              </div>
             </div>
             <Link
               href="/admin"
-              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-3 rounded-xl text-sm font-medium shadow-lg transition-all duration-200 hover:shadow-xl"
             >
-              Back to Dashboard
+              ← Back to Dashboard
             </Link>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="max-w-3xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
+      <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="px-8 py-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Company Information */}
-              <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Company Information</h3>
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-100">
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                  <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                  Company Information
+                </h3>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="companyName" className="block text-sm font-semibold text-gray-700 mb-2">
                       Company Name *
                     </label>
                     <input
@@ -115,12 +134,12 @@ export default function ClientsPage() {
                       required
                       value={newClient.companyName}
                       onChange={handleChange}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       placeholder="e.g., P&J Air Conditioning"
                     />
                   </div>
                   <div>
-                    <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="contactEmail" className="block text-sm font-semibold text-gray-700 mb-2">
                       Contact Email *
                     </label>
                     <input
@@ -130,7 +149,7 @@ export default function ClientsPage() {
                       required
                       value={newClient.contactEmail}
                       onChange={handleChange}
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       placeholder="contact@company.com"
                     />
                   </div>
@@ -266,13 +285,20 @@ export default function ClientsPage() {
               )}
 
               {/* Submit Button */}
-              <div className="flex justify-end">
+              <div className="flex justify-end pt-6">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-6 py-2 rounded-md text-sm font-medium"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-8 py-4 rounded-xl text-sm font-semibold shadow-lg transition-all duration-200 hover:shadow-xl disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Creating Client...' : 'Create Client'}
+                  {loading ? (
+                    <div className="flex items-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Creating Client...
+                    </div>
+                  ) : (
+                    'Create Client'
+                  )}
                 </button>
               </div>
             </form>

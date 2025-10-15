@@ -1,12 +1,16 @@
 import { Inter } from 'next/font/google';
-import './globals.css';
 import { SessionProvider } from '../SessionProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Optimum AI - Admin Panel',
-  description: 'Admin panel for managing Optimum AI clients',
+  title: 'Goshawk AI - Admin Panel',
+  description: 'Admin panel for managing Goshawk AI clients',
+  icons: {
+    icon: '/Goshawkai-Favicon.PNG',
+    shortcut: '/Goshawkai-Favicon.PNG',
+    apple: '/Goshawkai-Favicon.PNG',
+  },
 };
 
 export default function AdminLayout({
@@ -16,11 +20,9 @@ export default function AdminLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} antialiased`}>
         <SessionProvider>
-          <div className="min-h-screen bg-gray-50">
-            {children}
-          </div>
+          {children}
         </SessionProvider>
       </body>
     </html>
