@@ -33,20 +33,20 @@ export default function AdminDashboard() {
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (status === 'loading' || redirecting) return; // Still loading or already redirecting
+    if (redirecting) return; // Already redirecting
     
     console.log('Admin auth check:', { status, session: !!session, user: session?.user });
     
     // Add a timeout to prevent infinite loading
     const timeout = setTimeout(() => {
-      if (status === 'loading') {
+      if (status === 'unauthenticated') {
         console.log('Session loading timeout, redirecting to login');
         setRedirecting(true);
         router.push('/admin/login');
       }
     }, 5000); // 5 second timeout
     
-    if (!session) {
+    if (status === 'unauthenticated' || !session) {
       console.log('No session, redirecting to login');
       clearTimeout(timeout);
       setRedirecting(true);
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
   }, []);
 
   // Show loading while checking authentication
-  if (status === 'loading' || loading || redirecting) {
+  if (loading || redirecting) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

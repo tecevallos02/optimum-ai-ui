@@ -69,9 +69,6 @@ export const adminAuthOptions: any = {
       }
     }),
   ],
-  pages: {
-    signIn: "/admin/login",
-  },
   callbacks: {
     async jwt({ token, user }: any) {
       // Initial sign in
