@@ -37,8 +37,18 @@ export default function AdminDashboard() {
     
     console.log('Admin auth check:', { status, session: !!session, user: session?.user });
     
+    // Add a timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      if (status === 'loading') {
+        console.log('Session loading timeout, redirecting to login');
+        setRedirecting(true);
+        router.push('/admin/login');
+      }
+    }, 5000); // 5 second timeout
+    
     if (!session) {
       console.log('No session, redirecting to login');
+      clearTimeout(timeout);
       setRedirecting(true);
       router.push('/admin/login');
       return;
@@ -50,12 +60,14 @@ export default function AdminDashboard() {
     
     if (!user?.isAdmin) {
       console.log('Not admin, redirecting to login');
+      clearTimeout(timeout);
       setRedirecting(true);
       router.push('/admin/login');
       return;
     }
     
     console.log('Admin authenticated successfully');
+    clearTimeout(timeout);
   }, [session, status, router, redirecting]);
 
   useEffect(() => {

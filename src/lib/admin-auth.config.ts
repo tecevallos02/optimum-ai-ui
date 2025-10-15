@@ -4,14 +4,15 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { adminPrisma } from "./admin-prisma"
 import { verifyPassword } from "./password"
 
-// Validate required environment variables for admin
-if (!process.env.ADMIN_DATABASE_URL && !process.env.DATABASE_URL) {
+// Use main environment variables as fallback for admin
+const adminDatabaseUrl = process.env.ADMIN_DATABASE_URL || process.env.DATABASE_URL;
+const adminNextAuthUrl = process.env.ADMIN_NEXTAUTH_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
+const adminNextAuthSecret = process.env.ADMIN_NEXTAUTH_SECRET || process.env.NEXTAUTH_SECRET;
+
+if (!adminDatabaseUrl) {
   throw new Error("ADMIN_DATABASE_URL or DATABASE_URL is missing");
 }
-if (!process.env.ADMIN_NEXTAUTH_URL && !process.env.NEXTAUTH_URL) {
-  throw new Error("ADMIN_NEXTAUTH_URL or NEXTAUTH_URL is missing");
-}
-if (!process.env.ADMIN_NEXTAUTH_SECRET && !process.env.NEXTAUTH_SECRET) {
+if (!adminNextAuthSecret) {
   throw new Error("ADMIN_NEXTAUTH_SECRET or NEXTAUTH_SECRET is missing");
 }
 
@@ -19,6 +20,10 @@ export const adminAuthOptions: any = {
   adapter: PrismaAdapter(adminPrisma),
   session: {
     strategy: "jwt",
+  },
+  secret: adminNextAuthSecret,
+  pages: {
+    signIn: "/admin/login",
   },
   providers: [
     // Admin credentials provider only
