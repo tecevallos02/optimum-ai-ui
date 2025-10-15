@@ -20,24 +20,34 @@ function AdminLoginContent() {
     setError('')
 
     try {
+      console.log('🔐 Attempting admin login:', email);
+      
       const result = await signIn('admin-credentials', {
         email,
         password,
         redirect: false,
       })
 
+      console.log('🔐 SignIn result:', result);
+
       if (result?.error) {
+        console.log('❌ SignIn error:', result.error);
         setError('Invalid credentials or not authorized for admin access')
       } else {
         // Check if we have a valid admin session
         const session = await getSession()
+        console.log('🔐 Session after login:', session);
+        
         if (session?.user && 'isAdmin' in session.user && session.user.isAdmin) {
+          console.log('✅ Admin session valid, redirecting to:', redirectTo);
           router.push(redirectTo)
         } else {
+          console.log('❌ Admin session invalid or missing isAdmin flag');
           setError('Access denied. Admin privileges required.')
         }
       }
     } catch (error) {
+      console.error('❌ Login error:', error);
       setError('An error occurred during login')
     } finally {
       setIsLoading(false)

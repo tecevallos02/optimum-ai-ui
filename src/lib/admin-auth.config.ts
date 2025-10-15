@@ -34,7 +34,10 @@ export const adminAuthOptions: any = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
+        console.log('🔐 Admin login attempt:', credentials?.email);
+        
         if (!credentials?.email || !credentials?.password) {
+          console.log('❌ Missing credentials');
           return null
         }
 
@@ -45,16 +48,22 @@ export const adminAuthOptions: any = {
           })
 
           if (!adminUser) {
-            console.log('Email not in admin allowlist:', credentials.email)
+            console.log('❌ Email not in admin allowlist:', credentials.email)
             return null
           }
 
+          console.log('✅ Admin user found:', adminUser.email);
+
           // Verify password
           const isValidPassword = await verifyPassword(credentials.password, adminUser.password)
+          console.log('🔑 Password verification result:', isValidPassword);
+          
           if (!isValidPassword) {
-            console.log('Invalid password for admin:', credentials.email)
+            console.log('❌ Invalid password for admin:', credentials.email)
             return null
           }
+
+          console.log('✅ Admin authentication successful:', adminUser.email)
 
           return {
             id: adminUser.id,
@@ -63,7 +72,7 @@ export const adminAuthOptions: any = {
             isAdmin: true,
           }
         } catch (error) {
-          console.error('Admin credentials authorization error:', error)
+          console.error('❌ Admin credentials authorization error:', error)
           return null
         }
       }
