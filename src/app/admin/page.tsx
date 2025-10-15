@@ -29,16 +29,34 @@ export default function AdminDashboard() {
     recentActivity: []
   });
   const [loading, setLoading] = useState(true);
+  const [redirecting, setRedirecting] = useState(false);
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (status === 'loading') return; // Still loading
+    if (status === 'loading' || redirecting) return; // Still loading or already redirecting
     
-    if (!session || !(session.user as any)?.isAdmin) {
+    console.log('Admin auth check:', { status, session: !!session, user: session?.user });
+    
+    if (!session) {
+      console.log('No session, redirecting to login');
+      setRedirecting(true);
       router.push('/admin/login');
       return;
     }
-  }, [session, status, router]);
+    
+    // Check if user has admin privileges
+    const user = session.user as any;
+    console.log('User admin check:', { isAdmin: user?.isAdmin, user });
+    
+    if (!user?.isAdmin) {
+      console.log('Not admin, redirecting to login');
+      setRedirecting(true);
+      router.push('/admin/login');
+      return;
+    }
+    
+    console.log('Admin authenticated successfully');
+  }, [session, status, router, redirecting]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -59,12 +77,14 @@ export default function AdminDashboard() {
   }, []);
 
   // Show loading while checking authentication
-  if (status === 'loading' || loading) {
+  if (status === 'loading' || loading || redirecting) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading admin dashboard...</p>
+          <p className="mt-4 text-gray-600">
+            {redirecting ? 'Redirecting to login...' : 'Loading admin dashboard...'}
+          </p>
         </div>
       </div>
     );
