@@ -1,4 +1,4 @@
-// USER stack NextAuth types (simplified, no roles)
+// ADMIN stack NextAuth types
 declare module "next-auth" {
   interface Session {
     user: {
@@ -6,7 +6,7 @@ declare module "next-auth" {
       name?: string | null
       email?: string | null
       image?: string | null
-      companyId?: string | null
+      isAdmin?: boolean
     }
   }
 
@@ -15,16 +15,13 @@ declare module "next-auth" {
     name?: string | null
     email?: string | null
     image?: string | null
-    companyId?: string | null
+    isAdmin?: boolean
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     userId?: string
-    companyId?: string | null
+    isAdmin?: boolean
   }
 }
-
-
-

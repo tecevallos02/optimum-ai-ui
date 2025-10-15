@@ -1,21 +1,88 @@
-import { withAuth } from "next-auth/middleware"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
+import { getToken } from "next-auth/jwt"
 
-export default withAuth(
-  function middleware(req) {
-    // If user is authenticated but accessing auth pages, redirect to app
-    if ((req.nextUrl.pathname === '/signin' || req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/auth') && req.nextauth.token) {
-      return NextResponse.redirect(new URL('/app', req.url))
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  
+  // Allow public routes
+  if (
+    pathname === '/' ||
+    pathname === '/signin' ||
+    pathname === '/login' ||
+    pathname === '/auth' ||
+    pathname === '/verify' ||
+    pathname.startsWith('/api/auth/') ||
+    pathname.startsWith('/api/test-db') ||
+    pathname.startsWith('/invite/') ||
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/favicon.ico') ||
+    pathname.startsWith('/public/')
+  ) {
+    return NextResponse.next()
+  }
+
+  // Handle ADMIN routes
+  if (pathname.startsWith('/admin')) {
+    // Get admin token (using admin session name)
+    const adminToken = await getToken({ 
+      req: request, 
+      secret: process.env.ADMIN_NEXTAUTH_SECRET || process.env.NEXTAUTH_SECRET,
+      cookieName: process.env.ADMIN_SESSION_NAME || 'admin-next-auth.session-token'
+    })
+
+    // If no admin session and trying to access admin routes
+    if (!adminToken) {
+      if (pathname === '/admin/login') {
+        return NextResponse.next() // Allow access to login page
+      }
+      // Redirect to admin login with redirect parameter
+      const redirectUrl = new URL('/admin/login', request.url)
+      redirectUrl.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(redirectUrl)
     }
+
+    // If admin session exists but trying to access login page, redirect to admin dashboard
+    if (pathname === '/admin/login') {
+      return NextResponse.redirect(new URL('/admin', request.url))
+    }
+
+    // Allow access to admin routes
+    return NextResponse.next()
+  }
+
+  // Handle USER routes
+  if (pathname.startsWith('/app/') || 
+      (pathname.startsWith('/api/') && 
+       !pathname.startsWith('/api/admin/') &&
+       !pathname.startsWith('/api/auth/'))) {
     
+    // Get user token (using default session name)
+    const userToken = await getToken({ 
+      req: request, 
+      secret: process.env.NEXTAUTH_SECRET,
+      cookieName: 'next-auth.session-token'
+    })
+
+    // If no user session, redirect to login
+    if (!userToken) {
+      if (pathname === '/login' || pathname === '/signin') {
+        return NextResponse.next() // Allow access to login page
+      }
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+
+    // If user session exists but trying to access login page, redirect to app
+    if (pathname === '/login' || pathname === '/signin') {
+      return NextResponse.redirect(new URL('/app', request.url))
+    }
+
     // Auto-set current organization cookie if user has organizations but no current org
-    if (req.nextauth.token && req.nextUrl.pathname.startsWith('/app/')) {
-      const token = req.nextauth.token as any;
-      const currentOrgCookie = req.cookies.get('currentOrgId');
+    if (userToken && pathname.startsWith('/app/')) {
+      const currentOrgCookie = request.cookies.get('currentOrgId');
       
-      if (token.orgs && token.orgs.length > 0 && !currentOrgCookie) {
+      if (userToken.orgs && userToken.orgs.length > 0 && !currentOrgCookie) {
         const response = NextResponse.next();
-        response.cookies.set('currentOrgId', token.orgs[0].id, {
+        response.cookies.set('currentOrgId', userToken.orgs[0].id, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
@@ -25,43 +92,13 @@ export default withAuth(
         return response;
       }
     }
-    
+
+    // Allow access to user routes
     return NextResponse.next()
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const { pathname } = req.nextUrl
-        
-        // Allow public routes
-        if (
-          pathname === '/' ||
-          pathname === '/signin' ||
-          pathname === '/login' ||
-          pathname === '/auth' ||
-          pathname === '/verify' ||
-          pathname.startsWith('/api/auth/') ||
-          pathname.startsWith('/api/test-db') ||
-          pathname.startsWith('/invite/') ||
-          pathname.startsWith('/_next/') ||
-          pathname.startsWith('/favicon.ico') ||
-          pathname.startsWith('/public/')
-        ) {
-          return true
-        }
-        
-        // Require authentication for /app/** and protected APIs
-        if (pathname.startsWith('/app/') || 
-            (pathname.startsWith('/api/') && 
-             !pathname.startsWith('/api/auth/'))) {
-          return !!token
-        }
-        
-        return true
-      },
-    },
   }
-)
+
+  return NextResponse.next()
+}
 
 export const config = {
   matcher: [

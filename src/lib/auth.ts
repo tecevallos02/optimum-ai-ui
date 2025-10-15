@@ -1,6 +1,5 @@
 import { getServerSession as nextAuthGetServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth.config"
-import { Role, isAtLeast } from "./roles"
 import { cookies } from "next/headers"
 import { PrismaClient } from "@prisma/client"
 
@@ -10,9 +9,6 @@ export type SessionUser = {
   id: string;
   email: string;
   name?: string;
-  orgId: string | null;
-  role: Role | null;
-  orgs: Array<{ id: string; name: string; role: Role }>;
   companyId: string | null;
 }
 
@@ -28,9 +24,6 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     id: session.user.id,
     email: session.user.email!,
     name: session.user.name || undefined,
-    orgId: session.user.currentOrgId || null,
-    role: session.user.role || null,
-    orgs: session.user.orgs || [],
     companyId: session.user.companyId || null,
   }
 }
@@ -43,47 +36,13 @@ export async function requireUser(): Promise<SessionUser> {
   return user
 }
 
-export async function getCurrentOrgId(): Promise<string | null> {
-  const cookieStore = await cookies()
-  const currentOrgCookie = cookieStore.get('currentOrgId')
-  return currentOrgCookie?.value || null
-}
-
-export async function requireRole(required: Role): Promise<SessionUser> {
+// Simplified USER auth - no roles, single company per user
+export async function requireUserWithCompany(): Promise<SessionUser> {
   const user = await requireUser()
-  const currentOrgId = await getCurrentOrgId()
   
-  if (!currentOrgId || !user.role) {
-    throw new Error("No organization selected")
-  }
-  
-  if (!isAtLeast(user.role, required)) {
-    throw new Error("Insufficient permissions")
+  if (!user.companyId) {
+    throw new Error("User not linked to any company")
   }
   
   return user
-}
-
-export async function hasRole(required: Role): Promise<boolean> {
-  try {
-    await requireRole(required)
-    return true
-  } catch {
-    return false
-  }
-}
-
-export async function getUserMembership(userId: string, orgId: string) {
-  return await prisma.membership.findUnique({
-    where: {
-      userId_orgId: {
-        userId,
-        orgId,
-      },
-    },
-    include: {
-      org: true,
-      user: true,
-    },
-  })
 }

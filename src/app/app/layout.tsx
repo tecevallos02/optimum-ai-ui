@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getCurrentUser } from "@/lib/auth";
-import RoleGuard from "@/components/RoleGuard";
-import OrgSwitcherClient from "@/components/OrgSwitcherClient"; // <- client wrapper
+// Removed RoleGuard - no roles in USER stack
+// Removed OrgSwitcherClient - no company selector in USER stack
 import LogoutButton from "../../components/LogoutButton";
 import ClientOnlyThemeToggle from "@/components/ClientOnlyThemeToggle";
 import PhoneSelector from "@/components/PhoneSelector";
@@ -76,12 +76,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             </svg>
             Config
           </Link>
-          <Link href="/admin" className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500">
-            <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-            Admin
-          </Link>
+          {/* Admin link removed - admin is separate stack */}
         </nav>
       </aside>
 
@@ -89,9 +84,6 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       <main className="flex-1">
         <header className="flex items-center justify-between p-4 border-b border-border dark:border-gray-700 bg-background dark:bg-gray-900 sticky top-0 z-10 shadow-sm">
           <div className="flex items-center space-x-6">
-            {/* Organization Switcher */}
-            <OrgSwitcherClient />
-            
             {/* Phone Selector - only shows if multiple phones */}
             <PhoneSelector />
           </div>
@@ -108,12 +100,10 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
               </div>
             </div>
             
-            {/* Role Badge */}
-            <RoleGuard allowed={["OWNER", "MANAGER"]}>
-              <span className="px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full text-xs font-medium shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
-                {user?.role}
-              </span>
-            </RoleGuard>
+            {/* Company Badge */}
+            <span className="px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full text-xs font-medium shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
+              User
+            </span>
             
             {/* Theme Toggle */}
             <ClientOnlyThemeToggle />

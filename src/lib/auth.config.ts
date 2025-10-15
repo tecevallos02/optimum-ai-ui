@@ -23,6 +23,34 @@ export const authOptions: AuthOptions = {
   session: {
     strategy: "jwt",
   },
+  cookies: {
+    sessionToken: {
+      name: 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+      }
+    },
+    callbackUrl: {
+      name: 'next-auth.callback-url',
+      options: {
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+      }
+    },
+    csrfToken: {
+      name: 'next-auth.csrf-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+      }
+    }
+  },
   providers: [
     // Only enable providers with valid credentials
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && 
@@ -56,11 +84,7 @@ export const authOptions: AuthOptions = {
           const user = await prisma.user.findUnique({
             where: { email: credentials.email },
             include: {
-              memberships: {
-                include: {
-                  org: true
-                }
-              }
+              company: true
             }
           })
 
@@ -81,11 +105,7 @@ export const authOptions: AuthOptions = {
             lastName: user.lastName,
             image: user.image,
             emailVerified: user.emailVerified,
-            orgs: user.memberships.map(m => ({
-              id: m.org.id,
-              name: m.org.name,
-              role: m.role
-            }))
+            companyId: user.companyId
           }
         } catch (error) {
           console.error('Credentials authorization error:', error)
@@ -185,15 +205,7 @@ export const authOptions: AuthOptions = {
         }
         
         try {
-          // Get user data with organization name and company
-          const userData = await prisma.user.findUnique({
-            where: { id: user.id },
-            select: {
-              organization: true,
-            }
-          })
-          
-          // Get company ID separately to avoid Prisma client issues
+          // Get company ID for user
           const userWithCompany = await prisma.user.findUnique({
             where: { id: user.id },
             select: {
@@ -204,41 +216,16 @@ export const authOptions: AuthOptions = {
           // Set company ID
           token.companyId = userWithCompany?.companyId || null
           
-          if (userData?.organization) {
-            // User has organization name, create org object
-            token.orgs = [{
-              id: 'user-org',
-              name: userData.organization,
-              role: 'OWNER',
-            }]
-            token.currentOrgId = 'user-org'
-            
-            console.log('✅ Found organization for user:', user.email, userData.organization)
-          } else {
-            // User has no organization, set empty
-            token.orgs = []
-            token.currentOrgId = null
-            
-            console.log('No organization found for user:', user.email)
-          }
+          console.log('✅ User company ID:', user.email, token.companyId)
         } catch (error) {
-          console.error('Error handling user organization:', error)
-          // Fallback to empty if database fails
-          token.orgs = []
-          token.currentOrgId = null
+          console.error('Error handling user company:', error)
+          token.companyId = null
         }
       }
       
-      // Always refresh organization data on every JWT call
+      // Always refresh company data on every JWT call
       if (token.userId && token.email) {
         try {
-          const userData = await prisma.user.findUnique({
-            where: { id: token.userId },
-            select: {
-              organization: true,
-            }
-          })
-          
           // Get company ID separately
           const userWithCompany = await prisma.user.findUnique({
             where: { id: token.userId },
@@ -249,21 +236,8 @@ export const authOptions: AuthOptions = {
           
           // Update company ID
           token.companyId = userWithCompany?.companyId || null
-          
-          if (userData?.organization) {
-            token.orgs = [{
-              id: 'user-org',
-              name: userData.organization,
-              role: 'OWNER',
-            }]
-            
-            // Set current org if not already set
-            if (!token.currentOrgId) {
-              token.currentOrgId = 'user-org'
-            }
-          }
         } catch (error) {
-          console.error('Error refreshing user organization:', error)
+          console.error('Error refreshing user company:', error)
         }
       }
       
@@ -275,23 +249,7 @@ export const authOptions: AuthOptions = {
         session.user.email = token.email as string
         session.user.name = token.name as string
         session.user.image = token.image as string
-        session.user.orgs = token.orgs || []
-        session.user.currentOrgId = token.currentOrgId || null
         session.user.companyId = token.companyId || null
-        
-        // Set role based on current org
-        if (token.currentOrgId && token.orgs) {
-          const currentOrg = token.orgs.find(org => org.id === token.currentOrgId)
-          session.user.role = currentOrg?.role || null
-        } else {
-          session.user.role = null
-        }
-        
-        // Auto-set current org if user has organizations but no current org
-        if (token.orgs && token.orgs.length > 0 && !token.currentOrgId) {
-          session.user.currentOrgId = token.orgs[0].id
-          session.user.role = token.orgs[0].role
-        }
       }
       
       return session
