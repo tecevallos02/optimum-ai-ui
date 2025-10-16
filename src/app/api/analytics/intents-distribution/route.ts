@@ -74,9 +74,10 @@ export async function GET(request: NextRequest) {
       intentCounts[intent] = (intentCounts[intent] || 0) + 1;
     });
 
+    // Generate chart data with proper format for IntentsDistribution component
     const data = Object.keys(intentCounts).map(intent => ({
       name: intent,
-      value: intentCounts[intent],
+      count: intentCounts[intent],
     }));
 
     return NextResponse.json({ data });

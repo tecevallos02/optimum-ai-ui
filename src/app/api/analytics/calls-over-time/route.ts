@@ -81,10 +81,20 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    const data = Object.keys(dailyCalls).sort().map(date => ({
-      date,
-      calls: dailyCalls[date],
-    }));
+    // Generate chart data with proper format for CallsOverTime component
+    const data = Object.keys(dailyCalls).sort().map(date => {
+      const dayCalls = calls.filter(call => 
+        format(new Date(call.datetime_iso), 'yyyy-MM-dd') === date
+      );
+      
+      return {
+        name: format(new Date(date), 'MMM dd'),
+        totalCalls: dailyCalls[date],
+        escalatedCalls: dayCalls.filter(call => call.status === 'escalated').length,
+        bookedCalls: dayCalls.filter(call => call.status === 'booked').length,
+        completedCalls: dayCalls.filter(call => call.status === 'completed').length,
+      };
+    });
 
     return NextResponse.json({ data });
   } catch (error) {
