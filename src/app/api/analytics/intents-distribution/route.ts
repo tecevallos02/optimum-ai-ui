@@ -68,6 +68,13 @@ export async function GET(request: NextRequest) {
       companyId: company.id, // Pass companyId for mock data generation
     });
 
+    console.log(`📊 Intents Distribution API Debug:`, {
+      companyId: company.id,
+      callsCount: calls.length,
+      dateRange: `${startDate.toISOString()} to ${endDate.toISOString()}`,
+      intents: calls.map(call => call.intent).filter(Boolean)
+    });
+
     const intentCounts: { [key: string]: number } = {};
     calls.forEach(call => {
       const intent = call.intent || 'other';

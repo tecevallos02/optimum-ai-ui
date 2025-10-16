@@ -68,6 +68,17 @@ export async function GET(request: NextRequest) {
       companyId: company.id, // Pass companyId for mock data generation
     });
 
+    console.log(`📊 Calls Over Time API Debug:`, {
+      companyId: company.id,
+      callsCount: calls.length,
+      dateRange: `${startDate.toISOString()} to ${endDate.toISOString()}`,
+      firstCall: calls[0] ? {
+        id: calls[0].appointment_id,
+        date: calls[0].datetime_iso,
+        status: calls[0].status
+      } : 'none'
+    });
+
     const dailyCalls: { [key: string]: number } = {};
     for (let i = 0; i <= days; i++) {
       const date = format(subDays(endDate, i), 'yyyy-MM-dd');
