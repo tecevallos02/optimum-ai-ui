@@ -4,6 +4,11 @@ import { prisma } from '@/lib/prisma';
 export async function GET() {
   try {
     const companies = await prisma.company.findMany({
+      where: {
+        users: {
+          some: {} // Only include companies that have at least one user
+        }
+      },
       select: {
         id: true,
         name: true,

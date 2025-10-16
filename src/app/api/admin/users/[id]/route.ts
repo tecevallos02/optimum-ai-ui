@@ -83,9 +83,12 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    // Check if user exists
+    // Check if user exists and get their company
     const existingUser = await prisma.user.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        company: true
+      }
     });
 
     if (!existingUser) {
@@ -95,9 +98,19 @@ export async function DELETE(
       );
     }
 
-    // Delete user (this will cascade delete related records)
-    await prisma.user.delete({
-      where: { id }
+    // Start a transaction to delete user and company
+    await prisma.$transaction(async (tx) => {
+      // Delete the user first
+      await tx.user.delete({
+        where: { id }
+      });
+
+      // If the user had a company, delete it too
+      if (existingUser.companyId) {
+        await tx.company.delete({
+          where: { id: existingUser.companyId }
+        });
+      }
     });
 
     return NextResponse.json({ success: true });
