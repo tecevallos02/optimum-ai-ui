@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { generateMockDataForCompany, generateMockRetellDataForCompany } from '@/lib/mock-data-generator';
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,14 +12,15 @@ export async function POST(request: NextRequest) {
       contactName, 
       phone, 
       address, 
+      password,
       googleSheetId, 
       retellWebhookUrl 
     } = body;
 
     // Validate required fields
-    if (!companyName || !contactEmail || !contactName) {
+    if (!companyName || !contactEmail || !contactName || !password) {
       return NextResponse.json(
-        { error: 'Company name, contact email, and contact name are required' },
+        { error: 'Company name, contact email, contact name, and password are required' },
         { status: 400 }
       );
     }
@@ -56,9 +58,8 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Generate a temporary password
-    const tempPassword = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(tempPassword, 12);
+    // Hash the provided password
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create user
     const user = await prisma.user.create({
@@ -71,6 +72,17 @@ export async function POST(request: NextRequest) {
         emailVerified: new Date(), // Mark as verified
         companyId: company.id,
       }
+    });
+
+    // Generate mock data for the new company
+    const mockCallData = generateMockDataForCompany(company.id, companyName);
+    const mockRetellData = generateMockRetellDataForCompany(company.id);
+
+    // Store mock data in the database (you can implement this based on your needs)
+    // For now, we'll just log it - in a real implementation, you'd store this in your database
+    console.log(`Generated mock data for company ${companyName}:`, {
+      callData: mockCallData.length,
+      retellData: mockRetellData
     });
 
     // Generate the webhook URL for this company
@@ -91,7 +103,7 @@ export async function POST(request: NextRequest) {
         id: user.id,
         email: user.email,
         name: user.name,
-        tempPassword: tempPassword
+        password: password
       },
       webhookUrl: retellWebhookUrl || generatedWebhookUrl
     });
