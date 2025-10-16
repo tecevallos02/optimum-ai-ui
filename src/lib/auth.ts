@@ -10,6 +10,10 @@ export type SessionUser = {
   email: string;
   name?: string;
   companyId: string | null;
+  company?: {
+    id: string;
+    name: string;
+  } | null;
 }
 
 export async function getServerSession() {
@@ -23,11 +27,21 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   // Type assertion to fix TypeScript session type issue
   const typedSession = session as any
 
+  // Fetch company information if user has a companyId
+  let company = null
+  if (typedSession.user.companyId) {
+    company = await prisma.company.findUnique({
+      where: { id: typedSession.user.companyId },
+      select: { id: true, name: true }
+    })
+  }
+
   return {
     id: typedSession.user.id,
     email: typedSession.user.email!,
     name: typedSession.user.name || undefined,
     companyId: typedSession.user.companyId || null,
+    company,
   }
 }
 

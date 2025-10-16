@@ -74,16 +74,48 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Generate mock data for the new company
+    // Generate and store mock data for the new company
     const mockCallData = generateMockDataForCompany(company.id, companyName);
     const mockRetellData = generateMockRetellDataForCompany(company.id);
 
-    // Store mock data in the database (you can implement this based on your needs)
-    // For now, we'll just log it - in a real implementation, you'd store this in your database
-    console.log(`Generated mock data for company ${companyName}:`, {
-      callData: mockCallData.length,
-      retellData: mockRetellData
-    });
+    // Store mock data in the database
+    try {
+      // Create CompanySheet entry for Google Sheets integration
+      await prisma.companySheet.create({
+        data: {
+          companyId: company.id,
+          spreadsheetId: `mock-sheet-${company.id}`,
+          dataRange: 'Calls!A:H'
+        }
+      });
+
+      // Create CompanyRetell entry for Retell integration
+      await prisma.companyRetell.create({
+        data: {
+          companyId: company.id,
+          workflowId: `workflow-${company.id}`,
+          apiKey: `mock-api-key-${company.id}`,
+          webhookUrl: `https://ui.goshawkai.com/api/webhooks/retell/${company.id}`
+        }
+      });
+
+      // Store mock call data in SheetCache for analytics
+      await prisma.sheetCache.create({
+        data: {
+          companyId: company.id,
+          lastSynced: new Date(),
+          rowCount: mockCallData.length
+        }
+      });
+
+      console.log(`Generated and stored mock data for company ${companyName}:`, {
+        callData: mockCallData.length,
+        retellData: mockRetellData
+      });
+    } catch (error) {
+      console.error('Error storing mock data:', error);
+      // Don't fail the client creation if mock data storage fails
+    }
 
     // Generate the webhook URL for this company
     const generatedWebhookUrl = `https://ui.goshawkai.com/api/webhooks/retell/${company.id}`;

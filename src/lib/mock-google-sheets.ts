@@ -129,10 +129,17 @@ export async function mockReadSheetData({
   console.log(`📊 Range: ${range}`);
   console.log(`🏢 Company ID: ${companyId || 'unknown'}`);
   
+  // Check if this is a mock sheet ID (created by admin panel)
+  let actualCompanyId = companyId;
+  if (spreadsheetId.startsWith('mock-sheet-')) {
+    actualCompanyId = spreadsheetId.replace('mock-sheet-', '');
+    console.log(`🔧 Detected mock sheet, using company ID: ${actualCompanyId}`);
+  }
+  
   // Get company-specific mock data
-  console.log(`🔧 About to call getCompanyMockData with companyId: ${companyId}`);
-  const companyData = companyId ? getCompanyMockData(companyId) : baseMockData;
-  console.log(`📊 Generated ${companyData.length} appointments for company ${companyId}`);
+  console.log(`🔧 About to call getCompanyMockData with companyId: ${actualCompanyId}`);
+  const companyData = actualCompanyId ? getCompanyMockData(actualCompanyId) : baseMockData;
+  console.log(`📊 Generated ${companyData.length} appointments for company ${actualCompanyId}`);
   if (companyData.length > 0) {
     console.log(`   👤 First customer: ${companyData[0].name}`);
     console.log(`   📞 First phone: ${companyData[0].phone}`);

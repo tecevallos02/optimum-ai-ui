@@ -11,7 +11,7 @@ export function generateMockDataForCompany(companyId: string, companyName: strin
       window: '10:00 AM - 12:00 PM',
       status: 'Completed',
       notes: 'Replaced faulty thermostat, system working perfectly',
-      intent: 'HVAC Repair'
+      intent: 'booking'
     },
     {
       appointment_id: `${companyId}-002`,
@@ -22,7 +22,7 @@ export function generateMockDataForCompany(companyId: string, companyName: strin
       window: '2:00 PM - 4:00 PM',
       status: 'Completed',
       notes: 'New central air system installed, customer very satisfied',
-      intent: 'AC Installation'
+      intent: 'booking'
     },
     {
       appointment_id: `${companyId}-003`,
@@ -33,7 +33,7 @@ export function generateMockDataForCompany(companyId: string, companyName: strin
       window: '9:00 AM - 11:00 AM',
       status: 'Scheduled',
       notes: 'Furnace not heating properly, needs inspection',
-      intent: 'Heating Repair'
+      intent: 'inquiry'
     },
     {
       appointment_id: `${companyId}-004`,
@@ -44,7 +44,7 @@ export function generateMockDataForCompany(companyId: string, companyName: strin
       window: '11:00 AM - 1:00 PM',
       status: 'Completed',
       notes: 'Annual maintenance completed, all systems running efficiently',
-      intent: 'Maintenance'
+      intent: 'maintenance'
     },
     {
       appointment_id: `${companyId}-005`,
@@ -55,7 +55,7 @@ export function generateMockDataForCompany(companyId: string, companyName: strin
       window: '3:00 PM - 5:00 PM',
       status: 'Completed',
       notes: 'Emergency call - AC unit not cooling, fixed refrigerant leak',
-      intent: 'Emergency Repair'
+      intent: 'emergency'
     },
     {
       appointment_id: `${companyId}-006`,
@@ -66,7 +66,7 @@ export function generateMockDataForCompany(companyId: string, companyName: strin
       window: '1:00 PM - 3:00 PM',
       status: 'Scheduled',
       notes: 'Scheduled for duct cleaning and air quality check',
-      intent: 'Duct Cleaning'
+      intent: 'booking'
     },
     {
       appointment_id: `${companyId}-007`,
@@ -77,7 +77,7 @@ export function generateMockDataForCompany(companyId: string, companyName: strin
       window: '8:00 AM - 10:00 AM',
       status: 'Completed',
       notes: 'Water heater pilot light issue resolved, hot water restored',
-      intent: 'Water Heater Repair'
+      intent: 'repair'
     },
     {
       appointment_id: `${companyId}-008`,
@@ -88,7 +88,7 @@ export function generateMockDataForCompany(companyId: string, companyName: strin
       window: '4:00 PM - 6:00 PM',
       status: 'Completed',
       notes: 'Smart thermostat installed, customer trained on usage',
-      intent: 'Thermostat Upgrade'
+      intent: 'installation'
     },
     {
       appointment_id: `${companyId}-009`,
@@ -99,7 +99,7 @@ export function generateMockDataForCompany(companyId: string, companyName: strin
       window: '12:00 PM - 2:00 PM',
       status: 'Scheduled',
       notes: 'Regular maintenance check scheduled',
-      intent: 'AC Maintenance'
+      intent: 'maintenance'
     },
     {
       appointment_id: `${companyId}-010`,
@@ -110,7 +110,7 @@ export function generateMockDataForCompany(companyId: string, companyName: strin
       window: '10:30 AM - 12:30 PM',
       status: 'Completed',
       notes: 'Old furnace replaced with high-efficiency model, significant energy savings expected',
-      intent: 'Furnace Replacement'
+      intent: 'replacement'
     }
   ];
 

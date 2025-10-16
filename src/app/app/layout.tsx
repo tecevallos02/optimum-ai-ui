@@ -19,14 +19,32 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         {/* Logo Header */}
         <div className="p-4 border-b border-border dark:border-gray-700">
           <div className="flex items-center">
-            <Image
-              src="/goshawk-ai-logo.png"
-              alt="Goshawk AI"
-              width={140}
-              height={42}
-              className="h-10 w-auto object-contain"
-              priority
-            />
+            {user?.company ? (
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">
+                    {user.company.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                    {user.company.name}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    Powered by Goshawk AI
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Image
+                src="/goshawk-ai-logo.png"
+                alt="Goshawk AI"
+                width={140}
+                height={42}
+                className="h-10 w-auto object-contain"
+                priority
+              />
+            )}
           </div>
         </div>
         
@@ -102,7 +120,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             
             {/* Company Badge */}
             <span className="px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full text-xs font-medium shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
-              User
+              {user?.company?.name || 'User'}
             </span>
             
             {/* Theme Toggle */}
