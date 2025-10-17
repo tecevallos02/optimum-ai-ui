@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
 interface Company {
   id: string;
@@ -18,11 +18,11 @@ interface Company {
 export default function IntegrationsPage() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [editingCompany, setEditingCompany] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
-    googleSheetId: '',
-    retellWebhookUrl: ''
+    googleSheetId: "",
+    retellWebhookUrl: "",
   });
 
   useEffect(() => {
@@ -31,16 +31,16 @@ export default function IntegrationsPage() {
 
   const fetchCompanies = async () => {
     try {
-      const response = await fetch('/api/admin/companies');
+      const response = await fetch("/api/admin/companies");
       if (response.ok) {
         const data = await response.json();
         setCompanies(data);
       } else {
-        setError('Failed to fetch companies');
+        setError("Failed to fetch companies");
       }
     } catch (error) {
-      setError('An error occurred while fetching companies');
-      console.error('Error fetching companies:', error);
+      setError("An error occurred while fetching companies");
+      console.error("Error fetching companies:", error);
     } finally {
       setLoading(false);
     }
@@ -49,17 +49,17 @@ export default function IntegrationsPage() {
   const handleEdit = (company: Company) => {
     setEditingCompany(company.id);
     setEditForm({
-      googleSheetId: company.googleSheetId || '',
-      retellWebhookUrl: company.retellWebhookUrl || ''
+      googleSheetId: company.googleSheetId || "",
+      retellWebhookUrl: company.retellWebhookUrl || "",
     });
   };
 
   const handleSave = async (companyId: string) => {
     try {
       const response = await fetch(`/api/admin/companies/${companyId}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(editForm),
       });
@@ -69,17 +69,17 @@ export default function IntegrationsPage() {
         setEditingCompany(null);
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Failed to update company');
+        setError(errorData.error || "Failed to update company");
       }
     } catch (error) {
-      setError('An error occurred while updating the company');
-      console.error('Error updating company:', error);
+      setError("An error occurred while updating the company");
+      console.error("Error updating company:", error);
     }
   };
 
   const handleCancel = () => {
     setEditingCompany(null);
-    setEditForm({ googleSheetId: '', retellWebhookUrl: '' });
+    setEditForm({ googleSheetId: "", retellWebhookUrl: "" });
   };
 
   if (loading) {
@@ -100,8 +100,12 @@ export default function IntegrationsPage() {
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Integration Settings</h1>
-              <p className="mt-1 text-sm text-gray-500">Manage Google Sheets and Retell webhook integrations</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Integration Settings
+              </h1>
+              <p className="mt-1 text-sm text-gray-500">
+                Manage Google Sheets and Retell webhook integrations
+              </p>
             </div>
             <Link
               href="/admin"
@@ -120,8 +124,16 @@ export default function IntegrationsPage() {
           <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div className="ml-3">
@@ -141,9 +153,12 @@ export default function IntegrationsPage() {
               <div className="px-4 py-5 sm:p-6">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-lg font-medium text-gray-900">{company.name}</h3>
+                    <h3 className="text-lg font-medium text-gray-900">
+                      {company.name}
+                    </h3>
                     <p className="mt-1 text-sm text-gray-500">
-                      {company.users.length} user{company.users.length !== 1 ? 's' : ''}
+                      {company.users.length} user
+                      {company.users.length !== 1 ? "s" : ""}
                     </p>
                   </div>
                   <button
@@ -164,13 +179,18 @@ export default function IntegrationsPage() {
                       <input
                         type="text"
                         value={editForm.googleSheetId}
-                        onChange={(e) => setEditForm({ ...editForm, googleSheetId: e.target.value })}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            googleSheetId: e.target.value,
+                          })
+                        }
                         className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                         placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
                       />
                     ) : (
                       <div className="text-sm text-gray-900">
-                        {company.googleSheetId || 'Not configured'}
+                        {company.googleSheetId || "Not configured"}
                       </div>
                     )}
                   </div>
@@ -182,13 +202,18 @@ export default function IntegrationsPage() {
                       <input
                         type="url"
                         value={editForm.retellWebhookUrl}
-                        onChange={(e) => setEditForm({ ...editForm, retellWebhookUrl: e.target.value })}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            retellWebhookUrl: e.target.value,
+                          })
+                        }
                         className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                         placeholder="https://ui.goshawkai.com/api/webhooks/retell/COMPANY_ID"
                       />
                     ) : (
                       <div className="text-sm text-gray-900">
-                        {company.retellWebhookUrl || 'Not configured'}
+                        {company.retellWebhookUrl || "Not configured"}
                       </div>
                     )}
                   </div>
@@ -231,10 +256,15 @@ export default function IntegrationsPage() {
 
                 {/* Users List */}
                 <div className="mt-6">
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Users</h4>
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">
+                    Users
+                  </h4>
                   <div className="space-y-2">
                     {company.users.map((user) => (
-                      <div key={user.id} className="flex items-center text-sm text-gray-600">
+                      <div
+                        key={user.id}
+                        className="flex items-center text-sm text-gray-600"
+                      >
                         <div className="h-6 w-6 rounded-full bg-gray-300 flex items-center justify-center mr-3">
                           <span className="text-xs font-medium text-gray-700">
                             {user.name.charAt(0).toUpperCase()}
@@ -254,11 +284,25 @@ export default function IntegrationsPage() {
 
         {companies.length === 0 && (
           <div className="text-center py-12">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            <svg
+              className="mx-auto h-12 w-12 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+              />
             </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No companies found</h3>
-            <p className="mt-1 text-sm text-gray-500">Get started by adding a new client.</p>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">
+              No companies found
+            </h3>
+            <p className="mt-1 text-sm text-gray-500">
+              Get started by adding a new client.
+            </p>
             <div className="mt-6">
               <Link
                 href="/admin/add-client"

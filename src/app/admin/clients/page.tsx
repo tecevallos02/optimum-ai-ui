@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface NewClient {
   companyName: string;
@@ -17,61 +17,65 @@ interface NewClient {
 export default function ClientsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [newClient, setNewClient] = useState<NewClient>({
-    companyName: '',
-    contactEmail: '',
-    contactName: '',
-    phone: '',
-    address: '',
-    googleSheetId: '',
-    retellWebhookUrl: ''
+    companyName: "",
+    contactEmail: "",
+    contactName: "",
+    phone: "",
+    address: "",
+    googleSheetId: "",
+    retellWebhookUrl: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     try {
-      const response = await fetch('/api/admin/clients', {
-        method: 'POST',
+      const response = await fetch("/api/admin/clients", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(newClient),
       });
 
       if (response.ok) {
         const result = await response.json();
-        setSuccess(`Client "${newClient.companyName}" created successfully! User account: ${result.user.email}`);
+        setSuccess(
+          `Client "${newClient.companyName}" created successfully! User account: ${result.user.email}`,
+        );
         setNewClient({
-          companyName: '',
-          contactEmail: '',
-          contactName: '',
-          phone: '',
-          address: '',
-          googleSheetId: '',
-          retellWebhookUrl: ''
+          companyName: "",
+          contactEmail: "",
+          contactName: "",
+          phone: "",
+          address: "",
+          googleSheetId: "",
+          retellWebhookUrl: "",
         });
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Failed to create client');
+        setError(errorData.error || "Failed to create client");
       }
     } catch (error) {
-      setError('An error occurred while creating the client');
-      console.error('Error creating client:', error);
+      setError("An error occurred while creating the client");
+      console.error("Error creating client:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setNewClient({
       ...newClient,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -82,8 +86,12 @@ export default function ClientsPage() {
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Add New Client</h1>
-              <p className="mt-1 text-sm text-gray-500">Create a new client account and company</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Add New Client
+              </h1>
+              <p className="mt-1 text-sm text-gray-500">
+                Create a new client account and company
+              </p>
             </div>
             <Link
               href="/admin"
@@ -102,10 +110,15 @@ export default function ClientsPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Company Information */}
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Company Information</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  Company Information
+                </h3>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="companyName"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Company Name *
                     </label>
                     <input
@@ -120,7 +133,10 @@ export default function ClientsPage() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="contactEmail" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="contactEmail"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Contact Email *
                     </label>
                     <input
@@ -139,10 +155,15 @@ export default function ClientsPage() {
 
               {/* Contact Person */}
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Contact Person</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  Contact Person
+                </h3>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="contactName" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="contactName"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Full Name *
                     </label>
                     <input
@@ -157,7 +178,10 @@ export default function ClientsPage() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="phone"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Phone Number
                     </label>
                     <input
@@ -172,7 +196,10 @@ export default function ClientsPage() {
                   </div>
                 </div>
                 <div className="mt-6">
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="address"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Address
                   </label>
                   <textarea
@@ -189,10 +216,15 @@ export default function ClientsPage() {
 
               {/* Integration Settings */}
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Integration Settings</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  Integration Settings
+                </h3>
                 <div className="space-y-6">
                   <div>
-                    <label htmlFor="googleSheetId" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="googleSheetId"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Google Sheet ID
                     </label>
                     <input
@@ -205,11 +237,15 @@ export default function ClientsPage() {
                       placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
                     />
                     <p className="mt-1 text-sm text-gray-500">
-                      The ID from your Google Sheets URL (the long string between /d/ and /edit)
+                      The ID from your Google Sheets URL (the long string
+                      between /d/ and /edit)
                     </p>
                   </div>
                   <div>
-                    <label htmlFor="retellWebhookUrl" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="retellWebhookUrl"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Retell Webhook URL
                     </label>
                     <input
@@ -222,7 +258,8 @@ export default function ClientsPage() {
                       placeholder="https://ui.goshawkai.com/api/webhooks/retell/COMPANY_ID"
                     />
                     <p className="mt-1 text-sm text-gray-500">
-                      The webhook URL for this company (will be provided after creation)
+                      The webhook URL for this company (will be provided after
+                      creation)
                     </p>
                   </div>
                 </div>
@@ -233,12 +270,22 @@ export default function ClientsPage() {
                 <div className="bg-red-50 border border-red-200 rounded-md p-4">
                   <div className="flex">
                     <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      <svg
+                        className="h-5 w-5 text-red-400"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                     <div className="ml-3">
-                      <h3 className="text-sm font-medium text-red-800">Error</h3>
+                      <h3 className="text-sm font-medium text-red-800">
+                        Error
+                      </h3>
                       <div className="mt-2 text-sm text-red-700">
                         <p>{error}</p>
                       </div>
@@ -251,12 +298,22 @@ export default function ClientsPage() {
                 <div className="bg-green-50 border border-green-200 rounded-md p-4">
                   <div className="flex">
                     <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      <svg
+                        className="h-5 w-5 text-green-400"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                     <div className="ml-3">
-                      <h3 className="text-sm font-medium text-green-800">Success</h3>
+                      <h3 className="text-sm font-medium text-green-800">
+                        Success
+                      </h3>
                       <div className="mt-2 text-sm text-green-700">
                         <p>{success}</p>
                       </div>
@@ -272,7 +329,7 @@ export default function ClientsPage() {
                   disabled={loading}
                   className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-6 py-2 rounded-md text-sm font-medium"
                 >
-                  {loading ? 'Creating Client...' : 'Create Client'}
+                  {loading ? "Creating Client..." : "Create Client"}
                 </button>
               </div>
             </form>

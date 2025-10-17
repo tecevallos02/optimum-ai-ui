@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import type { Appointment } from '@/lib/types';
-import { getStatusColor, getSourceColor } from '@/lib/calendar/colors';
-import CancelAppointmentModal from './CancelAppointmentModal';
-import RequestRescheduleModal from './RequestRescheduleModal';
-import DeleteAppointmentModal from './DeleteAppointmentModal';
+import { useState } from "react";
+import type { Appointment } from "@/lib/types";
+import { getStatusColor, getSourceColor } from "@/lib/calendar/colors";
+import CancelAppointmentModal from "./CancelAppointmentModal";
+import RequestRescheduleModal from "./RequestRescheduleModal";
+import DeleteAppointmentModal from "./DeleteAppointmentModal";
 
 interface AppointmentDetailsDrawerProps {
   appointment: Appointment;
@@ -20,23 +20,25 @@ export default function AppointmentDetailsDrawer({
   onClose,
   onUpdate,
   onDelete,
-  onAddContact
+  onAddContact,
 }: AppointmentDetailsDrawerProps) {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const statusColor = getStatusColor(appointment.status);
-  const sourceColor = appointment.source ? getSourceColor(appointment.source) : null;
+  const sourceColor = appointment.source
+    ? getSourceColor(appointment.source)
+    : null;
 
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString([], {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -45,8 +47,10 @@ export default function AppointmentDetailsDrawer({
     const end = new Date(appointment.endsAt);
     const durationMs = end.getTime() - start.getTime();
     const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
-    const durationMinutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-    
+    const durationMinutes = Math.floor(
+      (durationMs % (1000 * 60 * 60)) / (1000 * 60),
+    );
+
     if (durationHours > 0) {
       return `${durationHours}h ${durationMinutes}m`;
     }
@@ -56,7 +60,7 @@ export default function AppointmentDetailsDrawer({
   return (
     <>
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black bg-opacity-50 z-40"
         onClick={onClose}
       />
@@ -66,13 +70,25 @@ export default function AppointmentDetailsDrawer({
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Appointment Details</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              Appointment Details
+            </h2>
             <button
               onClick={onClose}
               className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -87,11 +103,15 @@ export default function AppointmentDetailsDrawer({
                 </h3>
                 <div className="flex items-center gap-2">
                   <div className={`w-3 h-3 rounded-full ${statusColor.dot}`} />
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColor.bg} ${statusColor.text}`}>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${statusColor.bg} ${statusColor.text}`}
+                  >
                     {appointment.status}
                   </span>
                   {appointment.source && sourceColor && (
-                    <span className={`px-3 py-1 rounded-full text-sm ${sourceColor.bg} ${sourceColor.text}`}>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm ${sourceColor.bg} ${sourceColor.text}`}
+                    >
                       {sourceColor.icon} {appointment.source}
                     </span>
                   )}
@@ -105,19 +125,31 @@ export default function AppointmentDetailsDrawer({
                 </h4>
                 <div className="space-y-2">
                   <div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Name:</span>
-                    <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">{appointment.customerName}</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Name:
+                    </span>
+                    <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                      {appointment.customerName}
+                    </span>
                   </div>
                   {appointment.customerPhone && (
                     <div>
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Phone:</span>
-                      <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">{appointment.customerPhone}</span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Phone:
+                      </span>
+                      <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                        {appointment.customerPhone}
+                      </span>
                     </div>
                   )}
                   {appointment.customerEmail && (
                     <div>
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Email:</span>
-                      <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">{appointment.customerEmail}</span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Email:
+                      </span>
+                      <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                        {appointment.customerEmail}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -130,16 +162,28 @@ export default function AppointmentDetailsDrawer({
                 </h4>
                 <div className="space-y-2">
                   <div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Start:</span>
-                    <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">{formatDateTime(appointment.startsAt)}</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Start:
+                    </span>
+                    <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                      {formatDateTime(appointment.startsAt)}
+                    </span>
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">End:</span>
-                    <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">{formatDateTime(appointment.endsAt)}</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      End:
+                    </span>
+                    <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                      {formatDateTime(appointment.endsAt)}
+                    </span>
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Duration:</span>
-                    <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">{formatDuration()}</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Duration:
+                    </span>
+                    <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                      {formatDuration()}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -174,8 +218,14 @@ export default function AppointmentDetailsDrawer({
                   Details
                 </h4>
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                  <div>Created: {new Date(appointment.createdAt).toLocaleDateString()}</div>
-                  <div>Last updated: {new Date(appointment.updatedAt).toLocaleDateString()}</div>
+                  <div>
+                    Created:{" "}
+                    {new Date(appointment.createdAt).toLocaleDateString()}
+                  </div>
+                  <div>
+                    Last updated:{" "}
+                    {new Date(appointment.updatedAt).toLocaleDateString()}
+                  </div>
                   {appointment.googleEventId && (
                     <div>Google Event ID: {appointment.googleEventId}</div>
                   )}
@@ -193,25 +243,26 @@ export default function AppointmentDetailsDrawer({
               >
                 Add Contact
               </button>
-              
-              {appointment.status !== 'canceled' && appointment.status !== 'completed' && (
-                <>
-                  <button
-                    onClick={() => setShowRescheduleModal(true)}
-                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                  >
-                    Request Reschedule
-                  </button>
-                  <button
-                    onClick={() => setShowCancelModal(true)}
-                    className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
-                  >
-                    Cancel Appointment
-                  </button>
-                </>
-              )}
-              
-              {appointment.status === 'canceled' && (
+
+              {appointment.status !== "canceled" &&
+                appointment.status !== "completed" && (
+                  <>
+                    <button
+                      onClick={() => setShowRescheduleModal(true)}
+                      className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    >
+                      Request Reschedule
+                    </button>
+                    <button
+                      onClick={() => setShowCancelModal(true)}
+                      className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                    >
+                      Cancel Appointment
+                    </button>
+                  </>
+                )}
+
+              {appointment.status === "canceled" && (
                 <div className="space-y-3">
                   <div className="text-center text-sm text-gray-500 py-2">
                     This appointment has been canceled
@@ -224,8 +275,8 @@ export default function AppointmentDetailsDrawer({
                   </button>
                 </div>
               )}
-              
-              {appointment.status === 'completed' && (
+
+              {appointment.status === "completed" && (
                 <div className="text-center text-sm text-gray-500 py-2">
                   This appointment has been completed
                 </div>
@@ -256,8 +307,10 @@ export default function AppointmentDetailsDrawer({
             // Update appointment status to indicate reschedule requested
             onUpdate({
               ...appointment,
-              status: 'scheduled',
-              notes: appointment.notes ? `${appointment.notes}\n\nReschedule requested.` : 'Reschedule requested.'
+              status: "scheduled",
+              notes: appointment.notes
+                ? `${appointment.notes}\n\nReschedule requested.`
+                : "Reschedule requested.",
             });
             setShowRescheduleModal(false);
             onClose();

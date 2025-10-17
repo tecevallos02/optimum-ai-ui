@@ -1,28 +1,30 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireUser } from '@/lib/auth';
-import { getCombinedData } from '@/lib/combined-data';
+import { NextRequest, NextResponse } from "next/server";
+import { requireUser } from "@/lib/auth";
+import { getCombinedData } from "@/lib/combined-data";
 
 export async function GET(request: NextRequest) {
   try {
     const user = await requireUser();
 
     const { searchParams } = new URL(request.url);
-    const phone = searchParams.get('phone');
+    const phone = searchParams.get("phone");
 
     // Get the user's specific company
     console.log(`🔍 KPIs API - User ID: ${user.id}`);
     console.log(`🔍 KPIs API - User companyId: ${user.companyId}`);
-    
+
     if (!user.companyId) {
-      console.log('❌ User not linked to any company');
+      console.log("❌ User not linked to any company");
       return NextResponse.json(
-        { error: 'User not linked to any company' },
-        { status: 404 }
+        { error: "User not linked to any company" },
+        { status: 404 },
       );
     }
 
     // Get combined data (Google Sheets + Retell)
-    console.log(`🔍 KPIs API - Calling getCombinedData with companyId: ${user.companyId}`);
+    console.log(
+      `🔍 KPIs API - Calling getCombinedData with companyId: ${user.companyId}`,
+    );
     const combinedData = await getCombinedData(user.companyId, {
       phone: phone || undefined,
       useMockRetell: false, // Use real data from database
@@ -41,13 +43,14 @@ export async function GET(request: NextRequest) {
         userId: user.id,
         companyId: user.companyId,
         appointmentsCount: combinedData.appointments.length,
-        firstAppointmentId: combinedData.appointments[0]?.appointment_id || 'none'
-      }
+        firstAppointmentId:
+          combinedData.appointments[0]?.appointment_id || "none",
+      },
     };
 
     return NextResponse.json(mainKpis);
   } catch (error) {
-    console.error('Error fetching KPIs:', error);
+    console.error("Error fetching KPIs:", error);
     return NextResponse.json(
       {
         callsHandled: 0,
@@ -57,7 +60,7 @@ export async function GET(request: NextRequest) {
         callsEscalated: 0,
         estimatedSavings: 0,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

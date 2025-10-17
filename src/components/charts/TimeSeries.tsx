@@ -16,15 +16,21 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-        <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{label}</p>
+        <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          {label}
+        </p>
         {payload.map((entry: any, index: number) => (
           <div key={index} className="flex items-center gap-2 mb-1">
-            <div 
-              className="w-3 h-3 rounded-full" 
+            <div
+              className="w-3 h-3 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-sm text-gray-600 dark:text-gray-400">Value:</span>
-            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{entry.value}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Value:
+            </span>
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              {entry.value}
+            </span>
           </div>
         ))}
       </div>
@@ -33,11 +39,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export default function TimeSeries({
-  data,
-}: {
-  data?: Point[];
-}) {
+export default function TimeSeries({ data }: { data?: Point[] }) {
   // simple demo data if none is passed
   const demo = useMemo(
     () =>
@@ -45,7 +47,7 @@ export default function TimeSeries({
         x: `D${i + 1}`,
         y: Math.round(20 + Math.random() * 40),
       })),
-    []
+    [],
   );
 
   const series = data ?? demo;
@@ -57,7 +59,13 @@ export default function TimeSeries({
           <XAxis dataKey="x" />
           <YAxis />
           <Tooltip content={<CustomTooltip />} />
-          <Line type="monotone" dataKey="y" stroke="#6c63ff" strokeWidth={2} dot={false} />
+          <Line
+            type="monotone"
+            dataKey="y"
+            stroke="#6c63ff"
+            strokeWidth={2}
+            dot={false}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>

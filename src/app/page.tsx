@@ -1,21 +1,21 @@
-'use client';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function HomePage() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (status === 'loading') return; // Still loading
-    
-    if (status === 'unauthenticated') {
+    if (status === "loading") return; // Still loading
+
+    if (status === "unauthenticated") {
       // Not authenticated, go to login
-      router.replace('/login');
+      router.replace("/login");
     } else if (session) {
       // Authenticated, go to dashboard
-      router.replace('/app');
+      router.replace("/app");
     }
   }, [session, status, router]);
 
@@ -28,4 +28,3 @@ export default function HomePage() {
     </div>
   );
 }
-

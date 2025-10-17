@@ -18,16 +18,16 @@ export default function ConfigPage() {
 
   const fetchCurrentOrg = async () => {
     try {
-      const response = await fetch('/api/me');
+      const response = await fetch("/api/me");
       const userData = await response.json();
-      
+
       if (userData.orgs && userData.orgs.length > 0) {
         // Get the current organization (you might want to get this from context)
         const org = userData.orgs[0]; // For now, just get the first one
         setCurrentOrg(org);
       }
     } catch (error) {
-      console.error('Error fetching organization:', error);
+      console.error("Error fetching organization:", error);
     } finally {
       setIsLoading(false);
     }
@@ -38,9 +38,9 @@ export default function ConfigPage() {
 
     try {
       const response = await fetch(`/api/orgs/${currentOrg.id}/logo`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ logo: logoUrl }),
       });
@@ -51,11 +51,11 @@ export default function ConfigPage() {
         // You might want to refresh the organization switcher here
         window.location.reload(); // Simple refresh for now
       } else {
-        alert('Error updating logo. Please try again.');
+        alert("Error updating logo. Please try again.");
       }
     } catch (error) {
-      console.error('Error updating logo:', error);
-      alert('Error updating logo. Please try again.');
+      console.error("Error updating logo:", error);
+      alert("Error updating logo. Please try again.");
     }
   };
 
@@ -70,11 +70,13 @@ export default function ConfigPage() {
   return (
     <div className="space-y-8">
       <PageTitle title="Configuration" />
-      
+
       {/* Organization Settings */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Organization Settings</h2>
-        
+        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+          Organization Settings
+        </h2>
+
         {currentOrg && (
           <LogoUpload
             currentLogo={currentOrg.logo}
@@ -86,10 +88,13 @@ export default function ConfigPage() {
 
       {/* Other Settings */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Business Profile</h2>
+        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+          Business Profile
+        </h2>
         <p className="text-gray-600 dark:text-gray-400">
-          This section allows you to edit business hours, holidays, routing rules, 
-          conversation settings and integrations. (TODO: implement forms and toggles)
+          This section allows you to edit business hours, holidays, routing
+          rules, conversation settings and integrations. (TODO: implement forms
+          and toggles)
         </p>
       </div>
     </div>

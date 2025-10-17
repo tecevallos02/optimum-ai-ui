@@ -10,21 +10,21 @@ export async function POST(request: NextRequest) {
     const { fullName, email, phone } = await request.json();
 
     // Get user's organization
-    const userData = await prisma.user.findFirst({
-      where: { id: user.id }
-    }) as any;
-    
-    const orgName = userData?.organization || 'Default Organization';
-    
+    const userData = (await prisma.user.findFirst({
+      where: { id: user.id },
+    })) as any;
+
+    const orgName = userData?.organization || "Default Organization";
+
     // Ensure organization exists in the database
-    let org = await prisma.organization.findFirst({
-      where: { name: orgName }
+    const org = await prisma.organization.findFirst({
+      where: { name: orgName },
     });
-    
+
     if (!org) {
       return NextResponse.json(
         { error: "Organization not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -35,7 +35,9 @@ export async function POST(request: NextRequest) {
     const matchFields: string[] = [];
 
     if (email && email.trim()) {
-      whereConditions.push({ email: { equals: email.trim(), mode: 'insensitive' } });
+      whereConditions.push({
+        email: { equals: email.trim(), mode: "insensitive" },
+      });
     }
 
     if (phone && phone.trim()) {
@@ -43,11 +45,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (fullName && fullName.trim()) {
-      whereConditions.push({ 
-        name: { 
-          equals: fullName.trim(), 
-          mode: 'insensitive' 
-        } 
+      whereConditions.push({
+        name: {
+          equals: fullName.trim(),
+          mode: "insensitive",
+        },
       });
     }
 
@@ -59,14 +61,14 @@ export async function POST(request: NextRequest) {
     const duplicate = await prisma.contact.findFirst({
       where: {
         orgId: orgId,
-        OR: whereConditions
+        OR: whereConditions,
       },
       select: {
         id: true,
         name: true,
         email: true,
-        phone: true
-      }
+        phone: true,
+      },
     });
 
     if (!duplicate) {
@@ -74,26 +76,33 @@ export async function POST(request: NextRequest) {
     }
 
     // Determine which fields matched
-    if (email && duplicate.email && duplicate.email.toLowerCase() === email.toLowerCase()) {
-      matchFields.push('email');
+    if (
+      email &&
+      duplicate.email &&
+      duplicate.email.toLowerCase() === email.toLowerCase()
+    ) {
+      matchFields.push("email");
     }
     if (phone && duplicate.phone && duplicate.phone === phone) {
-      matchFields.push('phone');
+      matchFields.push("phone");
     }
-    if (fullName && duplicate.name && duplicate.name.toLowerCase() === fullName.toLowerCase()) {
-      matchFields.push('name');
+    if (
+      fullName &&
+      duplicate.name &&
+      duplicate.name.toLowerCase() === fullName.toLowerCase()
+    ) {
+      matchFields.push("name");
     }
 
     return NextResponse.json({
       matchId: duplicate.id,
-      matchFields: matchFields as ('email' | 'phone' | 'name')[]
+      matchFields: matchFields as ("email" | "phone" | "name")[],
     });
-
   } catch (error) {
-    console.error('Error checking for duplicate contact:', error);
+    console.error("Error checking for duplicate contact:", error);
     return NextResponse.json(
       { error: "Failed to check for duplicates" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

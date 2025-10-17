@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import type { Appointment } from '@/lib/types';
+import { useState } from "react";
+import type { Appointment } from "@/lib/types";
 
 interface EmailTemplate {
   id: string;
@@ -22,7 +22,7 @@ export default function EditableEmailDialog({
   appointment,
   emailTemplate,
   onClose,
-  onConfirm
+  onConfirm,
 }: EditableEmailDialogProps) {
   const [subject, setSubject] = useState(emailTemplate.subject);
   const [content, setContent] = useState(emailTemplate.content);
@@ -34,7 +34,7 @@ export default function EditableEmailDialog({
       onConfirm(subject, content);
       onClose();
     } catch (error) {
-      console.error('Error confirming email:', error);
+      console.error("Error confirming email:", error);
     } finally {
       setIsLoading(false);
     }
@@ -46,7 +46,9 @@ export default function EditableEmailDialog({
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Edit Email</h3>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                Edit Email
+              </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 For: {appointment.customerName} • {appointment.title}
               </p>
@@ -55,8 +57,18 @@ export default function EditableEmailDialog({
               onClick={onClose}
               className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -64,7 +76,10 @@ export default function EditableEmailDialog({
           <div className="space-y-6">
             {/* Subject */}
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="subject"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Subject Line
               </label>
               <input
@@ -79,7 +94,10 @@ export default function EditableEmailDialog({
 
             {/* Content */}
             <div>
-              <label htmlFor="content" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="content"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Email Content
               </label>
               <textarea
@@ -94,10 +112,13 @@ export default function EditableEmailDialog({
 
             {/* Preview */}
             <div>
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview</h4>
+              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Preview
+              </h4>
               <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
                 <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  <strong>To:</strong> {appointment.customerEmail || 'No email provided'}
+                  <strong>To:</strong>{" "}
+                  {appointment.customerEmail || "No email provided"}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                   <strong>Subject:</strong> {subject}
@@ -123,7 +144,7 @@ export default function EditableEmailDialog({
               disabled={isLoading || !subject.trim() || !content.trim()}
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
             >
-              {isLoading ? 'Confirming...' : 'Confirm & Insert'}
+              {isLoading ? "Confirming..." : "Confirm & Insert"}
             </button>
           </div>
         </div>

@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as any;
+    const session = (await getServerSession(authOptions)) as any;
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -14,11 +14,14 @@ export async function POST(request: NextRequest) {
     const memberships = await prisma.membership.findMany({
       where: { userId: session.user.id },
       include: { org: true },
-      orderBy: { org: { createdAt: 'asc' } },
+      orderBy: { org: { createdAt: "asc" } },
     });
 
     if (memberships.length === 0) {
-      return NextResponse.json({ error: "No organizations found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "No organizations found" },
+        { status: 404 },
+      );
     }
 
     // Set the first organization as current
@@ -29,17 +32,17 @@ export async function POST(request: NextRequest) {
       organization: {
         id: firstOrg.id,
         name: firstOrg.name,
-        role: memberships[0].role
-      }
+        role: memberships[0].role,
+      },
     });
 
     // Set the currentOrgId cookie
-    response.cookies.set('currentOrgId', firstOrg.id, {
+    response.cookies.set("currentOrgId", firstOrg.id, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24 * 30, // 30 days
-      path: '/',
+      path: "/",
     });
 
     return response;
@@ -47,7 +50,7 @@ export async function POST(request: NextRequest) {
     console.error("Error setting current organization:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

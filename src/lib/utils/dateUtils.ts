@@ -1,11 +1,11 @@
-import { startOfDay, endOfDay, subDays, formatISO } from 'date-fns';
+import { startOfDay, endOfDay, subDays, formatISO } from "date-fns";
 
 export function parseDateRange(range: string) {
   // Example range: "2025-01-01:2025-01-31"
-  const [start, end] = range.split(':');
+  const [start, end] = range.split(":");
   return {
     from: startOfDay(new Date(start)),
-    to: endOfDay(new Date(end))
+    to: endOfDay(new Date(end)),
   };
 }
 
@@ -16,5 +16,5 @@ export function lastNDays(n: number) {
 }
 
 export function toISO(date: Date) {
-  return formatISO(date, { representation: 'complete' });
+  return formatISO(date, { representation: "complete" });
 }

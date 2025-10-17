@@ -1,51 +1,57 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
-import { generateMockDataForCompany, generateMockRetellDataForCompany } from '@/lib/mock-data-generator';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
+import {
+  generateMockDataForCompany,
+  generateMockRetellDataForCompany,
+} from "@/lib/mock-data-generator";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { 
-      companyName, 
-      contactEmail, 
-      contactName, 
-      phone, 
-      address, 
+    const {
+      companyName,
+      contactEmail,
+      contactName,
+      phone,
+      address,
       password,
-      googleSheetId, 
-      retellWebhookUrl 
+      googleSheetId,
+      retellWebhookUrl,
     } = body;
 
     // Validate required fields
     if (!companyName || !contactEmail || !contactName || !password) {
       return NextResponse.json(
-        { error: 'Company name, contact email, contact name, and password are required' },
-        { status: 400 }
+        {
+          error:
+            "Company name, contact email, contact name, and password are required",
+        },
+        { status: 400 },
       );
     }
 
     // Check if company already exists
     const existingCompany = await prisma.company.findFirst({
-      where: { name: companyName }
+      where: { name: companyName },
     });
 
     if (existingCompany) {
       return NextResponse.json(
-        { error: 'A company with this name already exists' },
-        { status: 400 }
+        { error: "A company with this name already exists" },
+        { status: 400 },
       );
     }
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email: contactEmail }
+      where: { email: contactEmail },
     });
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'A user with this email already exists' },
-        { status: 400 }
+        { error: "A user with this email already exists" },
+        { status: 400 },
       );
     }
 
@@ -55,7 +61,7 @@ export async function POST(request: NextRequest) {
         name: companyName,
         googleSheetId: googleSheetId || null,
         retellWebhookUrl: retellWebhookUrl || null,
-      }
+      },
     });
 
     // Hash the provided password
@@ -67,11 +73,11 @@ export async function POST(request: NextRequest) {
         email: contactEmail,
         password: hashedPassword,
         name: contactName,
-        firstName: contactName.split(' ')[0] || contactName,
-        lastName: contactName.split(' ').slice(1).join(' ') || '',
+        firstName: contactName.split(" ")[0] || contactName,
+        lastName: contactName.split(" ").slice(1).join(" ") || "",
         emailVerified: new Date(), // Mark as verified
         companyId: company.id,
-      }
+      },
     });
 
     // Generate and store mock data for the new company
@@ -85,8 +91,8 @@ export async function POST(request: NextRequest) {
         data: {
           companyId: company.id,
           spreadsheetId: `mock-sheet-${company.id}`,
-          dataRange: 'Calls!A:H'
-        }
+          dataRange: "Calls!A:H",
+        },
       });
 
       // Create CompanyRetell entry for Retell integration
@@ -95,8 +101,8 @@ export async function POST(request: NextRequest) {
           companyId: company.id,
           workflowId: `workflow-${company.id}`,
           apiKey: `mock-api-key-${company.id}`,
-          webhookUrl: `https://ui.goshawkai.com/api/webhooks/retell/${company.id}`
-        }
+          webhookUrl: `https://ui.goshawkai.com/api/webhooks/retell/${company.id}`,
+        },
       });
 
       // Store mock call data in SheetCache for analytics
@@ -104,16 +110,19 @@ export async function POST(request: NextRequest) {
         data: {
           companyId: company.id,
           lastSynced: new Date(),
-          rowCount: mockCallData.length
-        }
+          rowCount: mockCallData.length,
+        },
       });
 
-      console.log(`Generated and stored mock data for company ${companyName}:`, {
-        callData: mockCallData.length,
-        retellData: mockRetellData
-      });
+      console.log(
+        `Generated and stored mock data for company ${companyName}:`,
+        {
+          callData: mockCallData.length,
+          retellData: mockRetellData,
+        },
+      );
     } catch (error) {
-      console.error('Error storing mock data:', error);
+      console.error("Error storing mock data:", error);
       // Don't fail the client creation if mock data storage fails
     }
 
@@ -124,7 +133,7 @@ export async function POST(request: NextRequest) {
     if (!retellWebhookUrl) {
       await prisma.company.update({
         where: { id: company.id },
-        data: { retellWebhookUrl: generatedWebhookUrl }
+        data: { retellWebhookUrl: generatedWebhookUrl },
       });
     }
 
@@ -135,16 +144,15 @@ export async function POST(request: NextRequest) {
         id: user.id,
         email: user.email,
         name: user.name,
-        password: password
+        password: password,
       },
-      webhookUrl: retellWebhookUrl || generatedWebhookUrl
+      webhookUrl: retellWebhookUrl || generatedWebhookUrl,
     });
-
   } catch (error) {
-    console.error('Error creating client:', error);
+    console.error("Error creating client:", error);
     return NextResponse.json(
-      { error: 'Failed to create client' },
-      { status: 500 }
+      { error: "Failed to create client" },
+      { status: 500 },
     );
   }
 }

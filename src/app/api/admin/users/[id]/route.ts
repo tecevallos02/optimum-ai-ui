@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -13,32 +13,33 @@ export async function PUT(
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!existingUser) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Check if email is already taken by another user
     if (email && email !== existingUser.email) {
       const emailExists = await prisma.user.findUnique({
-        where: { email }
+        where: { email },
       });
 
       if (emailExists) {
         return NextResponse.json(
-          { error: 'Email already taken' },
-          { status: 400 }
+          { error: "Email already taken" },
+          { status: 400 },
         );
       }
     }
 
     // Prepare update data
-    const updateData: any = {};
+    const updateData: {
+      name?: string;
+      email?: string;
+      password?: string;
+    } = {};
     if (name) updateData.name = name;
     if (email) updateData.email = email;
     if (password) {
@@ -60,25 +61,24 @@ export async function PUT(
           select: {
             id: true,
             name: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     return NextResponse.json(updatedUser);
-
   } catch (error) {
-    console.error('Error updating user:', error);
+    console.error("Error updating user:", error);
     return NextResponse.json(
-      { error: 'Failed to update user' },
-      { status: 500 }
+      { error: "Failed to update user" },
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -87,39 +87,35 @@ export async function DELETE(
     const existingUser = await prisma.user.findUnique({
       where: { id },
       include: {
-        company: true
-      }
+        company: true,
+      },
     });
 
     if (!existingUser) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Start a transaction to delete user and company
     await prisma.$transaction(async (tx) => {
       // Delete the user first
       await tx.user.delete({
-        where: { id }
+        where: { id },
       });
 
       // If the user had a company, delete it too
       if (existingUser.companyId) {
         await tx.company.delete({
-          where: { id: existingUser.companyId }
+          where: { id: existingUser.companyId },
         });
       }
     });
 
     return NextResponse.json({ success: true });
-
   } catch (error) {
-    console.error('Error deleting user:', error);
+    console.error("Error deleting user:", error);
     return NextResponse.json(
-      { error: 'Failed to delete user' },
-      { status: 500 }
+      { error: "Failed to delete user" },
+      { status: 500 },
     );
   }
 }

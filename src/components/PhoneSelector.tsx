@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { fetcher } from '@/lib/fetcher';
+import { useState, useEffect } from "react";
+import { fetcher } from "@/lib/fetcher";
 
 export default function PhoneSelector() {
   const [phones, setPhones] = useState<string[]>([]);
@@ -11,15 +11,15 @@ export default function PhoneSelector() {
   useEffect(() => {
     const fetchPhones = async () => {
       try {
-        const data = await fetcher<{ phones: string[] }>('/api/me/company');
+        const data = await fetcher<{ phones: string[] }>("/api/me/company");
         setPhones(data?.phones || []);
-        
+
         // Auto-select if only one phone
         if (data?.phones && data.phones.length === 1) {
           setSelectedPhone(data.phones[0]);
         }
       } catch (error) {
-        console.error('Error fetching phones:', error);
+        console.error("Error fetching phones:", error);
       } finally {
         setIsLoading(false);
       }
@@ -28,7 +28,7 @@ export default function PhoneSelector() {
   }, []);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const phone = e.target.value === 'all' ? null : e.target.value;
+    const phone = e.target.value === "all" ? null : e.target.value;
     setSelectedPhone(phone);
     // TODO: Implement phone filtering logic here if needed
   };
@@ -46,12 +46,12 @@ export default function PhoneSelector() {
 
   return (
     <select
-      value={selectedPhone || 'all'}
+      value={selectedPhone || "all"}
       onChange={handlePhoneChange}
       className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm"
     >
       <option value="all">All Phones</option>
-      {phones.map(phone => (
+      {phones.map((phone) => (
         <option key={phone} value={phone}>
           {phone}
         </option>

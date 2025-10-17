@@ -5,10 +5,10 @@ import { prisma } from "@/lib/prisma";
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await getServerSession(authOptions) as any;
+    const session = (await getServerSession(authOptions)) as any;
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -18,16 +18,19 @@ export async function PUT(
 
     // Get user's organization name
     const userData = await prisma.user.findFirst({
-      where: { id: session.user.id }
+      where: { id: session.user.id },
     });
 
     if (!userData?.organization) {
-      return NextResponse.json({ error: "No organization found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "No organization found" },
+        { status: 404 },
+      );
     }
 
     // Find the organization by name (since we're using the new system)
     let org = await prisma.organization.findFirst({
-      where: { name: userData.organization }
+      where: { name: userData.organization },
     });
 
     if (!org) {
@@ -35,7 +38,7 @@ export async function PUT(
       org = await prisma.organization.create({
         data: {
           name: userData.organization,
-        }
+        },
       });
     }
 
@@ -46,8 +49,8 @@ export async function PUT(
       select: {
         id: true,
         name: true,
-        logo: true
-      }
+        logo: true,
+      },
     });
 
     return NextResponse.json(updatedOrg);
@@ -55,7 +58,7 @@ export async function PUT(
     console.error("Error updating organization logo:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

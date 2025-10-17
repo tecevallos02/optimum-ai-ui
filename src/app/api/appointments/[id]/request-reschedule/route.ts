@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await requireUser();
@@ -14,21 +14,21 @@ export async function PATCH(
     const body = await request.json();
 
     // Get user's organization
-    const userData = await prisma.user.findFirst({
-      where: { id: user.id }
-    }) as any;
-    
-    const orgName = userData?.organization || 'Default Organization'
-    
+    const userData = (await prisma.user.findFirst({
+      where: { id: user.id },
+    })) as any;
+
+    const orgName = userData?.organization || "Default Organization";
+
     // Ensure organization exists in the database
-    let org = await prisma.organization.findFirst({
-      where: { name: orgName }
-    })
-    
+    const org = await prisma.organization.findFirst({
+      where: { name: orgName },
+    });
+
     if (!org) {
       return NextResponse.json(
         { error: "Organization not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -36,16 +36,16 @@ export async function PATCH(
     const updatedAppointment = await prisma.appointment.update({
       where: {
         id: id,
-        orgId: org.id
+        orgId: org.id,
       },
       data: {
-        status: 'SCHEDULED', // Keep as scheduled but mark for reschedule
-        notes: body.notes || 'Reschedule requested.',
-      }
+        status: "SCHEDULED", // Keep as scheduled but mark for reschedule
+        notes: body.notes || "Reschedule requested.",
+      },
     });
 
     // Simulate SMS notification
-    console.log('📱 SMS sent to customer with reschedule link');
+    console.log("📱 SMS sent to customer with reschedule link");
 
     const responseData = {
       id: updatedAppointment.id,
@@ -56,10 +56,10 @@ export async function PATCH(
 
     return NextResponse.json(responseData);
   } catch (error) {
-    console.error('Error requesting reschedule:', error);
+    console.error("Error requesting reschedule:", error);
     return NextResponse.json(
       { error: "Failed to request reschedule" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

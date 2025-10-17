@@ -1,17 +1,17 @@
 // path: src/lib/types/index.ts
-import { Decimal } from '@prisma/client/runtime/library';
-import { JsonValue } from '@prisma/client/runtime/library';
+import { Decimal } from "@prisma/client/runtime/library";
+import { JsonValue } from "@prisma/client/runtime/library";
 
 export type CallRow = {
   appointment_id: string;
   name: string;
-  phone: string;        // E.164
+  phone: string; // E.164
   datetime_iso: string; // ISO 8601
   window: string;
   status: string;
   address: string;
   notes: string;
-  intent?: string;      // derive if missing
+  intent?: string; // derive if missing
 };
 
 export type Appointment = {
@@ -24,8 +24,8 @@ export type Appointment = {
   customerEmail?: string;
   startsAt: string;
   endsAt: string;
-  status: 'scheduled' | 'confirmed' | 'completed' | 'canceled' | 'no_show';
-  source?: 'web' | 'phone' | 'agent' | 'imported' | 'AI_RECEPTIONIST';
+  status: "scheduled" | "confirmed" | "completed" | "canceled" | "no_show";
+  source?: "web" | "phone" | "agent" | "imported" | "AI_RECEPTIONIST";
   description?: string;
   notes?: string;
   createdAt: string;
@@ -74,7 +74,7 @@ export type Complaint = {
   phoneNumber: string;
   callTimestamp: string;
   description?: string | null;
-  status: 'OPEN' | 'RESOLVED' | 'CLOSED';
+  status: "OPEN" | "RESOLVED" | "CLOSED";
   createdAt: string;
   updatedAt: string;
 };
@@ -108,7 +108,7 @@ export type AuditLog = {
 /** ✅ Add this so imports like `import type { Report } from "@/lib/types"` work */
 export type Report = {
   generatedAt: string; // ISO timestamp
-  kpis: KPI;           // snapshot of KPIs
+  kpis: KPI; // snapshot of KPIs
   series: { name: string; value: number }[]; // generic chart series
   notes?: string;
 };

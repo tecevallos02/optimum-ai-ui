@@ -4,9 +4,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 export type Column<T extends Record<string, unknown>> = {
-  key: keyof T & string;                 // ensure key is a string key of T
+  key: keyof T & string; // ensure key is a string key of T
   header: string;
-  render?: (row: T) => React.ReactNode;  // row is strongly typed as T
+  render?: (row: T) => React.ReactNode; // row is strongly typed as T
 };
 
 export default function DataTable<T extends Record<string, unknown>>({
@@ -46,7 +46,10 @@ export default function DataTable<T extends Record<string, unknown>>({
           <thead className="bg-gray-50 dark:bg-gray-700 text-left">
             <tr>
               {columns.map((c) => (
-                <th key={c.key} className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-600">
+                <th
+                  key={c.key}
+                  className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-600"
+                >
                   {c.header}
                 </th>
               ))}
@@ -55,15 +58,24 @@ export default function DataTable<T extends Record<string, unknown>>({
           <tbody className="bg-white dark:bg-gray-800">
             {pageData.length === 0 ? (
               <tr>
-                <td className="px-4 py-6 text-gray-500 dark:text-gray-400 text-center" colSpan={columns.length}>
+                <td
+                  className="px-4 py-6 text-gray-500 dark:text-gray-400 text-center"
+                  colSpan={columns.length}
+                >
                   No data to display.
                 </td>
               </tr>
             ) : (
               pageData.map((row, idx) => (
-                <tr key={String((row as Record<string, unknown>).id) || idx} className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800">
+                <tr
+                  key={String((row as Record<string, unknown>).id) || idx}
+                  className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800"
+                >
                   {columns.map((c) => (
-                    <td key={c.key} className="px-4 py-3 text-gray-900 dark:text-gray-100">
+                    <td
+                      key={c.key}
+                      className="px-4 py-3 text-gray-900 dark:text-gray-100"
+                    >
                       {c.render
                         ? c.render(row)
                         : String((row as Record<string, unknown>)[c.key] ?? "")}

@@ -2,7 +2,10 @@ interface ExportButtonProps {
   onExport: () => void;
   disabled?: boolean;
 }
-export default function ExportButton({ onExport, disabled }: ExportButtonProps) {
+export default function ExportButton({
+  onExport,
+  disabled,
+}: ExportButtonProps) {
   return (
     <button
       onClick={onExport}

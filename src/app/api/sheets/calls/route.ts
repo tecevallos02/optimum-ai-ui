@@ -1,43 +1,40 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { readSheetData, getSheetMetadata } from '@/lib/google-sheets';
-import { CallRow } from '@/lib/types';
-import { requireUser } from '@/lib/auth';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { readSheetData, getSheetMetadata } from "@/lib/google-sheets";
+import { CallRow } from "@/lib/types";
+import { requireUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
     const user = await requireUser();
     const { searchParams } = new URL(request.url);
-    const phone = searchParams.get('phone');
-    const from = searchParams.get('from');
-    const to = searchParams.get('to');
-    const status = searchParams.get('status');
-    const fresh = searchParams.get('fresh') === '1';
+    const phone = searchParams.get("phone");
+    const from = searchParams.get("from");
+    const to = searchParams.get("to");
+    const status = searchParams.get("status");
+    const fresh = searchParams.get("fresh") === "1";
 
     // Get the user's specific company
     if (!user.companyId) {
       return NextResponse.json(
-        { error: 'User not linked to any company' },
-        { status: 404 }
+        { error: "User not linked to any company" },
+        { status: 404 },
       );
     }
 
     const company = await prisma.company.findUnique({
       where: {
-        id: user.companyId
+        id: user.companyId,
       },
       include: {
         sheets: true,
         phones: true,
-        cache: true
-      }
+        cache: true,
+      },
     });
 
     if (!company) {
-      return NextResponse.json(
-        { error: 'No company found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "No company found" }, { status: 404 });
     }
 
     // Validate phone belongs to company if provided
@@ -45,8 +42,8 @@ export async function GET(request: NextRequest) {
       const phoneExists = company.phones.some((p: any) => p.e164 === phone);
       if (!phoneExists) {
         return NextResponse.json(
-          { error: 'Phone number does not belong to this company' },
-          { status: 400 }
+          { error: "Phone number does not belong to this company" },
+          { status: 400 },
         );
       }
     }
@@ -54,8 +51,8 @@ export async function GET(request: NextRequest) {
     const companySheet = company.sheets[0];
     if (!companySheet) {
       return NextResponse.json(
-        { error: 'Google Sheet configuration not found for this company' },
-        { status: 404 }
+        { error: "Google Sheet configuration not found for this company" },
+        { status: 404 },
       );
     }
 
@@ -88,21 +85,24 @@ export async function GET(request: NextRequest) {
         where: { id: company.cache[0].id },
         data: {
           lastSynced: new Date(),
-          rowCount: calls.length
-        }
+          rowCount: calls.length,
+        },
       });
     } else {
       await prisma.sheetCache.create({
         data: {
           companyId: company.id,
           lastSynced: new Date(),
-          rowCount: calls.length
-        }
+          rowCount: calls.length,
+        },
       });
     }
 
     // Get sheet metadata for pagination info
-    const metadata = await getSheetMetadata(companySheet.spreadsheetId, companySheet.dataRange);
+    const metadata = await getSheetMetadata(
+      companySheet.spreadsheetId,
+      companySheet.dataRange,
+    );
     const totalRows = metadata?.rowCount || calls.length;
 
     return NextResponse.json({
@@ -111,14 +111,14 @@ export async function GET(request: NextRequest) {
         total: totalRows,
         page: 1,
         limit: calls.length,
-        totalPages: Math.ceil(totalRows / calls.length)
-      }
+        totalPages: Math.ceil(totalRows / calls.length),
+      },
     });
   } catch (error) {
-    console.error('Error fetching calls from Google Sheet:', error);
+    console.error("Error fetching calls from Google Sheet:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch calls from sheet' },
-      { status: 500 }
+      { error: "Failed to fetch calls from sheet" },
+      { status: 500 },
     );
   }
 }
