@@ -106,55 +106,97 @@ export async function GET() {
       );
     }
 
-    // Read data from Google Sheets
-    const calls = await readSheetData({
-      spreadsheetId: companySheet.spreadsheetId,
-      range: companySheet.dataRange,
-      companyId: company.id, // Pass companyId for mock data generation
+    // Get appointments from database first
+    const dbAppointments = await prisma.appointment.findMany({
+      where: {
+        orgId: company.id,
+      },
+      orderBy: {
+        startsAt: 'asc',
+      },
     });
 
-    // Convert CallRow data to Appointment format for upcoming appointments
-    // Only include calls that are booked/scheduled/confirmed
-    const appointments = calls
-      .filter(
-        (call) =>
-          call.status.toLowerCase() === "booked" ||
-          call.status.toLowerCase() === "scheduled" ||
-          call.status.toLowerCase() === "confirmed",
-      )
-      .map((call) => ({
-        id: call.appointment_id,
-        orgId: company.id,
-        googleEventId: null,
-        title: `Appointment with ${call.name}`,
-        customerName: call.name,
-        customerPhone: call.phone,
-        customerEmail: null,
-        startsAt: call.datetime_iso,
-        endsAt: new Date(
-          new Date(call.datetime_iso).getTime() + 60 * 60 * 1000,
-        ).toISOString(), // 1 hour duration
-        status: call.status.toLowerCase(),
-        source: "phone",
-        description: call.notes,
-        notes: call.notes,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }))
-      .sort(
-        (a, b) =>
-          new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime(),
-      );
+    // Convert database appointments to API format
+    const dbAppointmentsFormatted = dbAppointments.map((apt) => ({
+      id: apt.id,
+      orgId: apt.orgId,
+      googleEventId: apt.googleEventId,
+      title: apt.title,
+      customerName: apt.customerName,
+      customerPhone: apt.customerPhone,
+      customerEmail: apt.customerEmail,
+      startsAt: apt.startsAt.toISOString(),
+      endsAt: apt.endsAt.toISOString(),
+      status: apt.status.toLowerCase(),
+      source: apt.source.toLowerCase(),
+      description: apt.description,
+      notes: apt.notes,
+      createdAt: apt.createdAt.toISOString(),
+      updatedAt: apt.updatedAt.toISOString(),
+    }));
+
+    // Also read data from Google Sheets (if configured)
+    let sheetAppointments: any[] = [];
+    try {
+      const calls = await readSheetData({
+        spreadsheetId: companySheet.spreadsheetId,
+        range: companySheet.dataRange,
+        companyId: company.id,
+      });
+
+      // Convert CallRow data to Appointment format for upcoming appointments
+      sheetAppointments = calls
+        .filter(
+          (call) =>
+            call.status.toLowerCase() === "booked" ||
+            call.status.toLowerCase() === "scheduled" ||
+            call.status.toLowerCase() === "confirmed",
+        )
+        .map((call) => ({
+          id: call.appointment_id,
+          orgId: company.id,
+          googleEventId: null,
+          title: `Appointment with ${call.name}`,
+          customerName: call.name,
+          customerPhone: call.phone,
+          customerEmail: null,
+          startsAt: call.datetime_iso,
+          endsAt: new Date(
+            new Date(call.datetime_iso).getTime() + 60 * 60 * 1000,
+          ).toISOString(), // 1 hour duration
+          status: call.status.toLowerCase(),
+          source: "phone",
+          description: call.notes,
+          notes: call.notes,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }));
+    } catch (sheetError) {
+      console.log("⚠️ Could not read from Google Sheets:", sheetError);
+    }
+
+    // Combine database and sheet appointments, removing duplicates
+    const allAppointments = [...dbAppointmentsFormatted, ...sheetAppointments];
+    const uniqueAppointments = allAppointments.filter((apt, index, self) => 
+      index === self.findIndex(a => a.id === apt.id)
+    );
+
+    const appointments = uniqueAppointments.sort(
+      (a, b) =>
+        new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime(),
+    );
 
     // Add debugging info
     const debugInfo = {
       userId: user.id,
       companyId: user.companyId,
       companyName: company.name,
-      rawCallsCount: calls.length,
-      appointmentsCount: appointments.length,
+      dbAppointmentsCount: dbAppointmentsFormatted.length,
+      sheetAppointmentsCount: sheetAppointments.length,
+      totalAppointmentsCount: appointments.length,
       firstAppointmentId: appointments[0]?.id || "none",
-      firstCallId: calls[0]?.appointment_id || "none",
+      firstDbAppointmentId: dbAppointmentsFormatted[0]?.id || "none",
+      firstSheetAppointmentId: sheetAppointments[0]?.id || "none",
     };
 
     console.log("🔍 Appointments API Debug:", debugInfo);
