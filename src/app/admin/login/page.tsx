@@ -20,12 +20,13 @@ function AdminLoginContent() {
 
     try {
       console.log("🔐 Attempting admin login:", email);
+      console.log("🔐 Redirect to:", redirectTo);
 
       const result = await signIn("admin-credentials", {
         email,
         password,
         redirect: false,
-        callbackUrl: "/admin",
+        callbackUrl: redirectTo,
       });
 
       console.log("🔐 SignIn result:", result);
