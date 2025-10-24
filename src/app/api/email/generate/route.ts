@@ -3,6 +3,9 @@ import OpenAI from "openai";
 
 export async function POST(request: NextRequest) {
   try {
+    const requestBody = await request.json();
+    console.log("📧 Email generation request received:", requestBody);
+    
     const {
       appointmentId,
       attendeeName,
@@ -12,9 +15,15 @@ export async function POST(request: NextRequest) {
       description,
       status,
       isApology,
-    } = await request.json();
+    } = requestBody;
 
     if (!appointmentId || !attendeeName || !attendeeEmail || !appointmentDate) {
+      console.error("❌ Missing required fields:", {
+        appointmentId: !!appointmentId,
+        attendeeName: !!attendeeName,
+        attendeeEmail: !!attendeeEmail,
+        appointmentDate: !!appointmentDate,
+      });
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },

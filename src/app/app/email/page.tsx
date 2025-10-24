@@ -50,21 +50,25 @@ export default function EmailPage() {
   const generateEmail = async (appointment: Appointment, isApology = false) => {
     setIsGenerating(true);
     try {
+      const requestData = {
+        appointmentId: appointment.id,
+        attendeeName: appointment.customerName,
+        attendeeEmail: appointment.customerEmail || "",
+        appointmentDate: appointment.startsAt,
+        appointmentEnd: appointment.endsAt,
+        description: appointment.description || appointment.notes,
+        status: appointment.status,
+        isApology: isApology,
+      };
+      
+      console.log("📧 Sending email generation request:", requestData);
+      
       const response = await fetch("/api/email/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          appointmentId: appointment.id,
-          attendeeName: appointment.customerName,
-          attendeeEmail: appointment.customerEmail || "",
-          appointmentDate: appointment.startsAt,
-          appointmentEnd: appointment.endsAt,
-          description: appointment.description || appointment.notes,
-          status: appointment.status,
-          isApology: isApology,
-        }),
+        body: JSON.stringify(requestData),
       });
 
       if (response.ok) {
@@ -72,7 +76,9 @@ export default function EmailPage() {
         setEditableTemplate(template);
         setShowEditableDialog(true);
       } else {
-        console.error("Failed to generate email");
+        const errorData = await response.json();
+        console.error("Failed to generate email:", errorData);
+        alert(`Failed to generate email: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error("Error generating email:", error);
