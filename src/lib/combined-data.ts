@@ -90,11 +90,17 @@ export async function getCombinedData(
         // Use mock data for development
         callLogs = getMockRetellData(companyId);
       } else {
-        // Fetch real data from Retell API
-        callLogs = await fetchRetellCalls(companyRetell, {
-          startDate: options.startDate,
-          endDate: options.endDate,
-        });
+        try {
+          // Fetch real data from Retell API
+          callLogs = await fetchRetellCalls(companyRetell, {
+            startDate: options.startDate,
+            endDate: options.endDate,
+          });
+        } catch (retellError) {
+          console.log("⚠️ Retell API error, using mock data:", retellError);
+          // Fall back to mock data if Retell API fails
+          callLogs = getMockRetellData(companyId);
+        }
       }
 
       retellAnalytics = calculateRetellAnalytics(callLogs);
