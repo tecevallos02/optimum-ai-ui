@@ -33,6 +33,11 @@ export async function middleware(request: NextRequest) {
 
   // Handle admin routes
   if (pathname.startsWith("/admin")) {
+    // Allow admin login page without redirect
+    if (pathname === "/admin/login") {
+      return NextResponse.next();
+    }
+    
     if (!adminSessionToken) {
       // Not authenticated, redirect to admin login
       const loginUrl = new URL("/admin/login", request.url);
