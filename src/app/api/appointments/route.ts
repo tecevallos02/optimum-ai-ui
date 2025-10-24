@@ -238,6 +238,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log("📝 POST /api/appointments - Creating new appointment");
+    
     // For now, let's create a simple test user to bypass auth issues
     let user;
     try {
@@ -331,7 +333,8 @@ export async function POST(request: NextRequest) {
       title: body.title,
       customerName: body.customerName,
       startsAt: body.startsAt,
-      endsAt: body.endsAt
+      endsAt: body.endsAt,
+      fullBody: body
     });
 
     const newAppointment = await prisma.appointment.create({
