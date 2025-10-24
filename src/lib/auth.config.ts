@@ -1,4 +1,4 @@
-// NextAuth v4 doesn't export NextAuthOptions, using any for now
+// NextAuth configuration with proper TypeScript types
 import GoogleProvider from "next-auth/providers/google"
 import AzureADProvider from "next-auth/providers/azure-ad"
 import EmailProvider from "next-auth/providers/email"
@@ -18,10 +18,10 @@ if (!process.env.NEXTAUTH_SECRET) {
   throw new Error("NEXTAUTH_SECRET is missing");
 }
 
-export const authOptions: any = {
+export const authOptions = {
   adapter: PrismaAdapter(prisma),
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
   },
   cookies: {
     sessionToken: {
