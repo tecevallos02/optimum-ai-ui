@@ -243,17 +243,31 @@ export async function POST(request: NextRequest) {
     // Get user's organization and ensure it exists in the database
     const userData = (await prisma.user.findFirst({
       where: { id: user.id },
+      include: {
+        memberships: {
+          include: {
+            organization: true
+          }
+        }
+      }
     })) as any;
 
-    const orgName = userData?.organization || "Default Organization";
-
-    // Ensure organization exists in the database
-    let org = await prisma.organization.findFirst({
-      where: { name: orgName },
+    console.log("🔍 User data for appointment creation:", {
+      userId: user.id,
+      userData: userData,
+      memberships: userData?.memberships
     });
 
+    // Get organization from user's memberships
+    const userMembership = userData?.memberships?.[0];
+    const orgName = userMembership?.organization?.name || "Default Organization";
+    const currentOrgId = userMembership?.organization?.id;
+
+    // Use the organization from user's membership if available
+    let org = userMembership?.organization;
+    
     if (!org) {
-      console.log("Creating organization for appointments POST:", orgName);
+      console.log("⚠️ No organization found for user, creating default organization");
       org = await prisma.organization.create({
         data: {
           name: orgName,
@@ -261,7 +275,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const currentOrgId = org.id;
+    console.log("🔍 Using organization for appointment:", {
+      orgId: org.id,
+      orgName: org.name
+    });
     const body = await request.json();
 
     // Validate required fields
@@ -276,9 +293,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new appointment in database
+    console.log("🔍 Creating appointment with data:", {
+      orgId: org.id,
+      title: body.title,
+      customerName: body.customerName,
+      startsAt: body.startsAt,
+      endsAt: body.endsAt
+    });
+
     const newAppointment = await prisma.appointment.create({
       data: {
-        orgId: currentOrgId,
+        orgId: org.id,
         googleEventId: body.googleEventId || null,
         title: body.title,
         customerName: body.customerName,
@@ -292,6 +317,8 @@ export async function POST(request: NextRequest) {
         notes: body.notes || null,
       },
     });
+
+    console.log("✅ Appointment created successfully:", newAppointment.id);
 
     // Convert to API format
     const responseData = {
