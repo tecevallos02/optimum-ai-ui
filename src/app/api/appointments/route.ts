@@ -274,40 +274,35 @@ export async function POST(request: NextRequest) {
         console.log("✅ Created test organization:", org.id);
       }
     } else {
-      // Get user's organization and ensure it exists in the database
-      const userData = (await prisma.user.findFirst({
-        where: { id: user.id },
-        include: {
-          memberships: {
-            include: {
-              org: true
-            }
-          }
-        }
-      })) as any;
+      // Use the same company lookup as the GET method
+      if (!user.companyId) {
+        console.log("❌ User not linked to any company");
+        return NextResponse.json(
+          { error: "User not linked to any company" },
+          { status: 404 },
+        );
+      }
 
-      console.log("🔍 User data for appointment creation:", {
-        userId: user.id,
-        userData: userData,
-        memberships: userData?.memberships
+      const company = await prisma.company.findUnique({
+        where: {
+          id: user.companyId,
+        },
       });
 
-      // Get organization from user's memberships
-      const userMembership = userData?.memberships?.[0];
-      const orgName = userMembership?.org?.name || "Default Organization";
-      const currentOrgId = userMembership?.org?.id;
-
-      // Use the organization from user's membership if available
-      org = userMembership?.org;
-      
-      if (!org) {
-        console.log("⚠️ No organization found for user, creating default organization");
-        org = await prisma.organization.create({
-          data: {
-            name: orgName,
-          },
-        });
+      if (!company) {
+        console.log("❌ No company found for this user");
+        return NextResponse.json(
+          { error: "No company found for this user" },
+          { status: 404 },
+        );
       }
+
+      // Use the company ID for appointments (same as GET method)
+      org = { id: company.id, name: company.name };
+      console.log("🔍 Using company for appointment:", {
+        companyId: company.id,
+        companyName: company.name
+      });
     }
 
     console.log("🔍 Using organization for appointment:", {
