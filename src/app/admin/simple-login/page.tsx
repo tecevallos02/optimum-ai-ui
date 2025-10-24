@@ -30,7 +30,7 @@ export default function SimpleAdminLogin() {
 
       if (response.ok && data.success) {
         console.log("✅ Admin login successful:", data.user);
-        router.push("/admin");
+        router.push("/admin/simple");
       } else {
         console.log("❌ Admin login failed:", data.error);
         setError(data.error || "Login failed");

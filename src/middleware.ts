@@ -34,8 +34,8 @@ export async function middleware(request: NextRequest) {
 
   // Handle admin routes
   if (pathname.startsWith("/admin")) {
-    // Allow admin login pages without redirect
-    if (pathname === "/admin/login" || pathname === "/admin/simple-login") {
+    // Allow admin login pages and simple admin dashboard without redirect
+    if (pathname === "/admin/login" || pathname === "/admin/simple-login" || pathname === "/admin/simple") {
       return NextResponse.next();
     }
     
