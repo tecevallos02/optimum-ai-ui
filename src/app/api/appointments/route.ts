@@ -246,7 +246,7 @@ export async function POST(request: NextRequest) {
       include: {
         memberships: {
           include: {
-            organization: true
+            org: true
           }
         }
       }
@@ -260,11 +260,11 @@ export async function POST(request: NextRequest) {
 
     // Get organization from user's memberships
     const userMembership = userData?.memberships?.[0];
-    const orgName = userMembership?.organization?.name || "Default Organization";
-    const currentOrgId = userMembership?.organization?.id;
+    const orgName = userMembership?.org?.name || "Default Organization";
+    const currentOrgId = userMembership?.org?.id;
 
     // Use the organization from user's membership if available
-    let org = userMembership?.organization;
+    let org = userMembership?.org;
     
     if (!org) {
       console.log("⚠️ No organization found for user, creating default organization");
