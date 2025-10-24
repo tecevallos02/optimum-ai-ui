@@ -29,13 +29,14 @@ export async function middleware(request: NextRequest) {
 
   // Get session from cookies (Edge Runtime compatible)
   const sessionToken = request.cookies.get("next-auth.session-token")?.value;
+  const adminSessionToken = request.cookies.get("admin-next-auth.session-token")?.value;
 
   // Handle admin routes
   if (pathname.startsWith("/admin")) {
-    if (!sessionToken) {
-      // Not authenticated, redirect to login
-      const loginUrl = new URL("/login", request.url);
-      loginUrl.searchParams.set("next", pathname);
+    if (!adminSessionToken) {
+      // Not authenticated, redirect to admin login
+      const loginUrl = new URL("/admin/login", request.url);
+      loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
 

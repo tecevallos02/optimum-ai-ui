@@ -26,6 +26,7 @@ function AdminLoginContent() {
         email,
         password,
         redirect: false,
+        callbackUrl: "/admin",
       });
 
       console.log("🔐 SignIn result:", result);

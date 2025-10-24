@@ -14,7 +14,7 @@ export default function HomePage() {
       // Not authenticated, go to login
       router.replace("/login");
     } else if (session) {
-      // Authenticated, go to dashboard
+      // Regular user, go to CRM dashboard
       router.replace("/app");
     }
   }, [session, status, router]);

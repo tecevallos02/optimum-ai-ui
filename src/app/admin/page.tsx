@@ -41,8 +41,8 @@ export default function AdminDashboard() {
     if (status === "loading") return;
 
     if (status === "unauthenticated") {
-      console.log("❌ Not authenticated, redirecting to login");
-      router.push("/login?next=/admin");
+      console.log("❌ Not authenticated, redirecting to admin login");
+      router.push("/admin/login");
       return;
     }
 

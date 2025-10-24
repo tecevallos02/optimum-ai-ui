@@ -14,7 +14,18 @@ export default function AuthPage() {
     // Check if user is already signed in
     getSession().then((session) => {
       if (session) {
-        router.replace("/app");
+        // Check if this is an admin user
+        const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",").map(
+          (email) => email.trim(),
+        ) || ["goshawkai1@gmail.com"];
+        
+        if (adminEmails.includes(session.user?.email || "")) {
+          // Admin user, redirect to admin dashboard
+          router.replace("/admin");
+        } else {
+          // Regular user, go to CRM dashboard
+          router.replace("/app");
+        }
       } else {
         setIsLoading(false);
       }
