@@ -1,4 +1,4 @@
-// NextAuth v4 doesn't export NextAuthOptions, using any for now
+// Admin NextAuth configuration with proper TypeScript types
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { adminPrisma } from "./admin-prisma";
@@ -24,7 +24,7 @@ if (!adminNextAuthSecret) {
 export const adminAuthOptions = {
   adapter: PrismaAdapter(adminPrisma),
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
   },
   secret: adminNextAuthSecret,
   pages: {
