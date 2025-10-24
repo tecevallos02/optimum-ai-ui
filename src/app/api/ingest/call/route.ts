@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { mockDb } from '@/lib/mockDb';
+import { NextResponse } from "next/server";
+import { mockDb } from "@/lib/mockDb";
 
 export async function POST(req: Request) {
   const payload = await req.json();

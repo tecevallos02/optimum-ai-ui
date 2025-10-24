@@ -25,76 +25,85 @@ export const authOptions = {
   },
   cookies: {
     sessionToken: {
-      name: 'next-auth.session-token',
+      name: "next-auth.session-token",
       options: {
         httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production'
-      }
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
     },
     callbackUrl: {
-      name: 'next-auth.callback-url',
+      name: "next-auth.callback-url",
       options: {
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production'
-      }
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
     },
     csrfToken: {
-      name: 'next-auth.csrf-token',
+      name: "next-auth.csrf-token",
       options: {
         httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production'
-      }
-    }
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
   },
   providers: [
     // Only enable providers with valid credentials
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && 
-        process.env.GOOGLE_CLIENT_ID !== 'placeholder-google-client-id' ? [
-      GoogleProvider({
-        clientId: process.env.GOOGLE_CLIENT_ID!,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      })
-    ] : []),
-    ...(process.env.AZURE_AD_CLIENT_ID && process.env.AZURE_AD_CLIENT_SECRET && 
-        process.env.AZURE_AD_CLIENT_ID !== 'placeholder-azure-client-id' ? [
-      AzureADProvider({
-        clientId: process.env.AZURE_AD_CLIENT_ID!,
-        clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
-        tenantId: process.env.AZURE_AD_TENANT_ID!,
-      })
-    ] : []),
+    ...(process.env.GOOGLE_CLIENT_ID &&
+    process.env.GOOGLE_CLIENT_SECRET &&
+    process.env.GOOGLE_CLIENT_ID !== "placeholder-google-client-id"
+      ? [
+          GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+          }),
+        ]
+      : []),
+    ...(process.env.AZURE_AD_CLIENT_ID &&
+    process.env.AZURE_AD_CLIENT_SECRET &&
+    process.env.AZURE_AD_CLIENT_ID !== "placeholder-azure-client-id"
+      ? [
+          AzureADProvider({
+            clientId: process.env.AZURE_AD_CLIENT_ID!,
+            clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
+            tenantId: process.env.AZURE_AD_TENANT_ID!,
+          }),
+        ]
+      : []),
     // Credentials provider for email/password authentication
     CredentialsProvider({
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null
+          return null;
         }
 
         try {
           const user = await prisma.user.findUnique({
             where: { email: credentials.email },
             include: {
-              company: true
-            }
-          })
+              company: true,
+            },
+          });
 
           if (!user || !user.password || !user.emailVerified) {
-            return null
+            return null;
           }
 
-          const isValidPassword = await verifyPassword(credentials.password, user.password)
+          const isValidPassword = await verifyPassword(
+            credentials.password,
+            user.password,
+          );
           if (!isValidPassword) {
-            return null
+            return null;
           }
 
           return {
@@ -105,38 +114,36 @@ export const authOptions = {
             lastName: user.lastName,
             image: user.image,
             emailVerified: user.emailVerified,
-            companyId: user.companyId
-          }
+            companyId: user.companyId,
+          };
         } catch (error) {
-          console.error('Credentials authorization error:', error)
-          return null
+          console.error("Credentials authorization error:", error);
+          return null;
         }
-      }
+      },
     }),
     // Email provider - always enabled for development
     EmailProvider({
       from: process.env.EMAIL_FROM || "noreply@localhost",
       sendVerificationRequest: async ({ identifier: email, url, provider }) => {
         try {
-          // For development, we'll log the magic link to console
+          // For development, skip sending emails
           if (process.env.NODE_ENV === "development") {
-            console.log("🔗 Magic Link for", email, ":", url)
-            console.log("📧 In production, this would be sent via email")
-            return
+            return;
           }
 
           // In production, send real emails with Resend
-          const { Resend } = await import('resend')
-          const resend = new Resend(process.env.RESEND_API_KEY)
+          const { Resend } = await import("resend");
+          const resend = new Resend(process.env.RESEND_API_KEY);
 
           // Extract the token from the URL for display
-          const urlObj = new URL(url)
-          const token = urlObj.searchParams.get('token') || '123456' // Fallback for display
-          
+          const urlObj = new URL(url);
+          const token = urlObj.searchParams.get("token") || "123456"; // Fallback for display
+
           await resend.emails.send({
-            from: process.env.EMAIL_FROM || 'noreply@yourdomain.com',
+            from: process.env.EMAIL_FROM || "noreply@yourdomain.com",
             to: [email],
-            subject: 'Your 6-digit activation code',
+            subject: "Your 6-digit activation code",
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <div style="text-align: center; margin-bottom: 30px;">
@@ -170,14 +177,10 @@ export const authOptions = {
                 </p>
               </div>
             `,
-          })
-
-          console.log("✅ Magic link email sent successfully to:", email)
+          });
         } catch (error) {
-          console.error("Failed to send verification email:", error)
-          // Fallback to logging for debugging
-          console.log("🔗 Magic Link for", email, ":", url)
-          throw new Error("Failed to send verification email")
+          console.error("Failed to send verification email:", error);
+          throw new Error("Failed to send verification email");
         }
       },
     }),
@@ -186,43 +189,50 @@ export const authOptions = {
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user, account }: any) {
+    async jwt({
+      token,
+      user,
+      account,
+    }: {
+      token: any;
+      user: any;
+      account: any;
+    }) {
       // Initial sign in
       if (account && user) {
-        token.userId = user.id
-        token.email = user.email
-        token.name = user.name
-        token.image = user.image
-        token.emailVerified = (user as any).emailVerified
-        
+        token.userId = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.image = user.image;
+        token.emailVerified = (
+          user as { emailVerified?: boolean }
+        ).emailVerified;
+
         // Check if email is verified
-        if (!(user as any).emailVerified) {
-          console.log('User email not verified:', user.email)
+        if (!(user as { emailVerified?: boolean }).emailVerified) {
           // Don't create organizations or memberships for unverified users
-          token.orgs = []
-          token.currentOrgId = null
-          return token
+          token.orgs = [];
+          token.currentOrgId = null;
+          return token;
         }
-        
+
         try {
           // Get company ID for user
           const userWithCompany = await prisma.user.findUnique({
             where: { id: user.id },
             select: {
               companyId: true,
-            }
-          })
-          
+            },
+          });
+
           // Set company ID
-          token.companyId = userWithCompany?.companyId || null
-          
-          console.log('✅ User company ID:', user.email, token.companyId)
+          token.companyId = userWithCompany?.companyId || null;
         } catch (error) {
-          console.error('Error handling user company:', error)
-          token.companyId = null
+          console.error("Error handling user company:", error);
+          token.companyId = null;
         }
       }
-      
+
       // Always refresh company data on every JWT call
       if (token.userId && token.email) {
         try {
@@ -231,30 +241,28 @@ export const authOptions = {
             where: { id: token.userId },
             select: {
               companyId: true,
-            }
-          })
-          
+            },
+          });
+
           // Update company ID
-          token.companyId = userWithCompany?.companyId || null
+          token.companyId = userWithCompany?.companyId || null;
         } catch (error) {
-          console.error('Error refreshing user company:', error)
+          console.error("Error refreshing user company:", error);
         }
       }
-      
-      return token
+
+      return token;
     },
-    async session({ session, token }: any) {
+    async session({ session, token }: { session: any; token: any }) {
       if (token.userId) {
-        session.user.id = token.userId as string
-        session.user.email = token.email as string
-        session.user.name = token.name as string
-        session.user.image = token.image as string
-        session.user.companyId = token.companyId || null
+        session.user.id = token.userId as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.image = token.image as string;
+        session.user.companyId = token.companyId || null;
       }
-      
-      return session
+
+      return session;
     },
   },
-}
-
-
+};

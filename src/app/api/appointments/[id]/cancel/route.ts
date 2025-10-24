@@ -7,28 +7,28 @@ const prisma = new PrismaClient();
 // PATCH /api/appointments/[id]/cancel - Cancel appointment
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const user = await requireUser();
     const { id } = await params;
 
     // Get user's organization
-    const userData = await prisma.user.findFirst({
-      where: { id: user.id }
-    }) as any;
-    
-    const orgName = userData?.organization || 'Default Organization'
-    
+    const userData = (await prisma.user.findFirst({
+      where: { id: user.id },
+    })) as any;
+
+    const orgName = userData?.organization || "Default Organization";
+
     // Ensure organization exists in the database
-    let org = await prisma.organization.findFirst({
-      where: { name: orgName }
-    })
-    
+    const org = await prisma.organization.findFirst({
+      where: { name: orgName },
+    });
+
     if (!org) {
       return NextResponse.json(
         { error: "Organization not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -36,14 +36,14 @@ export async function PATCH(
     const existingAppointment = await prisma.appointment.findFirst({
       where: {
         id: id,
-        orgId: org.id
-      }
+        orgId: org.id,
+      },
     });
 
     if (!existingAppointment) {
       return NextResponse.json(
         { error: "Appointment not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -53,9 +53,9 @@ export async function PATCH(
     const updatedAppointment = await prisma.appointment.update({
       where: { id },
       data: {
-        status: 'CANCELED',
+        status: "CANCELED",
         notes: body.notes || existingAppointment.notes,
-      }
+      },
     });
 
     console.log(`Canceled appointment ${id} for user ${user.email}`);
@@ -81,10 +81,10 @@ export async function PATCH(
 
     return NextResponse.json(responseData, { status: 200 });
   } catch (error) {
-    console.error('Error canceling appointment:', error);
+    console.error("Error canceling appointment:", error);
     return NextResponse.json(
       { error: "Failed to cancel appointment" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

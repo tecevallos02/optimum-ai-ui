@@ -1,34 +1,34 @@
-import { prisma } from './prisma'
+import { prisma } from "./prisma";
 
 export interface ActivationEmailData {
-  email: string
-  name: string
-  activationToken: string
-  activationUrl: string
+  email: string;
+  name: string;
+  activationToken: string;
+  activationUrl: string;
 }
 
 export interface PasswordResetEmailData {
-  email: string
-  name: string
-  resetToken: string
-  resetUrl: string
+  email: string;
+  name: string;
+  resetToken: string;
+  resetUrl: string;
 }
 
 export async function generateActivationToken(): Promise<string> {
   // Generate a 6-digit activation code
-  const token = Math.floor(100000 + Math.random() * 900000).toString()
-  return token
+  const token = Math.floor(100000 + Math.random() * 900000).toString();
+  return token;
 }
 
 export async function generateResetToken(): Promise<string> {
   // Generate a secure random token for password reset
-  const crypto = await import('crypto')
-  return crypto.randomBytes(32).toString('hex')
+  const crypto = await import("crypto");
+  return crypto.randomBytes(32).toString("hex");
 }
 
 export async function createActivationToken(userId: string): Promise<string> {
-  const token = await generateActivationToken()
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+  const token = await generateActivationToken();
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
   await prisma.user.update({
     where: { id: userId },
@@ -36,14 +36,14 @@ export async function createActivationToken(userId: string): Promise<string> {
       activationToken: token,
       activationExpires: expiresAt,
     },
-  })
+  });
 
-  return token
+  return token;
 }
 
 export async function createResetToken(userId: string): Promise<string> {
-  const token = await generateResetToken()
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+  const token = await generateResetToken();
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
   await prisma.user.update({
     where: { id: userId },
@@ -51,34 +51,30 @@ export async function createResetToken(userId: string): Promise<string> {
       resetToken: token,
       resetExpires: expiresAt,
     },
-  })
+  });
 
-  return token
+  return token;
 }
 
-export async function sendActivationEmail(data: ActivationEmailData): Promise<void> {
-  const { email, name, activationToken, activationUrl } = data
+export async function sendActivationEmail(
+  data: ActivationEmailData,
+): Promise<void> {
+  const { email, name, activationToken, activationUrl } = data;
 
-  // In development, log the activation details
-  if (process.env.NODE_ENV === 'development') {
-    console.log('📧 Activation Email Details:')
-    console.log(`   To: ${email}`)
-    console.log(`   Name: ${name}`)
-    console.log(`   Activation Code: ${activationToken}`)
-    console.log(`   Activation URL: ${activationUrl}`)
-    console.log('📧 In production, this would be sent via email')
-    return
+  // In development, skip sending emails
+  if (process.env.NODE_ENV === "development") {
+    return;
   }
 
   // In production, send real emails with Resend
   try {
-    const { Resend } = await import('resend')
-    const resend = new Resend(process.env.RESEND_API_KEY)
+    const { Resend } = await import("resend");
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'noreply@yourdomain.com',
+      from: process.env.EMAIL_FROM || "noreply@yourdomain.com",
       to: [email],
-      subject: 'Your 6-digit activation code',
+      subject: "Your 6-digit activation code",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="text-align: center; margin-bottom: 30px;">
@@ -112,21 +108,15 @@ export async function sendActivationEmail(data: ActivationEmailData): Promise<vo
           </p>
         </div>
       `,
-    })
-
-    console.log('✅ Activation email sent successfully to:', email)
+    });
   } catch (error) {
-    console.error('❌ Failed to send activation email:', error)
-    // Fallback to logging for debugging
-    console.log('📧 Activation Email Details (fallback):')
-    console.log(`   To: ${email}`)
-    console.log(`   Name: ${name}`)
-    console.log(`   Activation Code: ${activationToken}`)
-    console.log(`   Activation URL: ${activationUrl}`)
+    console.error("❌ Failed to send activation email:", error);
   }
 }
 
-export async function verifyActivationToken(token: string): Promise<{ success: boolean; user?: any; error?: string }> {
+export async function verifyActivationToken(
+  token: string,
+): Promise<{ success: boolean; user?: any; error?: string }> {
   try {
     const user = await prisma.user.findFirst({
       where: {
@@ -135,13 +125,13 @@ export async function verifyActivationToken(token: string): Promise<{ success: b
           gt: new Date(), // Token hasn't expired
         },
       },
-    })
+    });
 
     if (!user) {
       return {
         success: false,
-        error: 'Invalid or expired activation token',
-      }
+        error: "Invalid or expired activation token",
+      };
     }
 
     // Mark email as verified and clear activation token
@@ -152,44 +142,40 @@ export async function verifyActivationToken(token: string): Promise<{ success: b
         activationToken: null,
         activationExpires: null,
       },
-    })
+    });
 
     return {
       success: true,
       user,
-    }
+    };
   } catch (error) {
-    console.error('Error verifying activation token:', error)
+    console.error("Error verifying activation token:", error);
     return {
       success: false,
-      error: 'Failed to verify activation token',
-    }
+      error: "Failed to verify activation token",
+    };
   }
 }
 
-export async function sendPasswordResetEmail(data: PasswordResetEmailData): Promise<void> {
-  const { email, name, resetToken, resetUrl } = data
+export async function sendPasswordResetEmail(
+  data: PasswordResetEmailData,
+): Promise<void> {
+  const { email, name, resetToken, resetUrl } = data;
 
-  // In development, log the reset details
-  if (process.env.NODE_ENV === 'development') {
-    console.log('📧 Password Reset Email Details:')
-    console.log(`   To: ${email}`)
-    console.log(`   Name: ${name}`)
-    console.log(`   Reset Token: ${resetToken}`)
-    console.log(`   Reset URL: ${resetUrl}`)
-    console.log('📧 In production, this would be sent via email')
-    return
+  // In development, skip sending emails
+  if (process.env.NODE_ENV === "development") {
+    return;
   }
 
   // In production, send real emails with Resend
   try {
-    const { Resend } = await import('resend')
-    const resend = new Resend(process.env.RESEND_API_KEY)
+    const { Resend } = await import("resend");
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'noreply@yourdomain.com',
+      from: process.env.EMAIL_FROM || "noreply@yourdomain.com",
       to: [email],
-      subject: 'Reset your password - Goshawk AI',
+      subject: "Reset your password - Goshawk AI",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="text-align: center; margin-bottom: 30px;">
@@ -223,16 +209,8 @@ export async function sendPasswordResetEmail(data: PasswordResetEmailData): Prom
           </p>
         </div>
       `,
-    })
-
-    console.log('✅ Password reset email sent successfully to:', email)
+    });
   } catch (error) {
-    console.error('❌ Failed to send password reset email:', error)
-    // Fallback to logging for debugging
-    console.log('📧 Password Reset Email Details (fallback):')
-    console.log(`   To: ${email}`)
-    console.log(`   Name: ${name}`)
-    console.log(`   Reset Token: ${resetToken}`)
-    console.log(`   Reset URL: ${resetUrl}`)
+    console.error("❌ Failed to send password reset email:", error);
   }
 }

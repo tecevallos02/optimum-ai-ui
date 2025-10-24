@@ -1,7 +1,7 @@
-import { fetcher } from '@/lib/fetcher';
+import { fetcher } from "@/lib/fetcher";
 
 export default async function BillingPage() {
-  const res = await fetcher<{ url: string }>('/api/billing/portal');
+  const res = await fetcher<{ url: string }>("/api/billing/portal");
 
   if (!res || !res.url) {
     return (

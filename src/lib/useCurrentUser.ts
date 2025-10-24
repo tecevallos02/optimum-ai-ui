@@ -7,7 +7,7 @@ import type { SessionUser } from "@/lib/auth";
 
 export function useCurrentUser() {
   const { data, error, isLoading } = useSWR("/api/me", (url) =>
-    fetcher<SessionUser>(url)
+    fetcher<SessionUser>(url),
   );
   return { user: data ?? null, error, isLoading };
 }

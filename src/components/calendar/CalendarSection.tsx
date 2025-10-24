@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import type { Appointment } from '@/lib/types';
-import CalendarGrid from './CalendarGrid';
-import ListAppointments from './ListAppointments';
-import NewAppointmentModal from './NewAppointmentModal';
-import PageTitle from '@/components/PageTitle';
-import Legend from '@/components/ui/Legend';
-import DuplicateContactModal from '@/components/contacts/DuplicateContactModal';
-import { useContacts } from '@/hooks/useContacts';
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import type { Appointment } from "@/lib/types";
+import CalendarGrid from "./CalendarGrid";
+import ListAppointments from "./ListAppointments";
+import NewAppointmentModal from "./NewAppointmentModal";
+import PageTitle from "@/components/PageTitle";
+import Legend from "@/components/ui/Legend";
+import DuplicateContactModal from "@/components/contacts/DuplicateContactModal";
+import { useContacts } from "@/hooks/useContacts";
 
 interface CalendarSectionProps {
   appointments: Appointment[];
@@ -19,23 +19,23 @@ interface CalendarSectionProps {
   onRefresh?: () => void;
 }
 
-type ViewType = 'list' | 'calendar';
+type ViewType = "list" | "calendar";
 
 export default function CalendarSection({
   appointments,
   onAppointmentUpdate,
   onAppointmentDelete,
   onAppointmentCreate,
-  onRefresh
+  onRefresh,
 }: CalendarSectionProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [view, setView] = useState<ViewType>('list');
+  const [view, setView] = useState<ViewType>("list");
   const [showNewModal, setShowNewModal] = useState(false);
   const [filters, setFilters] = useState({
-    status: '',
-    source: '',
-    search: ''
+    status: "",
+    source: "",
+    search: "",
   });
 
   // Contact functionality
@@ -44,18 +44,18 @@ export default function CalendarSection({
   const [duplicateInfo, setDuplicateInfo] = useState<{
     appointment: Appointment;
     matchId: string;
-    matchFields: ('email' | 'phone' | 'name')[];
+    matchFields: ("email" | "phone" | "name")[];
   } | null>(null);
 
   // Initialize view from URL params
   useEffect(() => {
-    const viewParam = searchParams.get('view') as ViewType;
-    if (viewParam === 'list' || viewParam === 'calendar') {
+    const viewParam = searchParams.get("view") as ViewType;
+    if (viewParam === "list" || viewParam === "calendar") {
       setView(viewParam);
     } else {
       // Check localStorage for saved preference
-      const savedView = localStorage.getItem('calendar-view') as ViewType;
-      if (savedView === 'list' || savedView === 'calendar') {
+      const savedView = localStorage.getItem("calendar-view") as ViewType;
+      if (savedView === "list" || savedView === "calendar") {
         setView(savedView);
       }
     }
@@ -64,15 +64,15 @@ export default function CalendarSection({
   // Update URL when view changes
   const handleViewChange = (newView: ViewType) => {
     setView(newView);
-    localStorage.setItem('calendar-view', newView);
-    
+    localStorage.setItem("calendar-view", newView);
+
     const params = new URLSearchParams(searchParams.toString());
-    params.set('view', newView);
+    params.set("view", newView);
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
   // Filter appointments based on current filters
-  const filteredAppointments = appointments.filter(appointment => {
+  const filteredAppointments = appointments.filter((appointment) => {
     if (filters.status && appointment.status !== filters.status) return false;
     if (filters.source && appointment.source !== filters.source) return false;
     if (filters.search) {
@@ -88,7 +88,9 @@ export default function CalendarSection({
     return true;
   });
 
-  const handleNewAppointment = (appointment: Omit<Appointment, 'id' | 'orgId' | 'createdAt' | 'updatedAt'>) => {
+  const handleNewAppointment = (
+    appointment: Omit<Appointment, "id" | "orgId" | "createdAt" | "updatedAt">,
+  ) => {
     onAppointmentCreate(appointment as Appointment);
     setShowNewModal(false);
   };
@@ -103,75 +105,78 @@ export default function CalendarSection({
       email: appointment.customerEmail || undefined,
       phone: appointment.customerPhone || undefined,
       notes: appointment.description || undefined,
-      source: 'calendar'
+      source: "calendar",
     };
 
     try {
       const result = await createContact(contactData);
-      
+
       if (result.success) {
         // Show success toast
-        alert('Contact added successfully!');
+        alert("Contact added successfully!");
       } else if (result.duplicate) {
         // Show duplicate modal
         setDuplicateInfo({
           appointment,
           matchId: result.duplicate.matchId,
-          matchFields: result.duplicate.matchFields
+          matchFields: result.duplicate.matchFields,
         });
         setShowDuplicateModal(true);
       }
     } catch (error) {
-      console.error('Error adding contact:', error);
-      alert('Failed to add contact. Please try again.');
+      console.error("Error adding contact:", error);
+      alert("Failed to add contact. Please try again.");
     }
   };
 
   const handleDuplicateAddContact = async (contactData: any) => {
     try {
       await createContact(contactData);
-      alert('Contact added successfully!');
+      alert("Contact added successfully!");
     } catch (error) {
-      console.error('Error adding contact:', error);
-      alert('Failed to add contact. Please try again.');
+      console.error("Error adding contact:", error);
+      alert("Failed to add contact. Please try again.");
     }
   };
 
-  const handleDuplicateReplaceContact = async (contactId: string, contactData: any) => {
+  const handleDuplicateReplaceContact = async (
+    contactId: string,
+    contactData: any,
+  ) => {
     try {
       await updateContact(contactId, contactData);
-      alert('Contact replaced successfully!');
+      alert("Contact replaced successfully!");
     } catch (error) {
-      console.error('Error replacing contact:', error);
-      alert('Failed to replace contact. Please try again.');
+      console.error("Error replacing contact:", error);
+      alert("Failed to replace contact. Please try again.");
     }
   };
 
   return (
     <div className="space-y-8">
       <PageTitle title="Calendar" />
-      
+
       {/* Header with View Toggle and Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
           {/* View Toggle */}
           <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
             <button
-              onClick={() => handleViewChange('list')}
+              onClick={() => handleViewChange("list")}
               className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                view === 'list'
-                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                view === "list"
+                  ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
             >
               List
             </button>
             <button
-              onClick={() => handleViewChange('calendar')}
+              onClick={() => handleViewChange("calendar")}
               className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                view === 'calendar'
-                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                view === "calendar"
+                  ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
             >
               Calendar
@@ -186,8 +191,18 @@ export default function CalendarSection({
               className="px-3 py-2 text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium flex items-center gap-2"
               title="Refresh appointments"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
               Refresh
             </button>
@@ -196,8 +211,18 @@ export default function CalendarSection({
             onClick={() => setShowNewModal(true)}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-3"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             New Appointment
           </button>
@@ -213,7 +238,9 @@ export default function CalendarSection({
               type="text"
               placeholder="Search appointments..."
               value={filters.search}
-              onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, search: e.target.value }))
+              }
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
@@ -222,7 +249,9 @@ export default function CalendarSection({
           <div className="sm:w-48">
             <select
               value={filters.status}
-              onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, status: e.target.value }))
+              }
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Statuses</option>
@@ -238,7 +267,9 @@ export default function CalendarSection({
           <div className="sm:w-48">
             <select
               value={filters.source}
-              onChange={(e) => setFilters(prev => ({ ...prev, source: e.target.value }))}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, source: e.target.value }))
+              }
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Sources</option>
@@ -258,7 +289,7 @@ export default function CalendarSection({
 
       {/* Content */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 p-6">
-        {view === 'list' ? (
+        {view === "list" ? (
           <ListAppointments
             appointments={filteredAppointments}
             onAppointmentUpdate={onAppointmentUpdate}

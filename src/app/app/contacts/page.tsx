@@ -40,39 +40,44 @@ export default function ContactsPage() {
     fetchContacts();
   }, []);
 
-  const handleAddContact = async (contactData: Omit<Contact, 'id' | 'orgId' | 'createdAt' | 'updatedAt'>) => {
-    console.log('handleAddContact called with:', contactData);
+  const handleAddContact = async (
+    contactData: Omit<Contact, "id" | "orgId" | "createdAt" | "updatedAt">,
+  ) => {
+    console.log("handleAddContact called with:", contactData);
     try {
       const response = await fetch("/api/contacts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(contactData),
       });
-      
-      console.log('API response status:', response.status);
-      console.log('API response ok:', response.ok);
-      
+
+      console.log("API response status:", response.status);
+      console.log("API response ok:", response.ok);
+
       if (response.ok) {
-        console.log('Contact added successfully, refreshing list...');
+        console.log("Contact added successfully, refreshing list...");
         await fetchContacts();
         setShowAddModal(false);
       } else {
         const errorData = await response.text();
-        console.error('API error response:', errorData);
+        console.error("API error response:", errorData);
       }
     } catch (error) {
       console.error("Failed to add contact:", error);
     }
   };
 
-  const handleEditContact = async (id: string, contactData: Partial<Contact>) => {
+  const handleEditContact = async (
+    id: string,
+    contactData: Partial<Contact>,
+  ) => {
     try {
       const response = await fetch(`/api/contacts/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(contactData),
       });
-      
+
       if (response.ok) {
         await fetchContacts();
         setEditingContact(null);
@@ -84,12 +89,12 @@ export default function ContactsPage() {
 
   const handleDeleteContact = async (id: string) => {
     if (!confirm("Are you sure you want to delete this contact?")) return;
-    
+
     try {
       const response = await fetch(`/api/contacts/${id}`, {
         method: "DELETE",
       });
-      
+
       if (response.ok) {
         await fetchContacts();
       }
@@ -132,11 +137,11 @@ export default function ContactsPage() {
   return (
     <div className="space-y-8">
       <PageTitle title="Contacts" />
-      
+
       <div className="flex justify-end items-center">
         <button
           onClick={() => {
-            console.log('Opening add contact modal');
+            console.log("Opening add contact modal");
             setShowAddModal(true);
           }}
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
@@ -144,17 +149,21 @@ export default function ContactsPage() {
           Add Contact
         </button>
       </div>
-      
+
       {loading ? (
         <div className="text-sm text-muted dark:text-gray-400">Loading…</div>
       ) : (
-        <DataTable<Contact> data={data?.contacts || []} columns={columns} pageSize={10} />
+        <DataTable<Contact>
+          data={data?.contacts || []}
+          columns={columns}
+          pageSize={10}
+        />
       )}
 
       {showAddModal && (
         <AddContactModal
           onClose={() => {
-            console.log('Closing add contact modal');
+            console.log("Closing add contact modal");
             setShowAddModal(false);
           }}
           onSave={handleAddContact}
@@ -173,9 +182,14 @@ export default function ContactsPage() {
 }
 
 // Add Contact Modal Component
-function AddContactModal({ onClose, onSave }: {
+function AddContactModal({
+  onClose,
+  onSave,
+}: {
   onClose: () => void;
-  onSave: (data: Omit<Contact, 'id' | 'orgId' | 'createdAt' | 'updatedAt'>) => void;
+  onSave: (
+    data: Omit<Contact, "id" | "orgId" | "createdAt" | "updatedAt">,
+  ) => void;
 }) {
   const [formData, setFormData] = useState({
     name: "",
@@ -187,48 +201,66 @@ function AddContactModal({ onClose, onSave }: {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('AddContactModal: Form submitted with data:', formData);
+    console.log("AddContactModal: Form submitted with data:", formData);
     onSave(formData);
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Add Contact</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+          Add Contact
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Name *</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+              Name *
+            </label>
             <input
               type="text"
               required
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Email</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+              Email
+            </label>
             <input
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Phone</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+              Phone
+            </label>
             <input
               type="tel"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
               className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Notes</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+              Notes
+            </label>
             <textarea
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, notes: e.target.value })
+              }
               className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               rows={3}
             />
@@ -244,7 +276,7 @@ function AddContactModal({ onClose, onSave }: {
             <button
               type="submit"
               onClick={(e) => {
-                console.log('Add Contact button clicked');
+                console.log("Add Contact button clicked");
                 e.preventDefault();
                 handleSubmit(e);
               }}
@@ -260,7 +292,11 @@ function AddContactModal({ onClose, onSave }: {
 }
 
 // Edit Contact Modal Component
-function EditContactModal({ contact, onClose, onSave }: {
+function EditContactModal({
+  contact,
+  onClose,
+  onSave,
+}: {
   contact: Contact;
   onClose: () => void;
   onSave: (data: Partial<Contact>) => void;
@@ -281,15 +317,21 @@ function EditContactModal({ contact, onClose, onSave }: {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Edit Contact</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+          Edit Contact
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Name *</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+              Name *
+            </label>
             <input
               type="text"
               required
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
@@ -298,24 +340,34 @@ function EditContactModal({ contact, onClose, onSave }: {
             <input
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Phone</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+              Phone
+            </label>
             <input
               type="tel"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
               className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Notes</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+              Notes
+            </label>
             <textarea
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, notes: e.target.value })
+              }
               className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               rows={3}
             />

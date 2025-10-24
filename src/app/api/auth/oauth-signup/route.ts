@@ -7,27 +7,28 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as any;
-    
+    const session = (await getServerSession(authOptions)) as any;
+
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: "No active session found" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    const { email, firstName, lastName, organizationName, name, image } = await request.json();
+    const { email, firstName, lastName, organizationName, name, image } =
+      await request.json();
 
     if (!email || !firstName || !lastName || !organizationName) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if user already exists
     let user = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     });
 
     if (user) {
@@ -61,34 +62,35 @@ export async function POST(request: NextRequest) {
 
     // Ensure organization exists in the database
     let org = await prisma.organization.findFirst({
-      where: { name: organizationName }
+      where: { name: organizationName },
     });
 
     if (!org) {
       org = await prisma.organization.create({
         data: {
           name: organizationName,
-        }
+        },
       });
     }
 
-    console.log(`✅ OAuth signup completed for ${email} with organization: ${organizationName}`);
+    console.log(
+      `✅ OAuth signup completed for ${email} with organization: ${organizationName}`,
+    );
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
-        organization: user.organization
-      }
+        organization: user.organization,
+      },
     });
-
   } catch (error) {
-    console.error('OAuth signup error:', error);
+    console.error("OAuth signup error:", error);
     return NextResponse.json(
       { error: "Failed to create account" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

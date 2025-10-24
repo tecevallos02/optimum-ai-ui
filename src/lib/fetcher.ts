@@ -6,7 +6,7 @@
 export async function fetcher<T>(
   input: string,
   init?: RequestInit,
-  opts?: { throwOnError?: boolean; cache?: RequestCache }
+  opts?: { throwOnError?: boolean; cache?: RequestCache },
 ): Promise<T | null> {
   const url = await toAbsoluteUrl(input);
   const res = await fetch(url, {
@@ -17,7 +17,9 @@ export async function fetcher<T>(
   if (!res.ok) {
     if (opts?.throwOnError) {
       const text = await safeText(res);
-      throw new Error(`HTTP ${res.status} ${res.statusText}${text ? ` – ${text}` : ""}`);
+      throw new Error(
+        `HTTP ${res.status} ${res.statusText}${text ? ` – ${text}` : ""}`,
+      );
     }
     return null;
   }
@@ -39,7 +41,8 @@ async function toAbsoluteUrl(input: string): Promise<string> {
   if (typeof window !== "undefined") return input;
 
   // Prefer env
-  if (process.env.NEXT_PUBLIC_SITE_URL) return `${process.env.NEXT_PUBLIC_SITE_URL}${input}`;
+  if (process.env.NEXT_PUBLIC_SITE_URL)
+    return `${process.env.NEXT_PUBLIC_SITE_URL}${input}`;
 
   // Server: derive from headers()
   const { headers } = await import("next/headers");

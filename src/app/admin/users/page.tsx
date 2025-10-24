@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
 interface User {
   id: string;
@@ -19,8 +19,8 @@ interface User {
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
@@ -31,25 +31,27 @@ export default function UsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/admin/users');
+      const response = await fetch("/api/admin/users");
       if (response.ok) {
         const data = await response.json();
         setUsers(data);
       } else {
-        setError('Failed to fetch users');
+        setError("Failed to fetch users");
       }
     } catch (error) {
-      setError('An error occurred while fetching users');
-      console.error('Error fetching users:', error);
+      setError("An error occurred while fetching users");
+      console.error("Error fetching users:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredUsers = users.filter(user =>
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (user.company?.name && user.company.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredUsers = users.filter(
+    (user) =>
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.company?.name &&
+        user.company.name.toLowerCase().includes(searchTerm.toLowerCase())),
   );
 
   const handleEditUser = (user: User) => {
@@ -63,44 +65,44 @@ export default function UsersPage() {
 
   const confirmDelete = async () => {
     if (!userToDelete) return;
-    
+
     try {
       const response = await fetch(`/api/admin/users/${userToDelete.id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
-      
+
       if (response.ok) {
-        setUsers(users.filter(u => u.id !== userToDelete.id));
+        setUsers(users.filter((u) => u.id !== userToDelete.id));
         setShowDeleteModal(false);
         setUserToDelete(null);
       } else {
-        setError('Failed to delete user');
+        setError("Failed to delete user");
       }
     } catch (error) {
-      setError('An error occurred while deleting user');
-      console.error('Error deleting user:', error);
+      setError("An error occurred while deleting user");
+      console.error("Error deleting user:", error);
     }
   };
 
   const handleUpdateUser = async (updatedUser: User) => {
     try {
       const response = await fetch(`/api/admin/users/${updatedUser.id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedUser),
       });
-      
+
       if (response.ok) {
-        setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
+        setUsers(users.map((u) => (u.id === updatedUser.id ? updatedUser : u)));
         setEditingUser(null);
       } else {
-        setError('Failed to update user');
+        setError("Failed to update user");
       }
     } catch (error) {
-      setError('An error occurred while updating user');
-      console.error('Error updating user:', error);
+      setError("An error occurred while updating user");
+      console.error("Error updating user:", error);
     }
   };
 
@@ -123,7 +125,9 @@ export default function UsersPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Manage Users</h1>
-              <p className="mt-1 text-sm text-gray-500">View and manage all user accounts</p>
+              <p className="mt-1 text-sm text-gray-500">
+                View and manage all user accounts
+              </p>
             </div>
             <div className="flex space-x-3">
               <Link
@@ -148,7 +152,10 @@ export default function UsersPage() {
         {/* Search */}
         <div className="mb-6">
           <div className="max-w-md">
-            <label htmlFor="search" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="search"
+              className="block text-sm font-medium text-gray-700"
+            >
               Search users
             </label>
             <input
@@ -167,8 +174,16 @@ export default function UsersPage() {
           <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div className="ml-3">
@@ -215,34 +230,40 @@ export default function UsersPage() {
                             </div>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {user.name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {user.email}
+                            </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {user.company?.name || 'No company'}
+                          {user.company?.name || "No company"}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          user.emailVerified
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {user.emailVerified ? 'Verified' : 'Pending'}
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            user.emailVerified
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
+                          {user.emailVerified ? "Verified" : "Pending"}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
-                          <button 
+                          <button
                             onClick={() => handleEditUser(user)}
                             className="text-blue-600 hover:text-blue-900 px-3 py-1 rounded-md hover:bg-blue-50 transition-colors"
                           >
                             ✏️ Edit
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleDeleteUser(user)}
                             className="text-red-600 hover:text-red-900 px-3 py-1 rounded-md hover:bg-red-50 transition-colors"
                           >
@@ -258,12 +279,26 @@ export default function UsersPage() {
 
             {filteredUsers.length === 0 && (
               <div className="text-center py-12">
-                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                  />
                 </svg>
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No users found</h3>
+                <h3 className="mt-2 text-sm font-medium text-gray-900">
+                  No users found
+                </h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  {searchTerm ? 'Try adjusting your search terms.' : 'Get started by adding a new client.'}
+                  {searchTerm
+                    ? "Try adjusting your search terms."
+                    : "Get started by adding a new client."}
                 </p>
                 {!searchTerm && (
                   <div className="mt-6">
@@ -286,19 +321,25 @@ export default function UsersPage() {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Edit User</h3>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                const updatedUser = {
-                  ...editingUser,
-                  name: formData.get('name') as string,
-                  email: formData.get('email') as string,
-                };
-                handleUpdateUser(updatedUser);
-              }}>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Edit User
+              </h3>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  const updatedUser = {
+                    ...editingUser,
+                    name: formData.get("name") as string,
+                    email: formData.get("email") as string,
+                  };
+                  handleUpdateUser(updatedUser);
+                }}
+              >
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Name
+                  </label>
                   <input
                     type="text"
                     name="name"
@@ -308,7 +349,9 @@ export default function UsersPage() {
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
                   <input
                     type="email"
                     name="email"
@@ -343,9 +386,13 @@ export default function UsersPage() {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Delete User</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Delete User
+              </h3>
               <p className="text-sm text-gray-500 mb-6">
-                Are you sure you want to delete <strong>{userToDelete.name}</strong>? This action cannot be undone.
+                Are you sure you want to delete{" "}
+                <strong>{userToDelete.name}</strong>? This action cannot be
+                undone.
               </p>
               <div className="flex justify-end space-x-3">
                 <button

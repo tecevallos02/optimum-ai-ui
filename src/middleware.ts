@@ -1,76 +1,88 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  
+  const { pathname } = request.nextUrl;
+
   // Get admin emails from environment
-  const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(email => email.trim()) || ['goshawkai1@gmail.com']
-  
+  const adminEmails = process.env.ADMIN_EMAILS?.split(",").map((email) =>
+    email.trim(),
+  ) || ["goshawkai1@gmail.com"];
+
   // Always allow public routes
   if (
-    pathname === '/' ||
-    pathname === '/login' ||
-    pathname === '/signin' ||
-    pathname === '/auth' ||
-    pathname === '/verify' ||
-    pathname.startsWith('/api/auth/') ||
-    pathname.startsWith('/api/admin/') ||
-    pathname.startsWith('/api/test-db') ||
-    pathname.startsWith('/invite/') ||
-    pathname.startsWith('/_next/') ||
-    pathname.startsWith('/favicon.ico') ||
-    pathname.startsWith('/public/') ||
-    pathname.startsWith('/static/')
+    pathname === "/" ||
+    pathname === "/login" ||
+    pathname === "/signin" ||
+    pathname === "/auth" ||
+    pathname === "/verify" ||
+    pathname.startsWith("/api/auth/") ||
+    pathname.startsWith("/api/admin/") ||
+    pathname.startsWith("/api/test-db") ||
+    pathname.startsWith("/invite/") ||
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/favicon.ico") ||
+    pathname.startsWith("/public/") ||
+    pathname.startsWith("/static/")
   ) {
-    return NextResponse.next()
+    return NextResponse.next();
   }
 
   // Get session from cookies (Edge Runtime compatible)
-  const sessionToken = request.cookies.get('next-auth.session-token')?.value
-  
+  const sessionToken = request.cookies.get("next-auth.session-token")?.value;
+
   // Handle admin routes
-  if (pathname.startsWith('/admin')) {
+  if (pathname.startsWith("/admin")) {
     if (!sessionToken) {
       // Not authenticated, redirect to login
-      const loginUrl = new URL('/login', request.url)
-      loginUrl.searchParams.set('next', pathname)
-      return NextResponse.redirect(loginUrl)
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
     }
-    
+
     // For admin routes, we'll let the page handle the admin check
     // since we can't decode JWT in Edge Runtime
-    return NextResponse.next()
+    return NextResponse.next();
   }
 
   // Handle protected routes (app routes)
-  if (pathname.startsWith('/app')) {
+  if (pathname.startsWith("/app")) {
     if (!sessionToken) {
       // Not authenticated, redirect to login
-      const loginUrl = new URL('/login', request.url)
-      loginUrl.searchParams.set('next', pathname)
-      return NextResponse.redirect(loginUrl)
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
     }
-    
+
     // Authenticated user, allow access
-    return NextResponse.next()
+    return NextResponse.next();
   }
 
   // Handle other protected routes
-  const protectedRoutes = ['/dashboard', '/contacts', '/billing', '/config', '/calls', '/calendar', '/savings', '/team', '/audit']
-  if (protectedRoutes.some(route => pathname.startsWith(route))) {
+  const protectedRoutes = [
+    "/dashboard",
+    "/contacts",
+    "/billing",
+    "/config",
+    "/calls",
+    "/calendar",
+    "/savings",
+    "/team",
+    "/audit",
+  ];
+  if (protectedRoutes.some((route) => pathname.startsWith(route))) {
     if (!sessionToken) {
       // Not authenticated, redirect to login
-      const loginUrl = new URL('/login', request.url)
-      loginUrl.searchParams.set('next', pathname)
-      return NextResponse.redirect(loginUrl)
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
     }
-    
+
     // Authenticated user, allow access
-    return NextResponse.next()
+    return NextResponse.next();
   }
 
   // Allow all other routes
-  return NextResponse.next()
+  return NextResponse.next();
 }
 
 export const config = {
@@ -83,9 +95,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      */
-    '/((?!api/auth|_next/static|_next/image|favicon.ico|public).*)',
+    "/((?!api/auth|_next/static|_next/image|favicon.ico|public).*)",
   ],
-}
-
-
-
+};

@@ -1,10 +1,10 @@
-import NextAuth from "next-auth/next"
-import { adminAuthOptions } from "@/lib/admin-auth.config"
+import NextAuth from "next-auth/next";
+import { adminAuthOptions } from "@/lib/admin-auth.config";
 
 // Force Node.js runtime for Prisma compatibility
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-const handler = NextAuth(adminAuthOptions)
+const handler = NextAuth(adminAuthOptions);
 
-export { handler as GET, handler as POST }
+export { handler as GET, handler as POST };

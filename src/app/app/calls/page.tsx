@@ -16,11 +16,11 @@ export default function CallsPage() {
   useEffect(() => {
     const fetchCalls = async () => {
       try {
-        const data = await fetcher<{ calls: CallRow[] }>('/api/sheets/calls');
+        const data = await fetcher<{ calls: CallRow[] }>("/api/sheets/calls");
         setCalls(data?.calls || []);
         setFilteredCalls(data?.calls || []);
       } catch (error) {
-        console.error('Error fetching calls:', error);
+        console.error("Error fetching calls:", error);
       } finally {
         setLoading(false);
       }
@@ -34,27 +34,28 @@ export default function CallsPage() {
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(call =>
-        call.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        call.phone.includes(searchTerm) ||
-        call.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        call.notes.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (call) =>
+          call.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          call.phone.includes(searchTerm) ||
+          call.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          call.notes.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     // Apply status filter
     if (statusFilter !== "all") {
-      filtered = filtered.filter(call => {
+      filtered = filtered.filter((call) => {
         const status = call.status.toLowerCase();
         switch (statusFilter) {
           case "booked":
-            return status.includes('booked') || status.includes('scheduled');
+            return status.includes("booked") || status.includes("scheduled");
           case "completed":
-            return status.includes('completed');
+            return status.includes("completed");
           case "cancelled":
-            return status.includes('cancelled') || status.includes('canceled');
+            return status.includes("cancelled") || status.includes("canceled");
           case "no-show":
-            return status.includes('no-show') || status.includes('no_show');
+            return status.includes("no-show") || status.includes("no_show");
           default:
             return true;
         }
@@ -66,60 +67,64 @@ export default function CallsPage() {
 
   const columns: Column<CallRow>[] = [
     {
-      key: 'datetime_iso',
-      header: 'Date/Time',
-      render: (call) => new Date(call.datetime_iso).toLocaleString()
+      key: "datetime_iso",
+      header: "Date/Time",
+      render: (call) => new Date(call.datetime_iso).toLocaleString(),
     },
     {
-      key: 'name',
-      header: 'Name'
+      key: "name",
+      header: "Name",
     },
     {
-      key: 'phone',
-      header: 'Phone'
+      key: "phone",
+      header: "Phone",
     },
     {
-      key: 'status',
-      header: 'Status',
+      key: "status",
+      header: "Status",
       render: (call) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          call.status.toLowerCase().includes('booked') || call.status.toLowerCase().includes('scheduled')
-            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-            : call.status.toLowerCase().includes('completed')
-            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-            : call.status.toLowerCase().includes('cancelled') || call.status.toLowerCase().includes('canceled')
-            ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-            : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
-        }`}>
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            call.status.toLowerCase().includes("booked") ||
+            call.status.toLowerCase().includes("scheduled")
+              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+              : call.status.toLowerCase().includes("completed")
+                ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                : call.status.toLowerCase().includes("cancelled") ||
+                    call.status.toLowerCase().includes("canceled")
+                  ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                  : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+          }`}
+        >
           {call.status}
         </span>
-      )
+      ),
     },
     {
-      key: 'intent',
-      header: 'Intent',
+      key: "intent",
+      header: "Intent",
       render: (call) => (
-        <span className="capitalize">{call.intent || 'other'}</span>
-      )
+        <span className="capitalize">{call.intent || "other"}</span>
+      ),
     },
     {
-      key: 'address',
-      header: 'Address',
+      key: "address",
+      header: "Address",
       render: (call) => (
         <div className="max-w-xs truncate" title={call.address}>
           {call.address}
         </div>
-      )
+      ),
     },
     {
-      key: 'notes',
-      header: 'Notes',
+      key: "notes",
+      header: "Notes",
       render: (call) => (
         <div className="max-w-xs truncate" title={call.notes}>
           {call.notes}
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   if (loading) {
@@ -131,7 +136,10 @@ export default function CallsPage() {
             <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
             <div className="space-y-3">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                <div
+                  key={i}
+                  className="h-4 bg-gray-200 dark:bg-gray-700 rounded"
+                ></div>
               ))}
             </div>
           </div>
@@ -143,7 +151,7 @@ export default function CallsPage() {
   return (
     <div className="p-6">
       <PageTitle title="Call Logs" />
-      
+
       {/* Filters */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -180,10 +188,7 @@ export default function CallsPage() {
 
       {/* Data Table */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-        <DataTable
-          data={filteredCalls}
-          columns={columns}
-        />
+        <DataTable data={filteredCalls} columns={columns} />
       </div>
     </div>
   );

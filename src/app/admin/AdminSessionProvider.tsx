@@ -1,19 +1,19 @@
-'use client'
+"use client";
 
-import { SessionProvider } from 'next-auth/react'
+import { SessionProvider } from "next-auth/react";
 
 export default function AdminSessionProvider({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <SessionProvider 
+    <SessionProvider
       basePath="/api/admin/auth"
       refetchInterval={0}
       refetchOnWindowFocus={false}
     >
       {children}
     </SessionProvider>
-  )
+  );
 }

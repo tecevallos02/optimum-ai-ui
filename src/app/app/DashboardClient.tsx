@@ -13,7 +13,7 @@ import { fetcher } from "@/lib/fetcher";
 
 export default function DashboardClient() {
   const searchParams = useSearchParams();
-  const phone = searchParams.get('phone');
+  const phone = searchParams.get("phone");
 
   const [kpis, setKpis] = useState<KPI>({
     callsHandled: 0,
@@ -32,27 +32,31 @@ export default function DashboardClient() {
       try {
         // Build query parameters for phone
         const params = new URLSearchParams();
-        if (phone) params.set('phone', phone);
+        if (phone) params.set("phone", phone);
 
         // Fetch all dashboard data in parallel
         const [kpisData, callsOverTimeData, intentsData] = await Promise.all([
           fetcher(`/api/kpis?${params.toString()}`),
           fetcher(`/api/analytics/calls-over-time?${params.toString()}&days=7`),
-          fetcher(`/api/analytics/intents-distribution?${params.toString()}&days=30`)
+          fetcher(
+            `/api/analytics/intents-distribution?${params.toString()}&days=30`,
+          ),
         ]);
 
-        setKpis(kpisData as KPI || {
-          callsHandled: 0,
-          bookings: 0,
-          avgHandleTime: 0,
-          conversionRate: 0,
-          callsEscalated: 0,
-          estimatedSavings: 0,
-        });
+        setKpis(
+          (kpisData as KPI) || {
+            callsHandled: 0,
+            bookings: 0,
+            avgHandleTime: 0,
+            conversionRate: 0,
+            callsEscalated: 0,
+            estimatedSavings: 0,
+          },
+        );
         setCallsOverTimeData((callsOverTimeData as any)?.data || []);
         setIntentsData((intentsData as any)?.data || []);
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        console.error("Error fetching dashboard data:", error);
       } finally {
         setLoading(false);
       }
@@ -67,7 +71,10 @@ export default function DashboardClient() {
         <PageTitle title="Dashboard" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm animate-pulse">
+            <div
+              key={i}
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm animate-pulse"
+            >
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
               <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
             </div>
@@ -80,7 +87,7 @@ export default function DashboardClient() {
   return (
     <div className="p-6">
       <PageTitle title="Dashboard" />
-      
+
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <KpiCard
@@ -105,7 +112,6 @@ export default function DashboardClient() {
         />
       </div>
 
-
       {/* Upcoming Appointments */}
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm mb-8">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
@@ -122,7 +128,7 @@ export default function DashboardClient() {
           </h3>
           <CallsOverTime data={callsOverTimeData} />
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             Intents Distribution

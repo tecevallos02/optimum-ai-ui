@@ -1,7 +1,9 @@
 interface TranscriptViewerProps {
   transcriptUrl: string;
 }
-export default function TranscriptViewer({ transcriptUrl }: TranscriptViewerProps) {
+export default function TranscriptViewer({
+  transcriptUrl,
+}: TranscriptViewerProps) {
   // In mock mode we just fetch the text file from /public
   return (
     <div>

@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { LEGEND_ITEMS } from '@/lib/calendar/colors';
+import { LEGEND_ITEMS } from "@/lib/calendar/colors";
 
 interface LegendProps {
   className?: string;
 }
 
-export default function Legend({ className = '' }: LegendProps) {
-  const statusItems = LEGEND_ITEMS.filter(item => item.type === 'status');
-  const sourceItems = LEGEND_ITEMS.filter(item => item.type === 'source');
+export default function Legend({ className = "" }: LegendProps) {
+  const statusItems = LEGEND_ITEMS.filter((item) => item.type === "status");
+  const sourceItems = LEGEND_ITEMS.filter((item) => item.type === "source");
 
   return (
     <div className={`flex flex-wrap gap-4 text-sm ${className}`}>

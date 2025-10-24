@@ -1,6 +1,12 @@
-import { readSheetData } from './google-sheets';
-import { fetchRetellCalls, calculateRetellAnalytics, getMockRetellData, RetellCallData, RetellAnalytics } from './retell';
-import { CallRow } from './types';
+import { readSheetData } from "./google-sheets";
+import {
+  fetchRetellCalls,
+  calculateRetellAnalytics,
+  getMockRetellData,
+  RetellCallData,
+  RetellAnalytics,
+} from "./retell";
+import { CallRow } from "./types";
 
 export interface CombinedKPIs {
   // From Google Sheets (appointments)
@@ -10,7 +16,7 @@ export interface CombinedKPIs {
   conversionRate: number;
   callsEscalated: number;
   estimatedSavings: number;
-  
+
   // From Retell (call analytics)
   totalCalls: number;
   totalTimeSaved: number; // in seconds
@@ -22,10 +28,10 @@ export interface CombinedKPIs {
 export interface CombinedCallData {
   // Google Sheets data (appointments)
   appointments: CallRow[];
-  
+
   // Retell data (call logs)
   callLogs: RetellCallData[];
-  
+
   // Combined analytics
   kpis: CombinedKPIs;
   retellAnalytics: RetellAnalytics;
@@ -38,12 +44,12 @@ export async function getCombinedData(
     startDate?: string;
     endDate?: string;
     useMockRetell?: boolean;
-  } = {}
+  } = {},
 ): Promise<CombinedCallData> {
   try {
     // Import Prisma client
-    const { prisma } = await import('./prisma');
-    
+    const { prisma } = await import("./prisma");
+
     // Get company configuration
     const company = await prisma.company.findUnique({
       where: { id: companyId },
@@ -51,17 +57,17 @@ export async function getCombinedData(
         sheets: true,
         phones: true,
         retell: true,
-      }
+      },
     });
 
     if (!company) {
-      throw new Error('Company not found');
+      throw new Error("Company not found");
     }
 
     // Get Google Sheets data
     const companySheet = company.sheets[0];
     let appointments: CallRow[] = [];
-    
+
     if (companySheet) {
       appointments = await readSheetData({
         spreadsheetId: companySheet.spreadsheetId,
@@ -76,10 +82,10 @@ export async function getCombinedData(
     // Get Retell data
     let callLogs: RetellCallData[] = [];
     let retellAnalytics: RetellAnalytics;
-    
+
     if (company.retell && company.retell.length > 0) {
       const companyRetell = company.retell[0];
-      
+
       if (options.useMockRetell) {
         // Use mock data for development
         callLogs = getMockRetellData(companyId);
@@ -90,7 +96,7 @@ export async function getCombinedData(
           endDate: options.endDate,
         });
       }
-      
+
       retellAnalytics = calculateRetellAnalytics(callLogs);
     } else {
       // No Retell configuration, use empty data
@@ -116,22 +122,27 @@ export async function getCombinedData(
       retellAnalytics,
     };
   } catch (error) {
-    console.error('Error getting combined data:', error);
+    console.error("Error getting combined data:", error);
     throw error;
   }
 }
 
-function calculateCombinedKPIs(appointments: CallRow[], retellAnalytics: RetellAnalytics): CombinedKPIs {
+function calculateCombinedKPIs(
+  appointments: CallRow[],
+  retellAnalytics: RetellAnalytics,
+): CombinedKPIs {
   // Use Retell data for the main KPIs
   const callsHandled = retellAnalytics.totalCalls;
-  const bookings = appointments.filter(app => 
-    app.status.toLowerCase() === 'booked' || 
-    app.status.toLowerCase() === 'scheduled' ||
-    app.status.toLowerCase() === 'confirmed'
+  const bookings = appointments.filter(
+    (app) =>
+      app.status.toLowerCase() === "booked" ||
+      app.status.toLowerCase() === "scheduled" ||
+      app.status.toLowerCase() === "confirmed",
   ).length;
-  const conversionRate = callsHandled > 0 ? Math.round((bookings / callsHandled) * 10000) / 100 : 0;
+  const conversionRate =
+    callsHandled > 0 ? Math.round((bookings / callsHandled) * 10000) / 100 : 0;
   const callsEscalated = retellAnalytics.callsByStatus.failed; // Use failed calls as escalated
-  
+
   // Use Retell data for handle time and savings
   const avgHandleTime = retellAnalytics.averageCallDuration;
   const estimatedSavings = retellAnalytics.totalTimeSaved * 0.05; // $0.05 per second saved
@@ -144,7 +155,7 @@ function calculateCombinedKPIs(appointments: CallRow[], retellAnalytics: RetellA
     conversionRate,
     callsEscalated,
     estimatedSavings,
-    
+
     // Retell data (for reference, but not displayed)
     totalCalls: retellAnalytics.totalCalls,
     totalTimeSaved: retellAnalytics.totalTimeSaved,
