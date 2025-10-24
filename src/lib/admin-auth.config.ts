@@ -22,7 +22,8 @@ if (!adminNextAuthSecret) {
 }
 
 export const adminAuthOptions = {
-  adapter: PrismaAdapter(adminPrisma),
+  // Remove adapter to use JWT-only sessions (no database sessions)
+  // adapter: PrismaAdapter(adminPrisma),
   session: {
     strategy: "jwt" as const,
   },
