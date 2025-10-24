@@ -22,7 +22,7 @@ function AdminLoginContent() {
     try {
       console.log("🔐 Attempting admin login:", email);
 
-      const result = await signIn("credentials", {
+      const result = await signIn("admin-credentials", {
         email,
         password,
         redirect: false,
