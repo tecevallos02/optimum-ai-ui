@@ -34,6 +34,9 @@ function AdminLoginContent() {
         console.log("❌ SignIn error:", result.error);
         setError("Invalid credentials or not authorized for admin access");
       } else {
+        // Wait a moment for session to be established
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         // Check if we have a valid session
         const session = await getSession();
         console.log("🔐 Session after login:", session);
@@ -42,8 +45,10 @@ function AdminLoginContent() {
           console.log("✅ Session valid, redirecting to:", redirectTo);
           router.push(redirectTo);
         } else {
-          console.log("❌ Session invalid");
-          setError("Login failed. Please try again.");
+          console.log("❌ Session invalid, but login was successful - redirecting anyway");
+          // Even if session is not immediately available, redirect to admin page
+          // The admin page will handle the session check
+          router.push(redirectTo);
         }
       }
     } catch (error) {
