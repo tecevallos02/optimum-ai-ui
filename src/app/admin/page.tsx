@@ -47,14 +47,21 @@ export default function AdminDashboard() {
     }
 
     if (session?.user?.email) {
+      // Check if this is an admin user (either by email or isAdmin flag)
       const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",").map(
         (email) => email.trim(),
       ) || ["goshawkai1@gmail.com"];
+      
+      const isAdminEmail = adminEmails.includes(session.user.email);
+      const isAdminFlag = (session.user as any)?.isAdmin;
+      
       console.log("🔍 Admin emails:", adminEmails);
       console.log("🔍 User email:", session.user.email);
-      console.log("🔍 Is admin:", adminEmails.includes(session.user.email));
+      console.log("🔍 Is admin email:", isAdminEmail);
+      console.log("🔍 Is admin flag:", isAdminFlag);
+      console.log("🔍 Session user:", session.user);
 
-      if (!adminEmails.includes(session.user.email)) {
+      if (!isAdminEmail && !isAdminFlag) {
         console.log("❌ Not admin, redirecting to home");
         router.push("/");
         return;
