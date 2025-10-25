@@ -123,9 +123,11 @@ export async function getCombinedData(
       name: apt.customerName,
       phone: apt.customerPhone || "",
       datetime_iso: apt.startsAt.toISOString(),
+      window: "1 hour", // Default window for database appointments
       status: apt.status.toLowerCase(),
+      address: "Manual Entry", // Default address for database appointments
       notes: apt.notes || apt.description || "",
-      source: apt.source.toLowerCase(),
+      intent: "booking", // Default intent for database appointments
     }));
 
     // Combine database and sheet appointments, removing duplicates
