@@ -106,37 +106,30 @@ export async function GET() {
       );
     }
 
-    // Get user's organization from memberships
-    const userData = await prisma.user.findFirst({
-      where: { id: user.id },
-      include: {
-        memberships: {
-          include: {
-            org: true
-          }
-        }
-      }
+    // Get or create organization for this company
+    let organization = await prisma.organization.findFirst({
+      where: { name: company.name }
     });
 
-    const userMembership = userData?.memberships?.[0];
-    if (!userMembership?.org) {
-      console.log("❌ No organization found for user");
-      return NextResponse.json(
-        { error: "User not linked to any organization" },
-        { status: 404 },
-      );
+    if (!organization) {
+      // Create organization if it doesn't exist
+      organization = await prisma.organization.create({
+        data: {
+          name: company.name,
+        },
+      });
+      console.log("✅ Created organization for company:", organization.id);
     }
 
-    const userOrg = userMembership.org;
     console.log("🔍 Using organization for appointments:", {
-      orgId: userOrg.id,
-      orgName: userOrg.name
+      orgId: organization.id,
+      orgName: organization.name
     });
 
     // Get appointments from database first
     const dbAppointments = await prisma.appointment.findMany({
       where: {
-        orgId: userOrg.id,
+        orgId: organization.id,
       },
       orderBy: {
         startsAt: 'asc',
@@ -301,37 +294,46 @@ export async function POST(request: NextRequest) {
         console.log("✅ Created test organization:", org.id);
       }
     } else {
-      // Get user's organization from memberships (required for appointments)
-      const userData = await prisma.user.findFirst({
-        where: { id: user.id },
-        include: {
-          memberships: {
-            include: {
-              org: true
-            }
-          }
-        }
-      });
-
-      console.log("🔍 User data for appointment creation:", {
-        userId: user.id,
-        userData: userData,
-        memberships: userData?.memberships
-      });
-
-      // Get organization from user's memberships
-      const userMembership = userData?.memberships?.[0];
-      
-      if (!userMembership?.org) {
-        console.log("❌ No organization found for user");
+      // Use the same company lookup as the GET method
+      if (!user.companyId) {
+        console.log("❌ User not linked to any company");
         return NextResponse.json(
-          { error: "User not linked to any organization" },
+          { error: "User not linked to any company" },
           { status: 404 },
         );
       }
 
-      // Use the organization from user's membership
-      org = userMembership.org;
+      const company = await prisma.company.findUnique({
+        where: {
+          id: user.companyId,
+        },
+      });
+
+      if (!company) {
+        console.log("❌ No company found for this user");
+        return NextResponse.json(
+          { error: "No company found for this user" },
+          { status: 404 },
+        );
+      }
+
+      // Get or create organization for this company
+      let organization = await prisma.organization.findFirst({
+        where: { name: company.name }
+      });
+
+      if (!organization) {
+        // Create organization if it doesn't exist
+        organization = await prisma.organization.create({
+          data: {
+            name: company.name,
+          },
+        });
+        console.log("✅ Created organization for company:", organization.id);
+      }
+
+      // Use the organization for appointments
+      org = organization;
       console.log("🔍 Using organization for appointment:", {
         orgId: org.id,
         orgName: org.name
