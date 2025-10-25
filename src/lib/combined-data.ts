@@ -66,10 +66,10 @@ export async function getCombinedData(
 
     // Get Google Sheets data
     const companySheet = company.sheets[0];
-    let appointments: CallRow[] = [];
+    let sheetAppointments: CallRow[] = [];
 
     if (companySheet) {
-      appointments = await readSheetData({
+      sheetAppointments = await readSheetData({
         spreadsheetId: companySheet.spreadsheetId,
         range: companySheet.dataRange,
         phoneFilter: options.phone,
@@ -78,6 +78,68 @@ export async function getCombinedData(
         companyId: companyId,
       });
     }
+
+    // Get database appointments
+    let dbAppointments: any[] = [];
+    try {
+      // Get or create organization for this company
+      let organization = await prisma.organization.findFirst({
+        where: { name: company.name }
+      });
+
+      if (!organization) {
+        // Create organization if it doesn't exist
+        organization = await prisma.organization.create({
+          data: {
+            name: company.name,
+          },
+        });
+        console.log("✅ Created organization for KPIs:", organization.id);
+      }
+
+      // Get appointments from database
+      dbAppointments = await prisma.appointment.findMany({
+        where: {
+          orgId: organization.id,
+        },
+        orderBy: {
+          startsAt: 'asc',
+        },
+      });
+
+      console.log("🔍 Database appointments for KPIs:", {
+        companyId: companyId,
+        orgId: organization.id,
+        dbAppointmentsCount: dbAppointments.length,
+        firstDbAppointmentId: dbAppointments[0]?.id || "none"
+      });
+    } catch (dbError) {
+      console.log("⚠️ Could not read database appointments:", dbError);
+    }
+
+    // Convert database appointments to CallRow format
+    const dbAppointmentsFormatted = dbAppointments.map((apt) => ({
+      appointment_id: apt.id,
+      name: apt.customerName,
+      phone: apt.customerPhone || "",
+      datetime_iso: apt.startsAt.toISOString(),
+      status: apt.status.toLowerCase(),
+      notes: apt.notes || apt.description || "",
+      source: apt.source.toLowerCase(),
+    }));
+
+    // Combine database and sheet appointments, removing duplicates
+    const allAppointments = [...dbAppointmentsFormatted, ...sheetAppointments];
+    const appointments = allAppointments.filter((apt, index, self) => 
+      index === self.findIndex(a => a.appointment_id === apt.appointment_id)
+    );
+
+    console.log("🔍 Combined appointments for KPIs:", {
+      sheetAppointmentsCount: sheetAppointments.length,
+      dbAppointmentsCount: dbAppointmentsFormatted.length,
+      totalAppointmentsCount: appointments.length,
+      firstAppointmentId: appointments[0]?.appointment_id || "none"
+    });
 
     // Get Retell data
     let callLogs: RetellCallData[] = [];
