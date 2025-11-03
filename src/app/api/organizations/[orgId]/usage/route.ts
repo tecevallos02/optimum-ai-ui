@@ -125,6 +125,7 @@ async function getCallUsage(orgId: string, startDate: Date, endDate: Date) {
         intent: true,
         timeSaved: true,
         costUSD: true,
+        createdAt: true,
       },
     });
 
