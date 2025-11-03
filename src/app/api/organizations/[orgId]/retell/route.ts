@@ -13,7 +13,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { encrypt, decrypt, generateSecret } from "@/lib/encryption";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 
 /**
  * GET /api/organizations/[orgId]/retell
