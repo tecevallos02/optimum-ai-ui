@@ -22,7 +22,7 @@ import { getServerSession } from "next-auth";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orgId: string } },
+  { params }: { params: Promise<{ orgId: string }> },
 ) {
   try {
     const session = await getServerSession();
@@ -31,7 +31,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { orgId } = params;
+    const { orgId } = await params;
 
     // Verify user has access to this organization
     const membership = await prisma.membership.findFirst({
@@ -104,7 +104,7 @@ export async function GET(
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { orgId: string } },
+  { params }: { params: Promise<{ orgId: string }> },
 ) {
   try {
     const session = await getServerSession();
@@ -113,7 +113,7 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { orgId } = params;
+    const { orgId } = await params;
 
     // Verify user has access to this organization (simplified - all users are owners)
     const membership = await prisma.membership.findFirst({
@@ -226,7 +226,7 @@ export async function POST(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { orgId: string } },
+  { params }: { params: Promise<{ orgId: string }> },
 ) {
   try {
     const session = await getServerSession();
@@ -235,7 +235,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { orgId } = params;
+    const { orgId } = await params;
 
     // Verify user has access to this organization (simplified - all users are owners)
     const membership = await prisma.membership.findFirst({

@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { hash } from "@/lib/password";
+import { hashPassword } from "@/lib/password";
 
 /**
  * POST /api/admin/create-client
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
-    const hashedPassword = await hash(body.password);
+    const hashedPassword = await hashPassword(body.password);
 
     // Create organization and user in a transaction
     const result = await prisma.$transaction(async (tx) => {
