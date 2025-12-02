@@ -145,11 +145,11 @@ export default function OrgSwitcher({
 
           {/* Organization Info */}
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+            <div className="text-sm font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
               {currentOrg.name}
             </div>
             {currentOrg.role && (
-              <div className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+              <div className="text-xs text-gray-600 dark:text-dark-text-secondary uppercase tracking-wide">
                 {currentOrg.role}
               </div>
             )}
@@ -160,7 +160,7 @@ export default function OrgSwitcher({
             className={`transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
           >
             <svg
-              className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300"
+              className="w-4 h-4 text-gray-600 dark:text-dark-text-secondary group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -179,14 +179,14 @@ export default function OrgSwitcher({
       {/* Dropdown Menu */}
       {isOpen && (
         <div className="absolute top-full left-0 mt-2 w-full z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden backdrop-blur-sm">
+          <div className="bg-white dark:bg-dark-card rounded-xl shadow-2xl border border-gray-200 dark:border-dark-border overflow-hidden backdrop-blur-sm">
             <div className="p-2">
               {orgs.map((org) => (
                 <div
                   key={org.id}
-                  className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all duration-300 hover:bg-blue-50 dark:hover:bg-gray-700 ${
+                  className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all duration-300 hover:bg-blue-50 dark:hover:bg-dark-hover ${
                     org.id === currentOrgId
-                      ? "bg-blue-50 dark:bg-gray-700 border-l-2 border-blue-500"
+                      ? "bg-blue-50 dark:bg-dark-hover border-l-2 border-blue-500"
                       : ""
                   }`}
                   onClick={() => handleOrgSelect(org.id)}
@@ -221,11 +221,11 @@ export default function OrgSwitcher({
 
                   {/* Organization Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+                    <div className="font-semibold text-gray-900 dark:text-white truncate">
                       {org.name}
                     </div>
                     {org.role && (
-                      <div className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+                      <div className="text-xs text-gray-600 dark:text-dark-text-secondary uppercase tracking-wide">
                         {org.role}
                       </div>
                     )}

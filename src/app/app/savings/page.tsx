@@ -97,8 +97,8 @@ export default function SavingsPage() {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-          <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+        <div className="bg-white dark:bg-dark-card p-4 rounded-lg shadow-lg border border-gray-200 dark:border-dark-border">
+          <p className="font-semibold text-gray-900 dark:text-white mb-2">
             {label}
           </p>
           {payload.map((entry: any, index: number) => (
@@ -107,10 +107,10 @@ export default function SavingsPage() {
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: entry.color }}
               />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-gray-600 dark:text-dark-text-secondary">
                 {entry.dataKey}:
               </span>
-              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">
                 {entry.dataKey === "roi"
                   ? `${entry.value}%`
                   : entry.dataKey === "costSaved" ||
@@ -154,13 +154,13 @@ export default function SavingsPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-card border border-gray-100 dark:border-dark-border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-gray-500 dark:text-dark-text-secondary">
                 Total Time Saved
               </p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                 {totalTimeSaved}h
               </p>
             </div>
@@ -182,13 +182,13 @@ export default function SavingsPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-card border border-gray-100 dark:border-dark-border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-gray-500 dark:text-dark-text-secondary">
                 Total Cost Saved
               </p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                 ${totalCostSaved.toLocaleString()}
               </p>
             </div>
@@ -210,13 +210,13 @@ export default function SavingsPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-card border border-gray-100 dark:border-dark-border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-gray-500 dark:text-dark-text-secondary">
                 Average ROI
               </p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                 {Math.round(averageROI)}%
               </p>
             </div>
@@ -238,13 +238,13 @@ export default function SavingsPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-card border border-gray-100 dark:border-dark-border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-gray-500 dark:text-dark-text-secondary">
                 Current Month ROI
               </p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                 {currentMonth?.roi || 0}%
               </p>
             </div>
@@ -270,8 +270,8 @@ export default function SavingsPage() {
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Monthly Cost Savings */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
-          <h2 className="font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b border-gray-50 dark:border-gray-700 pb-2">
+        <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-card border border-gray-100 dark:border-dark-border">
+          <h2 className="font-semibold mb-4 text-gray-900 dark:text-white border-b border-gray-50 dark:border-dark-border pb-2">
             Monthly Cost Savings
           </h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -311,8 +311,8 @@ export default function SavingsPage() {
         </div>
 
         {/* ROI Trend */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
-          <h2 className="font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b border-gray-50 dark:border-gray-700 pb-2">
+        <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-card border border-gray-100 dark:border-dark-border">
+          <h2 className="font-semibold mb-4 text-gray-900 dark:text-white border-b border-gray-50 dark:border-dark-border pb-2">
             ROI Trend
           </h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -352,8 +352,8 @@ export default function SavingsPage() {
         </div>
 
         {/* Time Saved vs Cost Saved */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
-          <h2 className="font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b border-gray-50 dark:border-gray-700 pb-2">
+        <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-card border border-gray-100 dark:border-dark-border">
+          <h2 className="font-semibold mb-4 text-gray-900 dark:text-white border-b border-gray-50 dark:border-dark-border pb-2">
             Time vs Cost Efficiency
           </h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -441,8 +441,8 @@ export default function SavingsPage() {
         </div>
 
         {/* Savings vs Investment */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
-          <h2 className="font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b border-gray-50 dark:border-gray-700 pb-2">
+        <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-card border border-gray-100 dark:border-dark-border">
+          <h2 className="font-semibold mb-4 text-gray-900 dark:text-white border-b border-gray-50 dark:border-dark-border pb-2">
             Savings vs Investment
           </h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -474,8 +474,8 @@ export default function SavingsPage() {
       </div>
 
       {/* Cumulative Savings */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
-        <h2 className="font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b border-gray-50 dark:border-gray-700 pb-2">
+      <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-card border border-gray-100 dark:border-dark-border">
+        <h2 className="font-semibold mb-4 text-gray-900 dark:text-white border-b border-gray-50 dark:border-dark-border pb-2">
           Cumulative Savings Over Time
         </h2>
         <ResponsiveContainer width="100%" height={400}>

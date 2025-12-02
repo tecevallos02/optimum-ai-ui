@@ -35,7 +35,7 @@ export default function PhoneSelector() {
 
   if (isLoading) {
     return (
-      <div className="w-32 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+      <div className="w-32 h-8 bg-gray-200 dark:bg-dark-hover rounded animate-pulse"></div>
     );
   }
 
@@ -48,7 +48,7 @@ export default function PhoneSelector() {
     <select
       value={selectedPhone || "all"}
       onChange={handlePhoneChange}
-      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm"
+      className="px-3 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-white text-sm"
     >
       <option value="all">All Phones</option>
       {phones.map((phone) => (

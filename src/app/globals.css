@@ -12,3 +12,13 @@ html {
   @apply opacity-0 translate-y-5;
   animation: fadeUp 0.8s ease forwards;
 }
+
+/* Pitch black dark mode */
+.dark {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.dark body {
+  background-color: #000000;
+}

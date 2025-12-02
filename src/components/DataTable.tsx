@@ -41,25 +41,25 @@ export default function DataTable<T extends Record<string, unknown>>({
 
   return (
     <div className="w-full">
-      <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:!bg-gray-800 shadow-sm">
+      <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-dark-border bg-white dark:!bg-dark-card shadow-sm">
         <table className="min-w-full text-sm">
-          <thead className="bg-gray-50 dark:bg-gray-700 text-left">
+          <thead className="bg-gray-50 dark:bg-dark-hover text-left">
             <tr>
               {columns.map((c) => (
                 <th
                   key={c.key}
-                  className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-600"
+                  className="px-4 py-3 font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-dark-border"
                 >
                   {c.header}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-800">
+          <tbody className="bg-white dark:bg-dark-card">
             {pageData.length === 0 ? (
               <tr>
                 <td
-                  className="px-4 py-6 text-gray-500 dark:text-gray-400 text-center"
+                  className="px-4 py-6 text-gray-500 dark:text-dark-text-secondary text-center"
                   colSpan={columns.length}
                 >
                   No data to display.
@@ -69,12 +69,12 @@ export default function DataTable<T extends Record<string, unknown>>({
               pageData.map((row, idx) => (
                 <tr
                   key={String((row as Record<string, unknown>).id) || idx}
-                  className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800"
+                  className="border-t border-gray-200 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-hover bg-white dark:bg-dark-card"
                 >
                   {columns.map((c) => (
                     <td
                       key={c.key}
-                      className="px-4 py-3 text-gray-900 dark:text-gray-100"
+                      className="px-4 py-3 text-gray-900 dark:text-white"
                     >
                       {c.render
                         ? c.render(row)
@@ -90,33 +90,33 @@ export default function DataTable<T extends Record<string, unknown>>({
 
       {/* Pager */}
       <div className="mt-3 flex items-center justify-between text-sm">
-        <span className="text-gray-500 dark:text-gray-400">
+        <span className="text-gray-500 dark:text-dark-text-secondary">
           Page {pageCount === 0 ? 0 : safePage + 1} of {pageCount}
         </span>
         <div className="space-x-2">
           <button
-            className="rounded border border-gray-300 dark:border-gray-600 px-3 py-1 disabled:opacity-50 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="rounded border border-gray-300 dark:border-dark-border px-3 py-1 disabled:opacity-50 bg-white dark:bg-dark-card text-gray-700 dark:text-dark-text-secondary hover:bg-gray-50 dark:hover:bg-dark-hover"
             onClick={() => setPage(0)}
             disabled={safePage <= 0}
           >
             « First
           </button>
           <button
-            className="rounded border border-gray-300 dark:border-gray-600 px-3 py-1 disabled:opacity-50 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="rounded border border-gray-300 dark:border-dark-border px-3 py-1 disabled:opacity-50 bg-white dark:bg-dark-card text-gray-700 dark:text-dark-text-secondary hover:bg-gray-50 dark:hover:bg-dark-hover"
             onClick={() => setPage((p) => Math.max(0, p - 1))}
             disabled={safePage <= 0}
           >
             ‹ Prev
           </button>
           <button
-            className="rounded border border-gray-300 dark:border-gray-600 px-3 py-1 disabled:opacity-50 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="rounded border border-gray-300 dark:border-dark-border px-3 py-1 disabled:opacity-50 bg-white dark:bg-dark-card text-gray-700 dark:text-dark-text-secondary hover:bg-gray-50 dark:hover:bg-dark-hover"
             onClick={() => setPage((p) => p + 1)}
             disabled={safePage >= pageCount - 1}
           >
             Next ›
           </button>
           <button
-            className="rounded border border-gray-300 dark:border-gray-600 px-3 py-1 disabled:opacity-50 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="rounded border border-gray-300 dark:border-dark-border px-3 py-1 disabled:opacity-50 bg-white dark:bg-dark-card text-gray-700 dark:text-dark-text-secondary hover:bg-gray-50 dark:hover:bg-dark-hover"
             onClick={() => setPage(pageCount - 1)}
             disabled={safePage >= pageCount - 1}
           >

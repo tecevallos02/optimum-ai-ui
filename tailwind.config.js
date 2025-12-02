@@ -18,7 +18,15 @@ module.exports = {
         border: '#e0e4f5',
         success: '#2ecc71',
         warning: '#f4d06f',
-        danger: '#e74c3c'
+        danger: '#e74c3c',
+        dark: {
+          bg: '#000000',
+          card: '#0a0a0a',
+          hover: '#141414',
+          border: '#1f1f1f',
+          text: '#ffffff',
+          'text-secondary': '#a3a3a3'
+        }
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif']

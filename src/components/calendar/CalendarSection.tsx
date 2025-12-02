@@ -160,13 +160,13 @@ export default function CalendarSection({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
           {/* View Toggle */}
-          <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+          <div className="flex bg-gray-100 dark:bg-dark-hover rounded-lg p-1">
             <button
               onClick={() => handleViewChange("list")}
               className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                 view === "list"
-                  ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  ? "bg-white dark:bg-dark-hover text-gray-900 dark:text-white shadow-sm"
+                  : "text-gray-500 dark:text-dark-text-secondary hover:text-gray-700 dark:hover:text-gray-300"
               }`}
             >
               List
@@ -175,8 +175,8 @@ export default function CalendarSection({
               onClick={() => handleViewChange("calendar")}
               className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                 view === "calendar"
-                  ? "bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  ? "bg-white dark:bg-dark-hover text-gray-900 dark:text-white shadow-sm"
+                  : "text-gray-500 dark:text-dark-text-secondary hover:text-gray-700 dark:hover:text-gray-300"
               }`}
             >
               Calendar
@@ -188,7 +188,7 @@ export default function CalendarSection({
           {onRefresh && (
             <button
               onClick={onRefresh}
-              className="px-3 py-2 text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium flex items-center gap-2"
+              className="px-3 py-2 text-gray-600 dark:text-dark-text-secondary bg-gray-100 dark:bg-dark-hover rounded-lg hover:bg-gray-200 dark:hover:bg-dark-hover transition-colors font-medium flex items-center gap-2"
               title="Refresh appointments"
             >
               <svg
@@ -230,7 +230,7 @@ export default function CalendarSection({
       </div>
 
       {/* Filters and Search */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 p-4">
+      <div className="bg-white dark:bg-dark-card rounded-2xl shadow-md border border-gray-200 dark:border-dark-border p-4">
         <div className="flex flex-col sm:flex-row gap-4">
           {/* Search */}
           <div className="flex-1">
@@ -241,7 +241,7 @@ export default function CalendarSection({
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, search: e.target.value }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-dark-hover text-gray-900 dark:text-white"
             />
           </div>
 
@@ -252,7 +252,7 @@ export default function CalendarSection({
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, status: e.target.value }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-dark-hover text-gray-900 dark:text-white"
             >
               <option value="">All Statuses</option>
               <option value="scheduled">Scheduled</option>
@@ -270,7 +270,7 @@ export default function CalendarSection({
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, source: e.target.value }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-dark-hover text-gray-900 dark:text-white"
             >
               <option value="">All Sources</option>
               <option value="web">Web</option>
@@ -282,13 +282,13 @@ export default function CalendarSection({
         </div>
 
         {/* Legend */}
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-dark-border">
           <Legend />
         </div>
       </div>
 
       {/* Content */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-white dark:bg-dark-card rounded-2xl shadow-md border border-gray-200 dark:border-dark-border p-6">
         {view === "list" ? (
           <ListAppointments
             appointments={filteredAppointments}

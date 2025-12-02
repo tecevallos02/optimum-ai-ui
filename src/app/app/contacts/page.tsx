@@ -151,7 +151,7 @@ export default function ContactsPage() {
       </div>
 
       {loading ? (
-        <div className="text-sm text-muted dark:text-gray-400">Loading…</div>
+        <div className="text-sm text-muted dark:text-dark-text-secondary">Loading…</div>
       ) : (
         <DataTable<Contact>
           data={data?.contacts || []}
@@ -207,13 +207,13 @@ function AddContactModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+      <div className="bg-white dark:bg-dark-card rounded-lg p-6 w-full max-w-md">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
           Add Contact
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-dark-text-secondary">
               Name *
             </label>
             <input
@@ -223,11 +223,11 @@ function AddContactModal({
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-gray-300 dark:border-dark-border rounded-md px-3 py-2 bg-white dark:bg-dark-hover text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-dark-text-secondary">
               Email
             </label>
             <input
@@ -236,11 +236,11 @@ function AddContactModal({
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-gray-300 dark:border-dark-border rounded-md px-3 py-2 bg-white dark:bg-dark-hover text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-dark-text-secondary">
               Phone
             </label>
             <input
@@ -249,11 +249,11 @@ function AddContactModal({
               onChange={(e) =>
                 setFormData({ ...formData, phone: e.target.value })
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-gray-300 dark:border-dark-border rounded-md px-3 py-2 bg-white dark:bg-dark-hover text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-dark-text-secondary">
               Notes
             </label>
             <textarea
@@ -261,7 +261,7 @@ function AddContactModal({
               onChange={(e) =>
                 setFormData({ ...formData, notes: e.target.value })
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-gray-300 dark:border-dark-border rounded-md px-3 py-2 bg-white dark:bg-dark-hover text-gray-900 dark:text-white"
               rows={3}
             />
           </div>
@@ -269,7 +269,7 @@ function AddContactModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+              className="px-4 py-2 border rounded-md hover:bg-gray-50 dark:hover:bg-dark-hover text-gray-700 dark:text-dark-text-secondary"
             >
               Cancel
             </button>
@@ -316,13 +316,13 @@ function EditContactModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+      <div className="bg-white dark:bg-dark-card rounded-lg p-6 w-full max-w-md">
+        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
           Edit Contact
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-dark-text-secondary">
               Name *
             </label>
             <input
@@ -332,7 +332,7 @@ function EditContactModal({
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-gray-300 dark:border-dark-border rounded-md px-3 py-2 bg-white dark:bg-dark-hover text-gray-900 dark:text-white"
             />
           </div>
           <div>
@@ -343,11 +343,11 @@ function EditContactModal({
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-gray-300 dark:border-dark-border rounded-md px-3 py-2 bg-white dark:bg-dark-hover text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-dark-text-secondary">
               Phone
             </label>
             <input
@@ -356,11 +356,11 @@ function EditContactModal({
               onChange={(e) =>
                 setFormData({ ...formData, phone: e.target.value })
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-gray-300 dark:border-dark-border rounded-md px-3 py-2 bg-white dark:bg-dark-hover text-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-dark-text-secondary">
               Notes
             </label>
             <textarea
@@ -368,7 +368,7 @@ function EditContactModal({
               onChange={(e) =>
                 setFormData({ ...formData, notes: e.target.value })
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-gray-300 dark:border-dark-border rounded-md px-3 py-2 bg-white dark:bg-dark-hover text-gray-900 dark:text-white"
               rows={3}
             />
           </div>
@@ -376,7 +376,7 @@ function EditContactModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+              className="px-4 py-2 border rounded-md hover:bg-gray-50 dark:hover:bg-dark-hover text-gray-700 dark:text-dark-text-secondary"
             >
               Cancel
             </button>

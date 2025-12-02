@@ -62,7 +62,7 @@ export default function ConfigPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+        <div className="text-gray-500 dark:text-dark-text-secondary">Loading...</div>
       </div>
     );
   }
@@ -72,8 +72,8 @@ export default function ConfigPage() {
       <PageTitle title="Configuration" />
 
       {/* Organization Settings */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+      <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-card border border-gray-100 dark:border-dark-border">
+        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
           Organization Settings
         </h2>
 
@@ -87,11 +87,11 @@ export default function ConfigPage() {
       </div>
 
       {/* Other Settings */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+      <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-card border border-gray-100 dark:border-dark-border">
+        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
           Business Profile
         </h2>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-gray-600 dark:text-dark-text-secondary">
           This section allows you to edit business hours, holidays, routing
           rules, conversation settings and integrations. (TODO: implement forms
           and toggles)

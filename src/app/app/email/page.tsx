@@ -146,8 +146,8 @@ export default function EmailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Appointments List */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+        <div className="bg-white dark:bg-dark-card rounded-lg border border-gray-200 dark:border-dark-border p-6">
+          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
             Recent Appointments
           </h2>
           <div className="space-y-3">
@@ -157,16 +157,16 @@ export default function EmailPage() {
                 className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                   selectedAppointment?.id === appointment.id
                     ? "border-blue-500 bg-blue-50 dark:bg-blue-900 dark:border-blue-400"
-                    : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                    : "border-gray-200 dark:border-dark-border hover:border-gray-300 dark:hover:border-gray-600"
                 }`}
                 onClick={() => setSelectedAppointment(appointment)}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                    <h3 className="font-medium text-gray-900 dark:text-white">
                       {appointment.customerName}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
                       {appointment.customerEmail || "No email provided"}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-500">
@@ -184,12 +184,12 @@ export default function EmailPage() {
                         : appointment.status === "scheduled"
                           ? "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
                           : appointment.status === "completed"
-                            ? "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                            ? "bg-gray-100 dark:bg-dark-hover text-gray-800 dark:text-gray-200"
                             : appointment.status === "canceled"
                               ? "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
                               : appointment.status === "no_show"
                                 ? "bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200"
-                                : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                                : "bg-gray-100 dark:bg-dark-hover text-gray-800 dark:text-gray-200"
                     }`}
                   >
                     {appointment.status}
@@ -201,29 +201,29 @@ export default function EmailPage() {
         </div>
 
         {/* Email Generation */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+        <div className="bg-white dark:bg-dark-card rounded-lg border border-gray-200 dark:border-dark-border p-6">
+          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
             Generate Email
           </h2>
 
           {selectedAppointment ? (
             <div className="space-y-4">
-              <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+              <div className="p-4 bg-gray-50 dark:bg-dark-hover rounded-lg">
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2">
                   Selected Appointment
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
                   <strong>Name:</strong> {selectedAppointment.customerName}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
                   <strong>Email:</strong>{" "}
                   {selectedAppointment.customerEmail || "No email provided"}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
                   <strong>Date:</strong>{" "}
                   {new Date(selectedAppointment.startsAt).toLocaleDateString()}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
                   <strong>Time:</strong>{" "}
                   {new Date(selectedAppointment.startsAt).toLocaleTimeString(
                     [],
@@ -239,7 +239,7 @@ export default function EmailPage() {
                   })}
                 </p>
                 {(selectedAppointment as any).description && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  <p className="text-sm text-gray-600 dark:text-dark-text-secondary mt-2">
                     <strong>Description:</strong>{" "}
                     {(selectedAppointment as any).description}
                   </p>
@@ -274,7 +274,7 @@ export default function EmailPage() {
                     </h3>
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                           Subject:
                         </label>
                         <input
@@ -286,11 +286,11 @@ export default function EmailPage() {
                               subject: e.target.value,
                             })
                           }
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-white"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-1">
                           Content:
                         </label>
                         <textarea
@@ -302,7 +302,7 @@ export default function EmailPage() {
                             })
                           }
                           rows={8}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-white"
                         />
                       </div>
                     </div>
@@ -326,7 +326,7 @@ export default function EmailPage() {
               )}
             </div>
           ) : (
-            <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+            <p className="text-gray-500 dark:text-dark-text-secondary text-center py-8">
               Select an appointment to generate an email
             </p>
           )}

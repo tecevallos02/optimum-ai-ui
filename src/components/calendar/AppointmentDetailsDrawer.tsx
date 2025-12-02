@@ -66,16 +66,16 @@ export default function AppointmentDetailsDrawer({
       />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-800 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out">
+      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white dark:bg-dark-card shadow-2xl z-50 transform transition-transform duration-300 ease-in-out">
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-dark-border">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Appointment Details
             </h2>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-lg transition-colors"
             >
               <svg
                 className="w-5 h-5"
@@ -98,7 +98,7 @@ export default function AppointmentDetailsDrawer({
             <div className="space-y-6">
               {/* Title and Status */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                   {appointment.title}
                 </h3>
                 <div className="flex items-center gap-2">
@@ -120,34 +120,34 @@ export default function AppointmentDetailsDrawer({
 
               {/* Customer Information */}
               <div>
-                <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                <h4 className="text-sm font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wide mb-3">
                   Customer Information
                 </h4>
                 <div className="space-y-2">
                   <div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">
                       Name:
                     </span>
-                    <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                    <span className="ml-2 text-sm text-gray-900 dark:text-white">
                       {appointment.customerName}
                     </span>
                   </div>
                   {appointment.customerPhone && (
                     <div>
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <span className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">
                         Phone:
                       </span>
-                      <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                      <span className="ml-2 text-sm text-gray-900 dark:text-white">
                         {appointment.customerPhone}
                       </span>
                     </div>
                   )}
                   {appointment.customerEmail && (
                     <div>
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <span className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">
                         Email:
                       </span>
-                      <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                      <span className="ml-2 text-sm text-gray-900 dark:text-white">
                         {appointment.customerEmail}
                       </span>
                     </div>
@@ -157,31 +157,31 @@ export default function AppointmentDetailsDrawer({
 
               {/* Date and Time */}
               <div>
-                <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                <h4 className="text-sm font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wide mb-3">
                   Schedule
                 </h4>
                 <div className="space-y-2">
                   <div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">
                       Start:
                     </span>
-                    <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                    <span className="ml-2 text-sm text-gray-900 dark:text-white">
                       {formatDateTime(appointment.startsAt)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">
                       End:
                     </span>
-                    <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                    <span className="ml-2 text-sm text-gray-900 dark:text-white">
                       {formatDateTime(appointment.endsAt)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">
                       Duration:
                     </span>
-                    <span className="ml-2 text-sm text-gray-900 dark:text-gray-100">
+                    <span className="ml-2 text-sm text-gray-900 dark:text-white">
                       {formatDuration()}
                     </span>
                   </div>
@@ -191,10 +191,10 @@ export default function AppointmentDetailsDrawer({
               {/* Description */}
               {appointment.description && (
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                  <h4 className="text-sm font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wide mb-3">
                     Description
                   </h4>
-                  <p className="text-sm text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                  <p className="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-dark-hover p-3 rounded-lg">
                     {appointment.description}
                   </p>
                 </div>
@@ -203,10 +203,10 @@ export default function AppointmentDetailsDrawer({
               {/* Notes */}
               {appointment.notes && (
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                  <h4 className="text-sm font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wide mb-3">
                     Notes
                   </h4>
-                  <p className="text-sm text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                  <p className="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-dark-hover p-3 rounded-lg">
                     {appointment.notes}
                   </p>
                 </div>
@@ -214,10 +214,10 @@ export default function AppointmentDetailsDrawer({
 
               {/* Metadata */}
               <div>
-                <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                <h4 className="text-sm font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wide mb-3">
                   Details
                 </h4>
-                <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                <div className="space-y-2 text-sm text-gray-600 dark:text-dark-text-secondary">
                   <div>
                     Created:{" "}
                     {new Date(appointment.createdAt).toLocaleDateString()}
@@ -235,7 +235,7 @@ export default function AppointmentDetailsDrawer({
           </div>
 
           {/* Actions */}
-          <div className="border-t border-gray-200 dark:border-gray-700 p-6">
+          <div className="border-t border-gray-200 dark:border-dark-border p-6">
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => onAddContact?.(appointment)}

@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Pitch black dark mode for admin */
+.dark {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.dark body {
+  background-color: #000000;
+}
+
 /* Admin-specific styles */
 .admin-sidebar {
   @apply bg-white shadow-lg border-r border-gray-200;

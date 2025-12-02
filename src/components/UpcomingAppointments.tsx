@@ -96,13 +96,13 @@ export default function UpcomingAppointments({
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 p-6 rounded-xl shadow-card border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-lg group ${className}`}
+      className={`bg-white dark:bg-dark-card p-6 rounded-xl shadow-card border border-gray-100 dark:border-dark-border hover:border-gray-200 dark:hover:border-gray-600 transition-all duration-300 hover:shadow-lg group ${className}`}
     >
-      <div className="flex items-center justify-between mb-6 border-b border-gray-50 dark:border-gray-700 pb-4 group-hover:border-gray-100 dark:group-hover:border-gray-600 transition-colors duration-200">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors duration-200">
+      <div className="flex items-center justify-between mb-6 border-b border-gray-50 dark:border-dark-border pb-4 group-hover:border-gray-100 dark:group-hover:border-gray-600 transition-colors duration-200">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors duration-200">
           Upcoming Appointments
         </h2>
-        <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-200">
+        <span className="text-sm text-gray-500 dark:text-dark-text-secondary group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-200">
           Next 2 weeks ({appointments.length} appointments)
         </span>
       </div>
@@ -133,7 +133,7 @@ export default function UpcomingAppointments({
           {appointments.slice(0, 6).map((appointment) => (
             <div
               key={appointment.id}
-              className="flex items-center justify-between p-4 border border-gray-100 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-200 dark:hover:border-gray-600 transition-all duration-200 hover:shadow-sm group"
+              className="flex items-center justify-between p-4 border border-gray-100 dark:border-dark-border rounded-lg hover:bg-gray-50 dark:hover:bg-dark-hover hover:border-gray-200 dark:hover:border-gray-600 transition-all duration-200 hover:shadow-sm group"
             >
               <div className="flex items-center space-x-4">
                 <div className="flex-shrink-0">

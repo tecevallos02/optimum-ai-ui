@@ -13,8 +13,8 @@ export default function ClientOnlyThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 w-9 h-9 flex items-center justify-center">
-        <div className="w-5 h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+      <div className="p-2 rounded-lg border border-gray-200 dark:border-dark-border w-9 h-9 flex items-center justify-center">
+        <div className="w-5 h-5 bg-gray-200 dark:bg-dark-hover rounded animate-pulse"></div>
       </div>
     );
   }
@@ -26,13 +26,13 @@ export default function ClientOnlyThemeToggle() {
   return (
     <button
       onClick={handleToggle}
-      className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 hover:shadow-sm"
+      className="p-2 rounded-lg border border-gray-200 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 hover:shadow-sm"
       aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
     >
       {theme === "light" ? (
         // Moon icon for dark mode
         <svg
-          className="w-5 h-5 text-gray-600 dark:text-gray-400"
+          className="w-5 h-5 text-gray-600 dark:text-dark-text-secondary"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -47,7 +47,7 @@ export default function ClientOnlyThemeToggle() {
       ) : (
         // Sun icon for light mode
         <svg
-          className="w-5 h-5 text-gray-600 dark:text-gray-400"
+          className="w-5 h-5 text-gray-600 dark:text-dark-text-secondary"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

@@ -73,10 +73,10 @@ export default function DashboardClient() {
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm animate-pulse"
+              className="bg-white dark:bg-dark-card rounded-lg p-6 shadow-sm animate-pulse"
             >
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-200 dark:bg-dark-hover rounded w-1/2 mb-2"></div>
+              <div className="h-8 bg-gray-200 dark:bg-dark-hover rounded w-3/4"></div>
             </div>
           ))}
         </div>
@@ -113,8 +113,8 @@ export default function DashboardClient() {
       </div>
 
       {/* Upcoming Appointments */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+      <div className="bg-white dark:bg-dark-card rounded-lg p-6 shadow-sm mb-8">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Upcoming Appointments
         </h3>
         <UpcomingAppointments />
@@ -122,15 +122,15 @@ export default function DashboardClient() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-white dark:bg-dark-card rounded-lg p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Calls Over Time
           </h3>
           <CallsOverTime data={callsOverTimeData} />
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-white dark:bg-dark-card rounded-lg p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Intents Distribution
           </h3>
           <IntentsDistribution data={intentsData} />

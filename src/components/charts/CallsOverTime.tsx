@@ -24,8 +24,8 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-          <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+        <div className="bg-white dark:bg-dark-card p-4 rounded-lg shadow-lg border border-gray-200 dark:border-dark-border">
+          <p className="font-semibold text-gray-900 dark:text-white mb-2">
             {label}
           </p>
           {payload.map((entry: any, index: number) => (
@@ -34,10 +34,10 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: entry.color }}
               />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-gray-600 dark:text-dark-text-secondary">
                 {entry.dataKey}:
               </span>
-              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">
                 {entry.value}
               </span>
             </div>

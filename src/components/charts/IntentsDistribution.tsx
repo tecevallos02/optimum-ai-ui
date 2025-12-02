@@ -26,8 +26,8 @@ export default function IntentsDistribution({ data }: { data: IntentData[] }) {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-          <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2 capitalize">
+        <div className="bg-white dark:bg-dark-card p-4 rounded-lg shadow-lg border border-gray-200 dark:border-dark-border">
+          <p className="font-semibold text-gray-900 dark:text-white mb-2 capitalize">
             {label}
           </p>
           <div className="space-y-1">
@@ -36,18 +36,18 @@ export default function IntentsDistribution({ data }: { data: IntentData[] }) {
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: data.color }}
               />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-gray-600 dark:text-dark-text-secondary">
                 Count:
               </span>
-              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">
                 {data.count}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-gray-600 dark:text-dark-text-secondary">
                 Percentage:
               </span>
-              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">
                 {data.percentage}%
               </span>
             </div>

@@ -23,7 +23,7 @@ export default async function CalendarPage() {
       fallback={
         <div className="space-y-8">
           <PageTitle title="Calendar" subtitle="Loading..." />
-          <div className="h-96 bg-muted dark:bg-gray-700 rounded-2xl animate-pulse" />
+          <div className="h-96 bg-muted dark:bg-dark-hover rounded-2xl animate-pulse" />
         </div>
       }
     >

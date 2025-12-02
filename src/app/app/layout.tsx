@@ -13,11 +13,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
 
   return (
-    <div className="min-h-screen flex bg-background dark:bg-gray-900">
+    <div className="min-h-screen flex bg-background dark:bg-black">
       {/* Sidebar */}
-      <aside className="hidden md:block w-64 bg-background dark:bg-gray-800 border-r border-border dark:border-gray-700">
+      <aside className="hidden md:block w-64 bg-background dark:bg-dark-card border-r border-border dark:border-dark-border">
         {/* Logo Header */}
-        <div className="p-4 border-b border-border dark:border-gray-700">
+        <div className="p-4 border-b border-border dark:border-dark-border">
           <div className="flex items-center">
             {user?.company ? (
               <div className="flex items-center space-x-3">
@@ -27,10 +27,10 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
                   </span>
                 </div>
                 <div>
-                  <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                  <div className="text-lg font-bold text-gray-900 dark:text-white">
                     {user.company.name}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <div className="text-xs text-gray-500 dark:text-dark-text-secondary">
                     Powered by Goshawk AI
                   </div>
                 </div>
@@ -52,7 +52,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         <nav className="p-4 space-y-1">
           <Link
             href="/app"
-            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
+            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-dark-hover hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
           >
             <svg
               className="w-5 h-5 mr-3"
@@ -77,7 +77,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           </Link>
           <Link
             href="/app/calendar"
-            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
+            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-dark-hover hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
           >
             <svg
               className="w-5 h-5 mr-3"
@@ -96,7 +96,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           </Link>
           <Link
             href="/app/email"
-            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
+            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-dark-hover hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
           >
             <svg
               className="w-5 h-5 mr-3"
@@ -115,7 +115,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           </Link>
           <Link
             href="/app/savings"
-            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
+            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-dark-hover hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
           >
             <svg
               className="w-5 h-5 mr-3"
@@ -134,7 +134,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           </Link>
           <Link
             href="/app/contacts"
-            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
+            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-dark-hover hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
           >
             <svg
               className="w-5 h-5 mr-3"
@@ -153,7 +153,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           </Link>
           <Link
             href="/app/calls"
-            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
+            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-dark-hover hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
           >
             <svg
               className="w-5 h-5 mr-3"
@@ -172,7 +172,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           </Link>
           <Link
             href="/app/config"
-            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
+            className="group flex items-center px-3 py-3 text-sm font-medium text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-dark-hover hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-in-out border-l-2 border-transparent hover:border-blue-500"
           >
             <svg
               className="w-5 h-5 mr-3"
@@ -201,7 +201,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
       {/* Main content */}
       <main className="flex-1">
-        <header className="flex items-center justify-between p-4 border-b border-border dark:border-gray-700 bg-background dark:bg-gray-900 sticky top-0 z-10 shadow-sm">
+        <header className="flex items-center justify-between p-4 border-b border-border dark:border-dark-border bg-background dark:bg-black sticky top-0 z-10 shadow-sm">
           <div className="flex items-center space-x-6">
             {/* Phone Selector - only shows if multiple phones */}
             <PhoneSelector />
@@ -214,10 +214,10 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
                 {user?.email?.charAt(0).toUpperCase()}
               </div>
               <div className="hidden sm:block">
-                <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <div className="text-sm font-medium text-gray-900 dark:text-white">
                   {user?.email}
                 </div>
-                <div className="text-xs text-gray-600 dark:text-gray-400">
+                <div className="text-xs text-gray-600 dark:text-dark-text-secondary">
                   Active
                 </div>
               </div>
@@ -235,7 +235,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             <LogoutButton />
           </div>
         </header>
-        <div className="p-4 bg-muted/30 dark:bg-gray-900 min-h-screen">
+        <div className="p-4 bg-muted/30 dark:bg-black min-h-screen">
           {children}
         </div>
       </main>
