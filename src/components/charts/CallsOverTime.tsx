@@ -26,24 +26,22 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-dark-card p-4 rounded-lg shadow-lg border border-gray-200 dark:border-dark-border">
-          <p className="font-semibold text-gray-900 dark:text-white mb-2">
+        <div className="bg-white dark:bg-dark-card px-3 py-2 rounded-md shadow-lg border border-gray-200 dark:border-dark-border">
+          <p className="text-xs font-medium text-gray-500 dark:text-dark-text-secondary mb-1.5">
             {label}
           </p>
-          {payload.map((entry: any, index: number) => (
-            <div key={index} className="flex items-center gap-2 mb-1">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: entry.color }}
-              />
-              <span className="text-sm text-gray-600 dark:text-dark-text-secondary">
-                {entry.dataKey}:
-              </span>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">
-                {entry.value}
-              </span>
-            </div>
-          ))}
+          <div className="space-y-0.5">
+            {payload.map((entry: any, index: number) => (
+              <div key={index} className="flex items-center justify-between gap-4">
+                <span className="text-xs text-gray-600 dark:text-dark-text-secondary">
+                  {entry.name}
+                </span>
+                <span className="text-xs font-semibold text-gray-900 dark:text-white">
+                  {entry.value}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       );
     }
@@ -55,56 +53,51 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
-          margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+          margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
         >
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="#f0f0f0"
-            className="dark:stroke-gray-700"
+            stroke="#e5e7eb"
+            className="dark:stroke-gray-800"
+            vertical={false}
           />
           <XAxis
             dataKey="name"
-            stroke="#6b7280"
-            className="dark:stroke-gray-400"
-            fontSize={12}
+            stroke="#9ca3af"
+            className="dark:stroke-gray-500"
+            fontSize={11}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
-            stroke="#6b7280"
-            className="dark:stroke-gray-400"
-            fontSize={12}
+            stroke="#9ca3af"
+            className="dark:stroke-gray-500"
+            fontSize={11}
             tickLine={false}
             axisLine={false}
           />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend wrapperStyle={{ paddingTop: "20px" }} iconType="circle" />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#e5e7eb", strokeWidth: 1 }} />
+          <Legend
+            wrapperStyle={{ paddingTop: "16px", fontSize: "12px" }}
+            iconType="line"
+            iconSize={16}
+          />
           <Line
             type="monotone"
             dataKey="totalCalls"
             stroke="#3b82f6"
-            strokeWidth={3}
-            dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
-            activeDot={{ r: 6, stroke: "#3b82f6", strokeWidth: 2 }}
-            name="Total Calls"
-          />
-          <Line
-            type="monotone"
-            dataKey="escalatedCalls"
-            stroke="#ef4444"
-            strokeWidth={2}
-            dot={{ fill: "#ef4444", strokeWidth: 2, r: 3 }}
-            activeDot={{ r: 5, stroke: "#ef4444", strokeWidth: 2 }}
-            name="Escalated"
-            strokeDasharray="5 5"
+            strokeWidth={2.5}
+            dot={false}
+            activeDot={{ r: 4, strokeWidth: 0 }}
+            name="Total"
           />
           <Line
             type="monotone"
             dataKey="bookedCalls"
             stroke="#10b981"
             strokeWidth={2}
-            dot={{ fill: "#10b981", strokeWidth: 2, r: 3 }}
-            activeDot={{ r: 5, stroke: "#10b981", strokeWidth: 2 }}
+            dot={false}
+            activeDot={{ r: 4, strokeWidth: 0 }}
             name="Booked"
           />
           <Line
@@ -112,29 +105,18 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
             dataKey="completedCalls"
             stroke="#8b5cf6"
             strokeWidth={2}
-            dot={{ fill: "#8b5cf6", strokeWidth: 2, r: 3 }}
-            activeDot={{ r: 5, stroke: "#8b5cf6", strokeWidth: 2 }}
+            dot={false}
+            activeDot={{ r: 4, strokeWidth: 0 }}
             name="Completed"
           />
           <Line
             type="monotone"
-            dataKey="quoteCalls"
-            stroke="#f59e0b"
+            dataKey="escalatedCalls"
+            stroke="#ef4444"
             strokeWidth={2}
-            dot={{ fill: "#f59e0b", strokeWidth: 2, r: 3 }}
-            activeDot={{ r: 5, stroke: "#f59e0b", strokeWidth: 2 }}
-            name="Quote Requests"
-            strokeDasharray="3 3"
-          />
-          <Line
-            type="monotone"
-            dataKey="otherCalls"
-            stroke="#6b7280"
-            strokeWidth={2}
-            dot={{ fill: "#6b7280", strokeWidth: 2, r: 3 }}
-            activeDot={{ r: 5, stroke: "#6b7280", strokeWidth: 2 }}
-            name="Other"
-            strokeDasharray="3 3"
+            dot={false}
+            activeDot={{ r: 4, strokeWidth: 0 }}
+            name="Escalated"
           />
         </LineChart>
       </ResponsiveContainer>
