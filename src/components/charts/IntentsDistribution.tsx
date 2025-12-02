@@ -9,7 +9,6 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  CartesianGrid,
   Cell,
 } from "recharts";
 
@@ -44,30 +43,33 @@ export default function IntentsDistribution({ data }: { data: IntentData[] }) {
     return null;
   };
 
-  const getBarColor = (name: string) => {
+  const getBarGradient = (name: string) => {
     switch (name.toLowerCase()) {
       case "book":
       case "booking":
-        return "#10b981";
+        return "url(#bookingGradient)";
       case "info":
       case "information":
-        return "#3b82f6";
+        return "url(#informationGradient)";
       case "quote":
-        return "#f59e0b";
+        return "url(#quoteGradient)";
       case "complaint":
-        return "#ef4444";
-      case "other":
-        return "#6b7280";
+        return "url(#complaintGradient)";
       default:
-        return "#8b5cf6";
+        return "url(#bookingGradient)";
     }
   };
 
-  const processedData = data.map((item) => ({
+  // Filter out "other" from the data
+  const filteredData = data.filter(
+    (item) => item.name.toLowerCase() !== "other"
+  );
+
+  const processedData = filteredData.map((item) => ({
     ...item,
-    color: getBarColor(item.name),
+    gradientId: getBarGradient(item.name),
     percentage: Math.round(
-      (item.count / data.reduce((sum, d) => sum + d.count, 0)) * 100,
+      (item.count / filteredData.reduce((sum, d) => sum + d.count, 0)) * 100,
     ),
   }));
 
@@ -78,39 +80,51 @@ export default function IntentsDistribution({ data }: { data: IntentData[] }) {
           data={processedData}
           margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
         >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="#e5e7eb"
-            className="dark:stroke-gray-800"
-            vertical={false}
-          />
+          <defs>
+            <linearGradient id="bookingGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#10b981" />
+              <stop offset="100%" stopColor="#34d399" />
+            </linearGradient>
+            <linearGradient id="informationGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#3b82f6" />
+              <stop offset="100%" stopColor="#60a5fa" />
+            </linearGradient>
+            <linearGradient id="quoteGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f59e0b" />
+              <stop offset="100%" stopColor="#fbbf24" />
+            </linearGradient>
+            <linearGradient id="complaintGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ef4444" />
+              <stop offset="100%" stopColor="#f87171" />
+            </linearGradient>
+          </defs>
           <XAxis
             dataKey="name"
-            stroke="#9ca3af"
-            className="dark:stroke-gray-500"
+            stroke="#d1d5db"
+            className="dark:stroke-gray-700"
             fontSize={11}
             tickLine={false}
             axisLine={false}
             tick={{ style: { textTransform: "capitalize" } }}
           />
           <YAxis
-            stroke="#9ca3af"
-            className="dark:stroke-gray-500"
+            stroke="#d1d5db"
+            className="dark:stroke-gray-700"
             fontSize={11}
             tickLine={false}
             axisLine={false}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(0,0,0,0.05)" }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(0,0,0,0.02)" }} />
           <Bar
             dataKey="count"
-            radius={[6, 6, 0, 0]}
+            radius={[8, 8, 0, 0]}
             onMouseEnter={(_, index) => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
           >
             {processedData.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={entry.color}
+                fill={entry.gradientId}
                 opacity={hoveredIndex === null || hoveredIndex === index ? 1 : 0.4}
                 style={{
                   transition: "opacity 0.2s ease",

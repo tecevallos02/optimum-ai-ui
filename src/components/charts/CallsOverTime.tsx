@@ -55,28 +55,40 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
           data={data}
           margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
         >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="#e5e7eb"
-            className="dark:stroke-gray-800"
-            vertical={false}
-          />
+          <defs>
+            <linearGradient id="totalGradient" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#3b82f6" />
+              <stop offset="100%" stopColor="#60a5fa" />
+            </linearGradient>
+            <linearGradient id="bookedGradient" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#10b981" />
+              <stop offset="100%" stopColor="#34d399" />
+            </linearGradient>
+            <linearGradient id="completedGradient" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#8b5cf6" />
+              <stop offset="100%" stopColor="#a78bfa" />
+            </linearGradient>
+            <linearGradient id="escalatedGradient" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#ef4444" />
+              <stop offset="100%" stopColor="#f87171" />
+            </linearGradient>
+          </defs>
           <XAxis
             dataKey="name"
-            stroke="#9ca3af"
-            className="dark:stroke-gray-500"
+            stroke="#d1d5db"
+            className="dark:stroke-gray-700"
             fontSize={11}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
-            stroke="#9ca3af"
-            className="dark:stroke-gray-500"
+            stroke="#d1d5db"
+            className="dark:stroke-gray-700"
             fontSize={11}
             tickLine={false}
             axisLine={false}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#e5e7eb", strokeWidth: 1 }} />
+          <Tooltip content={<CustomTooltip />} cursor={false} />
           <Legend
             wrapperStyle={{ paddingTop: "16px", fontSize: "12px" }}
             iconType="line"
@@ -85,7 +97,7 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
           <Line
             type="monotone"
             dataKey="totalCalls"
-            stroke="#3b82f6"
+            stroke="url(#totalGradient)"
             strokeWidth={2.5}
             dot={false}
             activeDot={{ r: 4, strokeWidth: 0 }}
@@ -94,7 +106,7 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
           <Line
             type="monotone"
             dataKey="bookedCalls"
-            stroke="#10b981"
+            stroke="url(#bookedGradient)"
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 4, strokeWidth: 0 }}
@@ -103,7 +115,7 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
           <Line
             type="monotone"
             dataKey="completedCalls"
-            stroke="#8b5cf6"
+            stroke="url(#completedGradient)"
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 4, strokeWidth: 0 }}
@@ -112,7 +124,7 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
           <Line
             type="monotone"
             dataKey="escalatedCalls"
-            stroke="#ef4444"
+            stroke="url(#escalatedGradient)"
             strokeWidth={2}
             dot={false}
             activeDot={{ r: 4, strokeWidth: 0 }}
