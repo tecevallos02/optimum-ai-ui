@@ -15,15 +15,32 @@ function generateMockCallData(): CallRow[] {
   // Distribution for last 7 days (shown in chart)
   const last7Days = [18, 22, 19, 25, 21, 20, 17]; // Total: 142 calls handled
 
-  // Add calls for last 7 days
+  // Add calls for last 7 days with proper status distribution
   for (let i = 0; i < 7; i++) {
     const dayCallCount = last7Days[i];
     const date = subDays(today, 6 - i);
 
+    // For each day: 47.9% booked, 10% escalated, rest completed
+    const bookedForDay = Math.floor(dayCallCount * 0.479);
+    const escalatedForDay = Math.floor(dayCallCount * 0.10);
+
     for (let j = 0; j < dayCallCount; j++) {
-      const isBooked = j < Math.floor(dayCallCount * 0.479); // 47.9% conversion
-      const status = isBooked ? "booked" : (j % 5 === 0 ? "escalated" : "completed");
-      const intent = isBooked ? "booking" : (j % 3 === 0 ? "quote" : j % 3 === 1 ? "information" : "other");
+      let status: string;
+      let intent: string;
+
+      if (j < bookedForDay) {
+        // First 47.9% are booked
+        status = "booked";
+        intent = "booking";
+      } else if (j < bookedForDay + escalatedForDay) {
+        // Next 10% are escalated
+        status = "escalated";
+        intent = "complaint";
+      } else {
+        // Remaining are completed (not booked, just handled)
+        status = "completed";
+        intent = j % 3 === 0 ? "quote" : j % 3 === 1 ? "information" : "other";
+      }
 
       calls.push({
         appointment_id: `APPT-${String(calls.length + 1).padStart(4, "0")}`,
@@ -33,7 +50,11 @@ function generateMockCallData(): CallRow[] {
         window: `${9 + (j % 9)}:00-${10 + (j % 9)}:00 ${j % 9 < 3 ? 'AM' : 'PM'}`,
         status,
         address: `${100 + j} Main St, New York, NY 10001`,
-        notes: isBooked ? "Successfully booked appointment" : "Handled inquiry professionally",
+        notes: status === "booked"
+          ? "Successfully booked appointment"
+          : status === "escalated"
+            ? "Call escalated to manager"
+            : "Handled inquiry professionally",
         intent,
       });
     }
