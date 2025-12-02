@@ -108,6 +108,8 @@ export async function GET(request: NextRequest) {
             .length,
           completedCalls: dayCalls.filter((call) => call.status === "completed")
             .length,
+          quoteCalls: dayCalls.filter((call) => call.intent === "quote").length,
+          otherCalls: dayCalls.filter((call) => call.intent === "other").length,
         };
       });
 

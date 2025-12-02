@@ -18,6 +18,8 @@ interface CallData {
   escalatedCalls: number;
   bookedCalls: number;
   completedCalls: number;
+  quoteCalls?: number;
+  otherCalls?: number;
 }
 
 export default function CallsOverTime({ data }: { data: CallData[] }) {
@@ -113,6 +115,26 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
             dot={{ fill: "#8b5cf6", strokeWidth: 2, r: 3 }}
             activeDot={{ r: 5, stroke: "#8b5cf6", strokeWidth: 2 }}
             name="Completed"
+          />
+          <Line
+            type="monotone"
+            dataKey="quoteCalls"
+            stroke="#f59e0b"
+            strokeWidth={2}
+            dot={{ fill: "#f59e0b", strokeWidth: 2, r: 3 }}
+            activeDot={{ r: 5, stroke: "#f59e0b", strokeWidth: 2 }}
+            name="Quote Requests"
+            strokeDasharray="3 3"
+          />
+          <Line
+            type="monotone"
+            dataKey="otherCalls"
+            stroke="#6b7280"
+            strokeWidth={2}
+            dot={{ fill: "#6b7280", strokeWidth: 2, r: 3 }}
+            activeDot={{ r: 5, stroke: "#6b7280", strokeWidth: 2 }}
+            name="Other"
+            strokeDasharray="3 3"
           />
         </LineChart>
       </ResponsiveContainer>
