@@ -9,7 +9,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  CartesianGrid,
 } from "recharts";
 
 interface CallData {
@@ -57,20 +56,20 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
         >
           <defs>
             <linearGradient id="totalGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#3b82f6" />
-              <stop offset="100%" stopColor="#60a5fa" />
+              <stop offset="0%" stopColor="#93c5fd" stopOpacity="1" />
+              <stop offset="100%" stopColor="#bfdbfe" stopOpacity="1" />
             </linearGradient>
             <linearGradient id="bookedGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#10b981" />
-              <stop offset="100%" stopColor="#34d399" />
+              <stop offset="0%" stopColor="#6ee7b7" stopOpacity="1" />
+              <stop offset="100%" stopColor="#a7f3d0" stopOpacity="1" />
             </linearGradient>
             <linearGradient id="completedGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#8b5cf6" />
-              <stop offset="100%" stopColor="#a78bfa" />
+              <stop offset="0%" stopColor="#c4b5fd" stopOpacity="1" />
+              <stop offset="100%" stopColor="#ddd6fe" stopOpacity="1" />
             </linearGradient>
             <linearGradient id="escalatedGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#ef4444" />
-              <stop offset="100%" stopColor="#f87171" />
+              <stop offset="0%" stopColor="#fca5a5" stopOpacity="1" />
+              <stop offset="100%" stopColor="#fecaca" stopOpacity="1" />
             </linearGradient>
           </defs>
           <XAxis

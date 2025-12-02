@@ -82,20 +82,20 @@ export default function IntentsDistribution({ data }: { data: IntentData[] }) {
         >
           <defs>
             <linearGradient id="bookingGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" />
-              <stop offset="100%" stopColor="#34d399" />
+              <stop offset="0%" stopColor="#6ee7b7" stopOpacity="1" />
+              <stop offset="100%" stopColor="#a7f3d0" stopOpacity="1" />
             </linearGradient>
             <linearGradient id="informationGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#3b82f6" />
-              <stop offset="100%" stopColor="#60a5fa" />
+              <stop offset="0%" stopColor="#93c5fd" stopOpacity="1" />
+              <stop offset="100%" stopColor="#bfdbfe" stopOpacity="1" />
             </linearGradient>
             <linearGradient id="quoteGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f59e0b" />
-              <stop offset="100%" stopColor="#fbbf24" />
+              <stop offset="0%" stopColor="#fcd34d" stopOpacity="1" />
+              <stop offset="100%" stopColor="#fde68a" stopOpacity="1" />
             </linearGradient>
             <linearGradient id="complaintGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#ef4444" />
-              <stop offset="100%" stopColor="#f87171" />
+              <stop offset="0%" stopColor="#fca5a5" stopOpacity="1" />
+              <stop offset="100%" stopColor="#fecaca" stopOpacity="1" />
             </linearGradient>
           </defs>
           <XAxis
