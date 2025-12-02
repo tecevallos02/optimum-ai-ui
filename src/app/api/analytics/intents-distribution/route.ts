@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { readSheetData } from "@/lib/google-sheets";
 import { CallRow } from "@/lib/types";
@@ -20,6 +19,9 @@ export async function GET(request: NextRequest) {
         { status: 404 },
       );
     }
+
+    // Dynamic import to avoid build-time database connection
+    const { prisma } = await import("@/lib/prisma");
 
     const company = await prisma.company.findUnique({
       where: {
