@@ -56,20 +56,20 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
         >
           <defs>
             <linearGradient id="totalGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#00d4ff" stopOpacity="1" />
-              <stop offset="100%" stopColor="#0080ff" stopOpacity="1" />
+              <stop offset="0%" stopColor="#00E6A8" stopOpacity="1" />
+              <stop offset="100%" stopColor="#33F0C0" stopOpacity="1" />
             </linearGradient>
             <linearGradient id="bookedGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#00ff88" stopOpacity="1" />
-              <stop offset="100%" stopColor="#00ffcc" stopOpacity="1" />
+              <stop offset="0%" stopColor="#4DA6FF" stopOpacity="1" />
+              <stop offset="100%" stopColor="#80C0FF" stopOpacity="1" />
             </linearGradient>
             <linearGradient id="completedGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#c77dff" stopOpacity="1" />
-              <stop offset="100%" stopColor="#e0aaff" stopOpacity="1" />
+              <stop offset="0%" stopColor="#B17BFF" stopOpacity="1" />
+              <stop offset="100%" stopColor="#D0A8FF" stopOpacity="1" />
             </linearGradient>
             <linearGradient id="escalatedGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#ff006e" stopOpacity="1" />
-              <stop offset="100%" stopColor="#ff5fa2" stopOpacity="1" />
+              <stop offset="0%" stopColor="#FF4D9A" stopOpacity="1" />
+              <stop offset="100%" stopColor="#FF80B8" stopOpacity="1" />
             </linearGradient>
           </defs>
           <XAxis
