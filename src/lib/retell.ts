@@ -155,7 +155,7 @@ export function calculateRetellAnalytics(
   };
 }
 
-// Mock data for development/testing
+// Mock data for development/testing - aligned with Google Sheets mock data
 export function getMockRetellData(companyId?: string): RetellCallData[] {
   const now = new Date();
   const mockCalls: RetellCallData[] = [];
@@ -170,16 +170,19 @@ export function getMockRetellData(companyId?: string): RetellCallData[] {
   const companyPhone =
     companyPhones[companyId as keyof typeof companyPhones] || "+15551112222";
 
-  // Generate mock data for the last 30 days
-  for (let i = 0; i < 30; i++) {
-    const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-    const callsPerDay = Math.floor(Math.random() * 5) + 1; // 1-5 calls per day
+  // Match the Google Sheets mock data: 142 calls over last 7 days
+  // Distribution: [18, 22, 19, 25, 21, 20, 17]
+  const last7Days = [18, 22, 19, 25, 21, 20, 17];
+
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(now.getTime() - (6 - i) * 24 * 60 * 60 * 1000);
+    const callsPerDay = last7Days[i];
 
     for (let j = 0; j < callsPerDay; j++) {
       const startTime = new Date(
-        date.getTime() + Math.random() * 24 * 60 * 60 * 1000,
+        date.getTime() + (j * 60 * 60 * 1000), // Spread throughout the day
       );
-      const duration = Math.floor(Math.random() * 300) + 60; // 1-6 minutes
+      const duration = Math.floor(Math.random() * 180) + 120; // 2-5 minutes
       const endTime = new Date(startTime.getTime() + duration * 1000);
       const timeSaved = Math.floor(duration * 0.7); // Assume 70% time saved
       const cost = duration * 0.02; // $0.02 per second
@@ -191,7 +194,7 @@ export function getMockRetellData(companyId?: string): RetellCallData[] {
         startTime: startTime.toISOString(),
         endTime: endTime.toISOString(),
         duration,
-        status: Math.random() > 0.1 ? "completed" : "failed",
+        status: "completed", // All calls completed for clean KPIs
         timeSaved,
         cost,
         transcript: `Mock transcript for ${companyId || "default"} call ${i}-${j}`,

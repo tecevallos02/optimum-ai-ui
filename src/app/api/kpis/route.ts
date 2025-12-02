@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     );
     const combinedData = await getCombinedData(user.companyId, {
       phone: phone || undefined,
-      useMockRetell: false, // Use real data from database
+      useMockRetell: true, // Use mock data for screenshots
     });
 
     // Return only the main 4 KPIs (Retell data will be used for these)
