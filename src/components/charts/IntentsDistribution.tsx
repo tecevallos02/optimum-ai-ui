@@ -82,8 +82,8 @@ export default function IntentsDistribution({ data }: { data: IntentData[] }) {
         >
           <defs>
             <linearGradient id="bookingGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#00E6A8" stopOpacity="1" />
-              <stop offset="100%" stopColor="#33F0C0" stopOpacity="1" />
+              <stop offset="0%" stopColor="#00D9FF" stopOpacity="1" />
+              <stop offset="100%" stopColor="#33E4FF" stopOpacity="1" />
             </linearGradient>
             <linearGradient id="informationGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#4DA6FF" stopOpacity="1" />

@@ -56,8 +56,8 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
         >
           <defs>
             <linearGradient id="totalGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#00E6A8" stopOpacity="1" />
-              <stop offset="100%" stopColor="#33F0C0" stopOpacity="1" />
+              <stop offset="0%" stopColor="#00D9FF" stopOpacity="1" />
+              <stop offset="100%" stopColor="#33E4FF" stopOpacity="1" />
             </linearGradient>
             <linearGradient id="bookedGradient" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stopColor="#4DA6FF" stopOpacity="1" />
@@ -89,7 +89,11 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
           />
           <Tooltip content={<CustomTooltip />} cursor={false} />
           <Legend
-            wrapperStyle={{ paddingTop: "16px", fontSize: "12px" }}
+            wrapperStyle={{
+              paddingTop: "16px",
+              fontSize: "12px",
+              color: "#d1d5db"
+            }}
             iconType="line"
             iconSize={16}
           />
