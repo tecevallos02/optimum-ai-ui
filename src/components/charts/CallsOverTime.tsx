@@ -60,8 +60,8 @@ export default function CallsOverTime({ data }: { data: CallData[] }) {
               <stop offset="100%" stopColor="#33E4FF" stopOpacity="1" />
             </linearGradient>
             <linearGradient id="bookedGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#4DA6FF" stopOpacity="1" />
-              <stop offset="100%" stopColor="#80C0FF" stopOpacity="1" />
+              <stop offset="0%" stopColor="#FF5722" stopOpacity="1" />
+              <stop offset="100%" stopColor="#FF8A65" stopOpacity="1" />
             </linearGradient>
             <linearGradient id="completedGradient" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stopColor="#B17BFF" stopOpacity="1" />
