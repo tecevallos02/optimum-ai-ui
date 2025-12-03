@@ -124,7 +124,7 @@ export default function UpcomingAppointments({
               />
             </svg>
           </div>
-          <p className="text-gray-500">
+          <p className="text-gray-500 dark:text-gray-400">
             No upcoming appointments in the next 2 weeks
           </p>
         </div>
@@ -154,14 +154,14 @@ export default function UpcomingAppointments({
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">
+                  <h3 className="font-medium text-gray-900 dark:text-white">
                     {appointment.title}
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     {appointment.customerName}
                   </p>
                   {appointment.customerPhone && (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       {appointment.customerPhone}
                     </p>
                   )}
@@ -169,10 +169,10 @@ export default function UpcomingAppointments({
               </div>
 
               <div className="text-right">
-                <div className="text-sm font-medium text-gray-900">
+                <div className="text-sm font-medium text-gray-900 dark:text-white">
                   {formatDate(appointment.startsAt)}
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 dark:text-gray-300">
                   {formatTime(appointment.startsAt)} -{" "}
                   {formatTime(appointment.endsAt)}
                 </div>
@@ -187,7 +187,7 @@ export default function UpcomingAppointments({
 
           {appointments.length > 6 && (
             <div className="text-center pt-2">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 And {appointments.length - 6} more appointments...
               </p>
             </div>
