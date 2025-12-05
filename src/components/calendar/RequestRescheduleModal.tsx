@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Appointment } from "@/lib/types";
+import { useToast } from "@/components/Toast";
 
 interface RequestRescheduleModalProps {
   appointment: Appointment;
@@ -14,6 +15,7 @@ export default function RequestRescheduleModal({
   onClose,
   onConfirm,
 }: RequestRescheduleModalProps) {
+  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConfirm = async () => {
@@ -42,7 +44,7 @@ export default function RequestRescheduleModal({
       }
     } catch (error) {
       console.error("Error requesting reschedule:", error);
-      alert("Failed to request reschedule. Please try again.");
+      showToast("Failed to request reschedule. Please try again.", "error");
     } finally {
       setIsLoading(false);
     }

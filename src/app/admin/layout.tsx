@@ -1,5 +1,6 @@
 import { Inter } from "next/font/google";
 import AdminSessionProvider from "./AdminSessionProvider";
+import { ToastProvider } from "@/components/Toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +22,9 @@ export default function AdminLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        <AdminSessionProvider>{children}</AdminSessionProvider>
+        <AdminSessionProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </AdminSessionProvider>
       </body>
     </html>
   );

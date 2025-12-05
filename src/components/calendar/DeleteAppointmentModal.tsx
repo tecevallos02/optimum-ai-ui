@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Appointment } from "@/lib/types";
+import { useToast } from "@/components/Toast";
 
 interface DeleteAppointmentModalProps {
   appointment: Appointment;
@@ -14,6 +15,7 @@ export default function DeleteAppointmentModal({
   onClose,
   onConfirm,
 }: DeleteAppointmentModalProps) {
+  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConfirm = async () => {
@@ -31,7 +33,7 @@ export default function DeleteAppointmentModal({
       }
     } catch (error) {
       console.error("Error deleting appointment:", error);
-      alert("Failed to delete appointment. Please try again.");
+      showToast("Failed to delete appointment. Please try again.", "error");
     } finally {
       setIsLoading(false);
     }

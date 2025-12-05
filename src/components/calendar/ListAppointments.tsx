@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Appointment } from "@/lib/types";
 import { getStatusColor, getSourceColor } from "@/lib/calendar/colors";
 import AppointmentDetailsDrawer from "./AppointmentDetailsDrawer";
+import { useToast } from "@/components/Toast";
 
 interface ListAppointmentsProps {
   appointments: Appointment[];
@@ -18,6 +19,7 @@ export default function ListAppointments({
   onAppointmentDelete,
   onAddContact,
 }: ListAppointmentsProps) {
+  const { showToast, showConfirm } = useToast();
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
 
@@ -184,30 +186,39 @@ export default function ListAppointments({
 
                   {appointment.status === "canceled" && (
                     <button
-                      onClick={async (e) => {
+                      onClick={(e) => {
                         e.stopPropagation();
-                        if (
-                          confirm(
-                            "Are you sure you want to permanently delete this canceled appointment?",
-                          )
-                        ) {
-                          try {
-                            const response = await fetch(
-                              `/api/appointments/${appointment.id}`,
-                              {
-                                method: "DELETE",
-                              },
-                            );
-                            if (response.ok) {
-                              onAppointmentDelete(appointment.id);
-                            } else {
-                              alert("Failed to delete appointment");
+                        showConfirm(
+                          "Are you sure you want to permanently delete this canceled appointment?",
+                          async () => {
+                            try {
+                              const response = await fetch(
+                                `/api/appointments/${appointment.id}`,
+                                {
+                                  method: "DELETE",
+                                },
+                              );
+                              if (response.ok) {
+                                showToast(
+                                  "Appointment deleted successfully!",
+                                  "success",
+                                );
+                                onAppointmentDelete(appointment.id);
+                              } else {
+                                showToast(
+                                  "Failed to delete appointment. Please try again.",
+                                  "error",
+                                );
+                              }
+                            } catch (error) {
+                              console.error("Error deleting appointment:", error);
+                              showToast(
+                                "Failed to delete appointment. Please try again.",
+                                "error",
+                              );
                             }
-                          } catch (error) {
-                            console.error("Error deleting appointment:", error);
-                            alert("Failed to delete appointment");
-                          }
-                        }
+                          },
+                        );
                       }}
                       className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg"
                       title="Delete appointment"

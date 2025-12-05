@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Appointment } from "@/lib/types";
+import { useToast } from "@/components/Toast";
 
 interface NewAppointmentModalProps {
   onClose: () => void;
@@ -18,6 +19,7 @@ export default function NewAppointmentModal({
   initialStart,
   initialEnd,
 }: NewAppointmentModalProps) {
+  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -41,7 +43,7 @@ export default function NewAppointmentModal({
       !formData.startsAt ||
       !formData.endsAt
     ) {
-      alert("Please fill in all required fields");
+      showToast("Please fill in all required fields", "warning");
       return;
     }
 
@@ -65,6 +67,7 @@ export default function NewAppointmentModal({
 
       if (response.ok) {
         const newAppointment = await response.json();
+        showToast("Appointment created successfully!", "success");
         onSave(newAppointment);
         onClose();
       } else {
@@ -72,7 +75,7 @@ export default function NewAppointmentModal({
       }
     } catch (error) {
       console.error("Error creating appointment:", error);
-      alert("Failed to create appointment. Please try again.");
+      showToast("Failed to create appointment. Please try again.", "error");
     } finally {
       setIsLoading(false);
     }

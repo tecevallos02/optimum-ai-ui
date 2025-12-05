@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useToast } from "@/components/Toast";
 
 interface LogoUploadProps {
   currentLogo?: string;
@@ -13,6 +14,7 @@ export default function LogoUpload({
   onLogoChange,
   organizationName,
 }: LogoUploadProps) {
+  const { showToast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
 
   const handleFileUpload = async (
@@ -23,13 +25,13 @@ export default function LogoUpload({
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
-      alert("Please select an image file");
+      showToast("Please select an image file", "warning");
       return;
     }
 
     // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
-      alert("File size must be less than 2MB");
+      showToast("File size must be less than 2MB", "warning");
       return;
     }
 
@@ -47,7 +49,7 @@ export default function LogoUpload({
       reader.readAsDataURL(file);
     } catch (error) {
       console.error("Error uploading logo:", error);
-      alert("Error uploading logo. Please try again.");
+      showToast("Error uploading logo. Please try again.", "error");
       setIsUploading(false);
     }
   };

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Appointment } from "@/lib/types";
 import EditableEmailDialog from "@/components/email/EditableEmailDialog";
 import PageTitle from "@/components/PageTitle";
+import { useToast } from "@/components/Toast";
 
 interface EmailTemplate {
   id: string;
@@ -14,6 +15,7 @@ interface EmailTemplate {
 }
 
 export default function EmailPage() {
+  const { showToast } = useToast();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
@@ -78,10 +80,11 @@ export default function EmailPage() {
       } else {
         const errorData = await response.json();
         console.error("Failed to generate email:", errorData);
-        alert(`Failed to generate email: ${errorData.error || 'Unknown error'}`);
+        showToast(`Failed to generate email: ${errorData.error || 'Unknown error'}`, "error");
       }
     } catch (error) {
       console.error("Error generating email:", error);
+      showToast("Error generating email. Please try again.", "error");
     } finally {
       setIsGenerating(false);
     }
@@ -119,13 +122,13 @@ export default function EmailPage() {
       });
 
       if (response.ok) {
-        alert("Email sent successfully!");
+        showToast("Email sent successfully!", "success");
       } else {
-        alert("Failed to send email");
+        showToast("Failed to send email. Please try again.", "error");
       }
     } catch (error) {
       console.error("Error sending email:", error);
-      alert("Error sending email");
+      showToast("Error sending email. Please try again.", "error");
     }
   };
 

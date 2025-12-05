@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import type { Appointment } from "@/lib/types";
 import { getStatusColor, getSourceColor } from "@/lib/calendar/colors";
 import AppointmentDetailsDrawer from "./AppointmentDetailsDrawer";
+import { useToast } from "@/components/Toast";
 
 interface CalendarGridProps {
   appointments: Appointment[];
@@ -22,6 +23,7 @@ export default function CalendarGrid({
   onSelectSlot,
   onAddContact,
 }: CalendarGridProps) {
+  const { showToast, showConfirm } = useToast();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<ViewType>("month");
   const [selectedAppointment, setSelectedAppointment] =
@@ -269,33 +271,42 @@ export default function CalendarGrid({
 
                               {appointment.status === "canceled" && (
                                 <button
-                                  onClick={async (e) => {
+                                  onClick={(e) => {
                                     e.stopPropagation();
-                                    if (
-                                      confirm(
-                                        "Delete this canceled appointment?",
-                                      )
-                                    ) {
-                                      try {
-                                        const response = await fetch(
-                                          `/api/appointments/${appointment.id}`,
-                                          {
-                                            method: "DELETE",
-                                          },
-                                        );
-                                        if (response.ok) {
-                                          onAppointmentDelete(appointment.id);
-                                        } else {
-                                          alert("Failed to delete appointment");
+                                    showConfirm(
+                                      "Delete this canceled appointment?",
+                                      async () => {
+                                        try {
+                                          const response = await fetch(
+                                            `/api/appointments/${appointment.id}`,
+                                            {
+                                              method: "DELETE",
+                                            },
+                                          );
+                                          if (response.ok) {
+                                            showToast(
+                                              "Appointment deleted successfully!",
+                                              "success",
+                                            );
+                                            onAppointmentDelete(appointment.id);
+                                          } else {
+                                            showToast(
+                                              "Failed to delete appointment. Please try again.",
+                                              "error",
+                                            );
+                                          }
+                                        } catch (error) {
+                                          console.error(
+                                            "Error deleting appointment:",
+                                            error,
+                                          );
+                                          showToast(
+                                            "Failed to delete appointment. Please try again.",
+                                            "error",
+                                          );
                                         }
-                                      } catch (error) {
-                                        console.error(
-                                          "Error deleting appointment:",
-                                          error,
-                                        );
-                                        alert("Failed to delete appointment");
-                                      }
-                                    }
+                                      },
+                                    );
                                   }}
                                   className="opacity-0 group-hover:opacity-100 transition-opacity ml-1 p-0.5 hover:bg-red-200 rounded"
                                   title="Delete appointment"

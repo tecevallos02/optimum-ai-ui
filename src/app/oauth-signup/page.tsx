@@ -4,8 +4,10 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getSession } from "next-auth/react";
 import Link from "next/link";
+import { ToastProvider, useToast } from "@/components/Toast";
 
 function OAuthSignupContent() {
+  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -67,13 +69,14 @@ function OAuthSignupContent() {
         router.replace(callbackUrl);
       } else {
         const errorData = await response.json();
-        alert(
+        showToast(
           `Error creating account: ${errorData.error || "Please try again."}`,
+          "error"
         );
       }
     } catch (error) {
       console.error("OAuth signup error:", error);
-      alert("Error creating account. Please try again.");
+      showToast("Error creating account. Please try again.", "error");
     } finally {
       setIsLoading(false);
     }
@@ -266,17 +269,19 @@ function OAuthSignupContent() {
 
 export default function OAuthSignupPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-gray-600">Loading...</p>
+    <ToastProvider>
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-2 text-gray-600">Loading...</p>
+            </div>
           </div>
-        </div>
-      }
-    >
-      <OAuthSignupContent />
-    </Suspense>
+        }
+      >
+        <OAuthSignupContent />
+      </Suspense>
+    </ToastProvider>
   );
 }

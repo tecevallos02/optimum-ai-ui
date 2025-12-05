@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import LogoUpload from "@/components/LogoUpload";
 import PageTitle from "@/components/PageTitle";
+import { useToast } from "@/components/Toast";
 
 export default function ConfigPage() {
+  const { showToast } = useToast();
   const { data: session } = useSession();
   const [currentOrg, setCurrentOrg] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -48,14 +50,15 @@ export default function ConfigPage() {
       if (response.ok) {
         const updatedOrg = await response.json();
         setCurrentOrg(updatedOrg);
+        showToast("Logo updated successfully!", "success");
         // You might want to refresh the organization switcher here
         window.location.reload(); // Simple refresh for now
       } else {
-        alert("Error updating logo. Please try again.");
+        showToast("Error updating logo. Please try again.", "error");
       }
     } catch (error) {
       console.error("Error updating logo:", error);
-      alert("Error updating logo. Please try again.");
+      showToast("Error updating logo. Please try again.", "error");
     }
   };
 

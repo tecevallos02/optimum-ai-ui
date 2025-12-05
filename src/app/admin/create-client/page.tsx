@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/Toast";
 
 export default function CreateClientPage() {
+  const { showToast } = useToast();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -34,7 +36,10 @@ export default function CreateClientPage() {
 
       if (response.ok) {
         setSuccess(true);
-        alert(`Client created successfully!\n\nOrganization: ${data.data.organizationName}\nUser: ${data.data.userEmail}\n\nThey can now login at: ${data.data.loginUrl}`);
+        showToast(
+          `Client created successfully! Organization: ${data.data.organizationName}, User: ${data.data.userEmail}`,
+          "success"
+        );
 
         // Redirect to organizations list after 2 seconds
         setTimeout(() => {

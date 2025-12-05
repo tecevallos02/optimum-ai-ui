@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Appointment } from "@/lib/types";
+import { useToast } from "@/components/Toast";
 
 interface CancelAppointmentModalProps {
   appointment: Appointment;
@@ -14,6 +15,7 @@ export default function CancelAppointmentModal({
   onClose,
   onConfirm,
 }: CancelAppointmentModalProps) {
+  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConfirm = async () => {
@@ -44,7 +46,7 @@ export default function CancelAppointmentModal({
       }
     } catch (error) {
       console.error("Error canceling appointment:", error);
-      alert("Failed to cancel appointment. Please try again.");
+      showToast("Failed to cancel appointment. Please try again.", "error");
     } finally {
       setIsLoading(false);
     }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { useToast } from "@/components/Toast";
 
 interface Organization {
   id: string;
@@ -33,6 +34,7 @@ interface N8nConfig {
 }
 
 export default function OrganizationDetailPage() {
+  const { showToast } = useToast();
   const params = useParams();
   const router = useRouter();
   const orgId = params.orgId as string;
@@ -137,14 +139,14 @@ export default function OrganizationDetailPage() {
       });
 
       if (response.ok) {
-        alert("Retell configuration saved successfully!");
+        showToast("Retell configuration saved successfully!", "success");
         loadRetellConfig();
       } else {
         const data = await response.json();
-        alert(`Error: ${data.error}`);
+        showToast(`Error: ${data.error}`, "error");
       }
     } catch (error) {
-      alert("Failed to save Retell configuration");
+      showToast("Failed to save Retell configuration. Please try again.", "error");
     }
   };
 
@@ -157,14 +159,14 @@ export default function OrganizationDetailPage() {
       });
 
       if (response.ok) {
-        alert("n8n configuration saved successfully!");
+        showToast("n8n configuration saved successfully!", "success");
         loadN8nConfig();
       } else {
         const data = await response.json();
-        alert(`Error: ${data.error}`);
+        showToast(`Error: ${data.error}`, "error");
       }
     } catch (error) {
-      alert("Failed to save n8n configuration");
+      showToast("Failed to save n8n configuration. Please try again.", "error");
     }
   };
 
