@@ -8,12 +8,14 @@ import { getCurrentUser } from "@/lib/auth";
 import LogoutButton from "../../components/LogoutButton";
 import ClientOnlyThemeToggle from "@/components/ClientOnlyThemeToggle";
 import PhoneSelector from "@/components/PhoneSelector";
+import { ToastProvider } from "@/components/Toast";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentUser();
 
   return (
-    <div className="min-h-screen flex bg-background dark:bg-black">
+    <ToastProvider>
+      <div className="min-h-screen flex bg-background dark:bg-black">
       {/* Sidebar */}
       <aside className="hidden md:block w-64 bg-background dark:bg-dark-card border-r border-border dark:border-dark-border">
         {/* Logo Header */}
@@ -239,6 +241,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           {children}
         </div>
       </main>
-    </div>
+      </div>
+    </ToastProvider>
   );
 }

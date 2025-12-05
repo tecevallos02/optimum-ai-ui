@@ -10,6 +10,7 @@ import PageTitle from "@/components/PageTitle";
 import Legend from "@/components/ui/Legend";
 import DuplicateContactModal from "@/components/contacts/DuplicateContactModal";
 import { useContacts } from "@/hooks/useContacts";
+import { useToast } from "@/components/Toast";
 
 interface CalendarSectionProps {
   appointments: Appointment[];
@@ -40,6 +41,7 @@ export default function CalendarSection({
 
   // Contact functionality
   const { createContact, updateContact } = useContacts();
+  const { showToast } = useToast();
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [duplicateInfo, setDuplicateInfo] = useState<{
     appointment: Appointment;
@@ -113,7 +115,7 @@ export default function CalendarSection({
 
       if (result.success) {
         // Show success toast
-        alert("Contact added successfully!");
+        showToast("Contact added successfully!", "success");
       } else if (result.duplicate) {
         // Show duplicate modal
         setDuplicateInfo({
@@ -125,17 +127,17 @@ export default function CalendarSection({
       }
     } catch (error) {
       console.error("Error adding contact:", error);
-      alert("Failed to add contact. Please try again.");
+      showToast("Failed to add contact. Please try again.", "error");
     }
   };
 
   const handleDuplicateAddContact = async (contactData: any) => {
     try {
       await createContact(contactData);
-      alert("Contact added successfully!");
+      showToast("Contact added successfully!", "success");
     } catch (error) {
       console.error("Error adding contact:", error);
-      alert("Failed to add contact. Please try again.");
+      showToast("Failed to add contact. Please try again.", "error");
     }
   };
 
@@ -145,10 +147,10 @@ export default function CalendarSection({
   ) => {
     try {
       await updateContact(contactId, contactData);
-      alert("Contact replaced successfully!");
+      showToast("Contact replaced successfully!", "success");
     } catch (error) {
       console.error("Error replacing contact:", error);
-      alert("Failed to replace contact. Please try again.");
+      showToast("Failed to replace contact. Please try again.", "error");
     }
   };
 

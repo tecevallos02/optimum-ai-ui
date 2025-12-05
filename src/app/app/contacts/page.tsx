@@ -5,6 +5,7 @@ import type { Contact } from "@/lib/types";
 import { fetcher } from "@/lib/fetcher";
 import DataTable, { type Column } from "@/components/DataTable";
 import PageTitle from "@/components/PageTitle";
+import { useToast } from "@/components/Toast";
 
 interface ContactsResponse {
   contacts: Contact[];
@@ -17,6 +18,7 @@ interface ContactsResponse {
 }
 
 export default function ContactsPage() {
+  const { showToast, showConfirm } = useToast();
   const [data, setData] = useState<ContactsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -56,14 +58,17 @@ export default function ContactsPage() {
 
       if (response.ok) {
         console.log("Contact added successfully, refreshing list...");
+        showToast("Contact added successfully!", "success");
         await fetchContacts();
         setShowAddModal(false);
       } else {
         const errorData = await response.text();
         console.error("API error response:", errorData);
+        showToast("Failed to add contact. Please try again.", "error");
       }
     } catch (error) {
       console.error("Failed to add contact:", error);
+      showToast("Failed to add contact. Please try again.", "error");
     }
   };
 
@@ -79,28 +84,36 @@ export default function ContactsPage() {
       });
 
       if (response.ok) {
+        showToast("Contact updated successfully!", "success");
         await fetchContacts();
         setEditingContact(null);
+      } else {
+        showToast("Failed to update contact. Please try again.", "error");
       }
     } catch (error) {
       console.error("Failed to edit contact:", error);
+      showToast("Failed to update contact. Please try again.", "error");
     }
   };
 
   const handleDeleteContact = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this contact?")) return;
+    showConfirm("Are you sure you want to delete this contact?", async () => {
+      try {
+        const response = await fetch(`/api/contacts/${id}`, {
+          method: "DELETE",
+        });
 
-    try {
-      const response = await fetch(`/api/contacts/${id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        await fetchContacts();
+        if (response.ok) {
+          showToast("Contact deleted successfully!", "success");
+          await fetchContacts();
+        } else {
+          showToast("Failed to delete contact. Please try again.", "error");
+        }
+      } catch (error) {
+        console.error("Failed to delete contact:", error);
+        showToast("Failed to delete contact. Please try again.", "error");
       }
-    } catch (error) {
-      console.error("Failed to delete contact:", error);
-    }
+    });
   };
 
   const columns: Column<Contact & { actions?: never }>[] = [
